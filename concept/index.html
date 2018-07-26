@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>An open architecture for interactive radio campaigns</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  </head>
+  <body>
+    <!-- Jumbotron -->
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <p class="lead">
+          A modular and open architecture for interactive radio campaigns
+        </p>
+      </div>
+    </div>
+    <div class="container-fluid" style="margin: 3em 0;">
+      <div class="container">
+        <p class="lead">
+        </p>
+        <div class="row">
+          <div class="col">
+            <!-- Channels -->
+            <div class="card rounded-0">
+              <h5 class="card-header">Channels</h5>
+              <div class="card-body p-0">
+                <table class="table">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">1</th>
+                      <td>IVR</td>
+                      <td>Interactive voice response over the phone network</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">2</th>
+                      <td>Voice</td>
+                      <td>One way audio calls without interactivity</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">3</th>
+                      <td>SMS</th>
+                      <td>Mobile phone text message delivery</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">4</th>
+                      <td>USSD</td>
+                      <td>Menu-based message exchange over GSM</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">5</th>
+                      <td>Chat</th>
+                      <td>Text and audio via Internet-based messenger services</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">6</th>
+                      <td>WebRTC</th>
+                      <td>Browser-based real-time communication</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">7</th>
+                      <td>VoIP</th>
+                      <td>IP telephony (voice and video)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="p-3">
+              <p>
+                A <i>channel</i> is a means for uni- or bidirectional communication with an <i>audience</i>. Each channel is an interface which defines a set of operations. Together, these operations determine the capabilities of the channel.
+              </p>
+              <h5>Pseudo code:</h5>
+              <pre class="border p-3"><code>interface SmsChannel
+{
+    void sendSms(Audience recipients, Content message);
+}</code></pre>
+            </div>
+            <div class="card rounded-0">
+              <h5 class="card-header">Features</h5>
+              <div class="card-body p-0">
+                <table class="table">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Description</th>
+                      <th scope="col">Channels</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">1</th>
+                      <td>Decision tree</td>
+                      <td>A decision tree-based (<a href="http://www.voicexml.org/">VoiceXML</a>) interactive campaign element</td>
+                      <td>IVR, Chat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">2</th>
+                      <td>Bot AI</th>
+                      <td>Interactivity based on artificial conversational features</td>
+                      <td>Chat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">3</th>
+                      <td>Registration</td>
+                      <td>Capture of user demographic information</td>
+                      <td>IVR, Chat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">4</th>
+                      <td>Information service</td>
+                      <td>Delivery of subscription content or announcements</td>
+                      <td>SMS, Voice, Chat</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">5</th>
+                      <td>Transcription</td>
+                      <td>Machine-transcription of audio content</td>
+                      <td>IVR, Chat</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <p class="p-3">
+              <i>Features</i> are configurable units of functionality that can be added to radio <i>campaigns</i>. Channels are the communication link between the audience and a campaign feature. Multiple channels may be available for one feature.
+            </p>
+            <!-- Content -->
+            <div class="card rounded-0">
+              <h5 class="card-header">Content</h5>
+              <div class="card-body p-0">
+                <table class="table">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th scope="col">Title</th>
+                      <th scope="col">Synopsis</th>
+                      <th scope="col">Formats</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="align-middle">Welcome message</td>
+                      <td class="align-middle"></td>
+                      <td class="align-middle">
+                        <span class="badge badge-secondary">text-eng</span>
+                        <span class="badge badge-secondary">audio-eng</span>
+                        <span class="badge badge-secondary">audio-amh</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="align-middle">Uliza Answers introduction message</td>
+                      <td class="align-middle">This message is part of the Uliza Q&amp;A service.</td>
+                      <td class="align-middle">
+                        <span class="badge badge-secondary">audio-eng</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="align-middle">Uliza Answers conclusion</td>
+                      <td class="align-middle">This message is part of the Uliza Q&amp;A service.</td>
+                      <td class="align-middle">
+                        <span class="badge badge-secondary">audio-eng</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="align-middle">Advice on growing potatoes</td>
+                      <td class="align-middle"></td>
+                      <td class="align-middle">
+                        <span class="badge badge-secondary">audio-amh</span>
+                        <span class="badge badge-secondary">audio-swa</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="p-3">
+              <p>
+                Information available to campaigns for exchange over a channel is know as <i>content</i>. Content is available in different <i>formats</i> and <i>languages</i>. Examples of formats are text, audio, and video. Instances of data which renders content in a specific format and in a specific language are referred to as <i>representations</i> of that content.
+              </p>
+              <h5>Pseudo code:</h5>
+              <pre class="border p-3"><code>class ContentRep
+{
+    // ...
+
+    private ContentFormat format;
+    private Language lang;
+}
+
+class Content
+{
+    // ...
+
+    private ContentRep[] representations;
+}</code></pre>
+            </div>
+            <div class="p-3">
+              <h4>Media types</h4>
+              <p>
+                Content formats conform to the RFC 6838 <a href="https://www.iana.org/assignments/media-types/media-types.xhtml">Media Type</a> (also know as <i>MIME type</i>) specification.
+              </p>
+              <h5>Pseudo code:</h5>
+              <pre class="border p-3"><code>enum MediaType
+{
+    AudioMpeg,
+    TextPlain,
+    TextHtml,
+
+    // ...
+}
+
+interface ContentFormat
+{
+    static pure MediaType mediaType();
+}
+
+class TextFormat : ContentFormat
+{
+    static pure MediaType mediaType() 
+    { 
+        return MediaType.TextPlain; 
+    }
+}
+
+class Mp3Format : ContentFormat
+{
+    static pure MediaType mediaType() 
+    { 
+        return MediaType.AudioMpeg; 
+    }
+}</code></pre>
+            </div>
+          </div>
+          <div class="col">
+            <!-- Adapters -->
+            <div class="card rounded-0">
+              <h5 class="card-header">Adapters</h5>
+              <div class="card-body p-0">
+                <table class="table">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Module</th>
+                      <th scope="col">Service</th>
+                      <th scope="col">Channel</th>
+                      <th scope="col">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">1</th>
+                      <td><samp>viamo_sms</samp></td>
+                      <td>Viamo</td>
+                      <td>SMS</td>
+                      <td>Delivers SMS via the Viamo platform</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">2</th>
+                      <td><samp>telerivet_sms</samp></td>
+                      <td>TeleRivet</td>
+                      <td>SMS</td>
+                      <td>Delivers SMS via the TeleRivet platform</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">3</th>
+                      <td><samp>telerivet_ivr</samp></td>
+                      <td>TeleRivet</td>
+                      <td>IVR</td>
+                      <td>Enables IVR features via TeleRivet</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">4</th>
+                      <td><samp>telegram_bot</samp></td>
+                      <td>Telegram</td>
+                      <td>Chat</td>
+                      <td>Integrates with the Telegram messaging service</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">5</th>
+                      <td><samp>facebook_bot</samp></td>
+                      <td>Facebook</td>
+                      <td>Chat</td>
+                      <td>Integrates with Facebook Messenger</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">6</th>
+                      <td><samp>wazo_ivr</samp></td>
+                      <td>Wazo</td>
+                      <td>IVR</td>
+                      <td>Enables IVR features via Wazo</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="p-3">
+              <p>
+                An <i>adapter</i> implements a channel interface against a specific backend, service or platform.
+              </p>
+              <h5>Pseudo code:</h5>
+              <pre class="border p-3"><code>module nexmo_sms;
+
+class NexmoSmsAdapter : SmsChannel
+{
+    void sendSms(Audience recipients, Content message)
+    {
+        // code that talks to Nexmo's API
+    }
+}</code></pre>
+            </div>
+            <!-- Campaigns -->
+            <div class="card rounded-0">
+              <h5 class="card-header">Campaigns</h5>
+              <div class="card-body p-0">
+                <table class="table">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Title</th>
+                      <th scope="col">Features</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th class="align-middle" scope="row">1</th>
+                      <td class="align-middle">UPTAKE</td>
+                      <td class="align-middle">Decision tree</td>
+                    </tr>
+                    <tr>
+                      <th class="align-middle" scope="row">2</th>
+                      <td class="align-middle">Farmers priorities</td>
+                      <td class="align-middle">Decision tree, Bot AI</td>
+                    </tr>
+                    <tr>
+                      <th class="align-middle" scope="row">3</th>
+                      <td class="align-middle">Registration demo</td>
+                      <td class="align-middle">Decision tree, Registration</td>
+                    </tr>
+                    <tr>
+                      <th class="align-middle" scope="row">3</th>
+                      <td class="align-middle">NLP demo</td>
+                      <td class="align-middle">Transcription</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="p-3">
+              <p>
+                Interactive radio <i>campaigns</i> are schedulable and automated activities of audience interaction to exchange information (content).
+              </p>
+            </div>
+            <!-- Languages -->
+            <div class="card rounded-0">
+              <h5 class="card-header">Languages</h5>
+              <div class="card-body p-0">
+                <table class="table">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">ISO 639-2 code</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th class="align-middle" scope="row">1</th>
+                      <td class="align-middle">Amharic</td>
+                      <td class="align-middle">amh</td>
+                    </tr>
+                    <tr>
+                      <th class="align-middle" scope="row">2</th>
+                      <td class="align-middle">Esperanto</td>
+                      <td class="align-middle">epo</td>
+                    </tr>
+                    <tr>
+                      <th class="align-middle" scope="row">3</th>
+                      <td class="align-middle">Dinka</td>
+                      <td class="align-middle">din</td>
+                    </tr>
+                    <tr>
+                      <th class="align-middle" scope="row">4</th>
+                      <td class="align-middle">English</td>
+                      <td class="align-middle">eng</td>
+                    </tr>
+                    <tr>
+                      <th class="align-middle" scope="row">5</th>
+                      <td class="align-middle">Inupiaq</th>
+                      <td class="align-middle">ipk</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="p-3"><!-- --></div>
+            <!-- Audience -->
+            <div class="card rounded-0">
+              <h5 class="card-header">Audience</h5>
+              <div class="card-body p-0">
+                <table class="table">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Attributes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th class="align-middle" scope="row">1</th>
+                      <td class="align-middle">Uri Geller</td>
+                      <td class="align-middle"><code></code></td>
+                    </tr>
+                    <tr>
+                      <th class="align-middle" scope="row">2</th>
+                      <td class="align-middle">Sun Ra</td>
+                      <td class="align-middle"><code>{"farmer": true, "country": "us"}</code></td>
+                    </tr>
+                    <tr>
+                      <th class="align-middle" scope="row">3</th>
+                      <td class="align-middle">Grace Jones</td>
+                      <td class="align-middle"><code>{"farmer": true}</code></td>
+                    </tr>
+                    <tr>
+                      <th class="align-middle" scope="row">3</th>
+                      <td class="align-middle">Yngwie J. Malmsteen</td>
+                      <td class="align-middle"><code>{"farmer": true, "age": 55}</code></td>
+                    </tr>
+                    <tr>
+                      <th class="align-middle" scope="row">3</th>
+                      <td class="align-middle">Zlatan Ibrahimovic</td>
+                      <td class="align-middle"><code></code></td>
+                    </tr>
+                    <tr>
+                      <th class="align-middle" scope="row">3</th>
+                      <td class="align-middle">Celine Dion</td>
+                      <td class="align-middle"><code>{"registrered": true}</code></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="p-3">
+              <p>
+                An <i>audience</i> is a group of people who have been engaged to participate in a campaign. The audience interacts with the features of a campaign over a channel. 
+              </p>
+            </div>
+            <!-- Countries -->
+            <div class="card rounded-0">
+              <h5 class="card-header">Countries</h5>
+              <div class="card-body p-0">
+                <table class="table">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Alpha-2 code</th>
+                      <th scope="col">Dialing code</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th class="align-middle" scope="row">1</th>
+                      <td class="align-middle">Canada</td>
+                      <td class="align-middle">ca</td>
+                      <td class="align-middle">1</td>
+                    </tr>
+                    <tr>
+                      <th class="align-middle" scope="row">2</th>
+                      <td class="align-middle">Tanzania</td>
+                      <td class="align-middle">tz</td>
+                      <td class="align-middle">255</td>
+                    <tr>
+                      <th class="align-middle" scope="row">2</th>
+                      <td class="align-middle">Uganda</td>
+                      <td class="align-middle">ug</td>
+                      <td class="align-middle">256</td>
+                    </tr>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="p-3">
+              <p>
+                Alpha-2 codes are two-letter country codes defined in the <a href="https://www.iso.org/iso-3166-country-codes.html">ISO 3166</a> standard. 
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
