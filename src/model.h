@@ -19,6 +19,31 @@ namespace polls
      * \class model
      *
      * \brief MongoDB data model base class
+     * 
+     * ```
+     * #include <iostream>
+     * #include <mongocxx/instance.hpp>
+     * #include "model.h"
+     *
+     * class pants : public polls::model<pants>
+     * {
+     * public:
+     *     pants() : polls::model<pants>{"test", "pants"}
+     *     {
+     *     }
+     * };
+     *
+     * int main()
+     * {
+     *     mongocxx::instance instance{};
+     *     pants document = pants::get("5b63f486be9ca51a9a3c0e81");
+     *     
+     *     // ...
+     * 
+     *     return 0;
+     * }
+     * ```
+     *
      */
     template <typename T> class model
     {
@@ -27,9 +52,6 @@ namespace polls
         model(const model& other);
         model& operator=(const model& other);
 
-        /*!
-         * \brief Default destructor
-         */
         virtual ~model() = default;
 
         void set_data(std::string&& data);
@@ -69,9 +91,6 @@ namespace polls
     {
     }
 
-    /*!
-     * \brief Copy constructor
-     */
     template <typename T> model<T>::model(const model& other)
       : _db{other._db},
         _collection{other._collection},
@@ -81,9 +100,6 @@ namespace polls
     {
     }
 
-    /*!
-     * \brief Copy assignment operator
-     */
     template <typename T> model<T>& model<T>::operator=(const model& other)
     {
         if (&other != this)
