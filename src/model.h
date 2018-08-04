@@ -28,7 +28,7 @@ namespace polls
      *
      * class pants : public polls::model<pants>
      * {
-     *     static constexpr auto mongodb_collection{"pants"};
+     *     static constexpr auto mongodb_collection = "pants";
      *
      * public:
      *     pants() : polls::model<pants>{"test", pants::mongodb_collection}
