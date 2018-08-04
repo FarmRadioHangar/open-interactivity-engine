@@ -9,6 +9,7 @@
 #include <memory>
 #include <mongocxx/client.hpp>
 #include <mongocxx/collection.hpp>
+#include <mongocxx/instance.hpp>
 #include <string>
 
 namespace polls
@@ -19,7 +20,7 @@ namespace polls
      * \class model
      *
      * \brief MongoDB data model base class
-     * 
+     *
      * ```
      * #include <iostream>
      * #include <mongocxx/instance.hpp>
@@ -27,8 +28,10 @@ namespace polls
      *
      * class pants : public polls::model<pants>
      * {
+     *     static constexpr auto mongodb_collection{"pants"};
+     *
      * public:
-     *     pants() : polls::model<pants>{"test", "pants"}
+     *     pants() : polls::model<pants>{"test", pants::mongodb_collection}
      *     {
      *     }
      * };
@@ -37,18 +40,18 @@ namespace polls
      * {
      *     mongocxx::instance instance{};
      *     pants document = pants::get("5b63f486be9ca51a9a3c0e81");
-     *     
+     *
      *     // ...
-     * 
+     *
      *     return 0;
      * }
      * ```
-     *
      */
     template <typename T> class model
     {
     public:
-        model(const std::string& db, const std::string& collection);
+        model();
+        explicit model(const std::string& db, const std::string& collection);
         model(const model& other);
         model& operator=(const model& other);
 
@@ -76,6 +79,11 @@ namespace polls
         bsoncxx::oid     _oid;
         mongocxx::client _client;
     };
+
+    /*!
+     * \brief Default constructor
+     */
+    template <typename T> model<T>::model() : _client{mongocxx::uri{}} {}
 
     /*!
      * \brief Create a MongoDB document linked to a database and a collection.
@@ -142,7 +150,7 @@ namespace polls
         try {
             _oid = bsoncxx::oid{std::move(oid)};
         } catch(bsoncxx::v_noabi::exception& e) {
-            throw std::runtime_error{"invalid oid"};
+            throw std::runtime_error{"invalid ObjectId"};
         }
     }
 
@@ -177,6 +185,10 @@ namespace polls
     template <typename T> void model<T>::save()
     {
         std::unique_ptr<bsoncxx::document::value> data;
+
+        if (_data.empty()) {
+            throw std::runtime_error{"empty (null) document"};
+        }
 
         try {
             data = std::make_unique<bsoncxx::document::value>(
