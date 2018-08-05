@@ -1,97 +1,48 @@
 #include <iostream>
 #include <mongocxx/instance.hpp>
-#include <thread>
 #include "model.h"
 #include "server.h"
-#include "trace.h"
-
-class pants : public polls::model<pants>
-{
-public:
-    //static constexpr const char* collection_name = "pants";
-
-    pants() : polls::model<pants>{"test", "pants"} {}
-};
 
 class campaign : public polls::model<campaign>
 {
+public:
     static constexpr auto mongodb_collection = "campaigns";
 
-public:
-    campaign() : polls::model<campaign>{"uliza", campaign::mongodb_collection} 
-    {}
+    campaign() : polls::model<campaign>{"test", campaign::mongodb_collection} {}
 };
+
+void get_campaigns(polls::http::request req, polls::http::response res)
+{
+    auto collection = campaign::all();
+    std::ostringstream oss{};
+
+    oss << "{\"campaigns\":[";
+    for (auto i = collection.begin(); i != collection.end(); ++i) {
+        if (i != collection.begin()) 
+            oss << ",";
+        oss << i->data();
+    }
+    oss << "]}";
+
+    res.send_json(polls::http::status_code::success_ok, oss.str());
+}
+
+void get_campaign(polls::http::request req, polls::http::response res)
+{
+    auto document = campaign::get(req.param(1));
+    res.send_json(polls::http::status_code::success_ok, document.data());
+}
 
 int main()
 {
     mongocxx::instance instance{};
 
-    //A<s>::cout();
+    polls::http::server server{};
 
-    campaign doc{};
-    doc = campaign::get("xxxxxx86be9ca51a9a3c0e81");
+    server.on(polls::http::GET, "^/campaigns/([0-9a-z]+)$", get_campaign);
+    server.on(polls::http::GET, "^/campaigns$", get_campaigns);
 
-    //pants pant{};
-
-    //campaign doc{};
-
-//    std::cout << "xxx" << std::endl;
-//
-////    std::cout << pants::db_name << std::endl;
-//
-//
-//    campaign document = campaign::get("5b63f486be9ca51a9a3c0e81");
-//
-//    //std::cout << doucument.data() << std::endl;
-//
-//    //document.set_oid("5b63f486be9ca51a9a3c0e81");
-//
-//    document.fetch();
-//    document.save();
-
-//
-//    //campaign document = campaign::get("5b63f486be9ca51a9a3c0e81");
-//
-//    document.set_data("{\"baz\"\"fez\"}");
-//
-//    document.save();
-
-//    try {
-//        document.fetch();
-//    } catch(std::exception& e) {
-//        std::cout << e.what() << std::endl;
-//    }
-//
-//    document.set_oid("5b4a1f7bd93a9362f2cae08b");
-//
-//    try {
-//        document.fetch();
-//        std::cout << document.oid().to_string() << std::endl;
-//    } catch(std::exception& e) {
-//        std::cout << e.what() << std::endl;
-//    }
-//
-//    document.remove();
-//
-    //c = campaign::get("5b4a1f7bd93a9362f2cae08b");
-
-    //std::cout << c.id().to_string() << std::endl;
-
-    //std::vector<std::thread> threads;
-
-    //for (int i = 0; i < 800; i++)
-    //{
-    //    std::thread t{[]() {
-    //        campaign campaign_obj = campaign::get("5b4a1f7bd93a9362f2cae08b");
-    //    }};
-    //    threads.push_back(std::move(t));
-    //}
-
-    //std::vector<std::thread>::iterator i;
-    //for (i = threads.begin(); i != threads.end(); ++i)
-    //{
-    //    i->join();
-    //}
+    server.run();
 
     return 0;
 }
