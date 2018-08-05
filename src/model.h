@@ -8,6 +8,7 @@
 #include <iostream>
 #include <memory>
 #include <mongocxx/client.hpp>
+#include <mongocxx/cursor.hpp>
 #include <mongocxx/collection.hpp>
 #include <mongocxx/instance.hpp>
 #include <string>
@@ -28,9 +29,9 @@ namespace polls
      *
      * class pants : public polls::model<pants>
      * {
+     * public:
      *     static constexpr auto mongodb_collection = "pants";
      *
-     * public:
      *     pants() : polls::model<pants>{"test", pants::mongodb_collection}
      *     {
      *     }
@@ -68,6 +69,7 @@ namespace polls
         void remove();
 
         static T get(std::string&& oid);
+        static std::vector<T> all(std::int64_t skip = 0, std::int64_t limit = 60);
 
     protected:
         mongocxx::collection collection() const;
@@ -99,6 +101,9 @@ namespace polls
     {
     }
 
+    /*!
+     * \brief Copy construct a MongoDB document.
+     */
     template <typename T> model<T>::model(const model& other)
       : _db{other._db},
         _collection{other._collection},
@@ -108,6 +113,9 @@ namespace polls
     {
     }
 
+    /*!
+     * \brief Copy assign to a MongoDB document.
+     */
     template <typename T> model<T>& model<T>::operator=(const model& other)
     {
         if (&other != this)
@@ -141,7 +149,7 @@ namespace polls
     }
 
     /*!
-     * \brief Set the ObjectId of a document.
+     * \brief Set the document's ObjectId.
      *
      * \param id a valid MongoDB ObjectId string
      */
@@ -207,27 +215,62 @@ namespace polls
     }
 
     /*!
-     * \brief Delete the document from the database.
+     * \brief Delete the document from the database. This leaves the object in 
+     * a fresh (newly constructed) state.
      */
     template <typename T> void model<T>::remove()
     {
         auto filter = bsoncxx::builder::basic::make_document(kvp("_id", _oid));
         collection().delete_one(filter.view());
+
+        _oid  = bsoncxx::oid{};
+        _data = "";
     }
 
     /*!
      * \brief Get the MongoDB document corresponding to the given ObjectId.
      *
      * \param id a valid MongoDB ObjectId string
+     *
+     * \return a document
      */
     template <typename T> T model<T>::get(std::string&& oid)
     {
+        T document{};
+
+        document.set_oid(std::move(oid));
+        document.fetch();
+
+        return document;
+    }
+
+    /*
+     * \brief Get all documents from a collection.
+     *
+     * \return a vector of documents
+     */
+    template <typename T> std::vector<T> model<T>::all(
+        std::int64_t skip, 
+        std::int64_t limit)
+    {
         T model{};
 
-        model.set_oid(std::move(oid));
-        model.fetch();
+        mongocxx::options::find opts{};
+        opts.skip(skip);
+        opts.limit(limit);
 
-        return model;
+        auto cursor = model.collection().find({}, opts);
+        std::vector<T> collection{};
+
+        for (auto&& doc : cursor) 
+        {
+            T document{};
+            document._oid  = doc["_id"].get_oid().value;
+            document._data = bsoncxx::to_json(doc);
+            collection.push_back(document);
+        }
+
+        return collection;
     }
 
     template <typename T> mongocxx::collection model<T>::collection() const
