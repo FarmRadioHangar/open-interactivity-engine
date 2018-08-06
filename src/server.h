@@ -47,9 +47,6 @@ namespace polls
             void send(status_code code, const std::string& body);
             void send_json(status_code code, const std::string& body);
 
-            template <typename T>
-            static std::string from_collection(const std::vector<T>& collection);
-
         private:
             std::shared_ptr<HttpServer::Response> _r;
             SimpleWeb::CaseInsensitiveMultimap    _headers;
@@ -99,22 +96,10 @@ namespace polls
             );
 
         private:
+            static void on_error(std::shared_ptr<HttpServer::Request>, const SimpleWeb::error_code& code);
+            
             HttpServer _server;
             uint16_t   _port;
         };
-
-        template <typename T>
-        std::string response::from_collection(const std::vector<T>& collection)
-        {
-            std::ostringstream oss{};
-            oss << "{\"" << T::mongodb_collection << "\":[";
-            for (auto i = collection.begin(); i != collection.end(); ++i) {
-                if (i != collection.begin())
-                    oss << ",";
-                oss << i->data();
-            }
-            oss << "]}";
-            return oss.str();
-        }
     }
 }

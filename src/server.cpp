@@ -41,7 +41,7 @@ namespace polls
          */
         void response::send(status_code code, const std::string& body)
         {
-            _headers.emplace("Content-Length", std::to_string(body.length()));
+            //_headers.emplace("Content-Length", std::to_string(body.length()));
             _headers.emplace("Access-Control-Allow-Origin", "*");
             _r->write(code, body, _headers);
         }
@@ -72,6 +72,7 @@ namespace polls
          */
         void server::run()
         {
+            _server.on_error = &server::on_error;
             _server.config.port = _port;
             _server.start();
         }
@@ -111,6 +112,11 @@ namespace polls
                     std::cout << e.what() << std::endl;
                 }
             };
+        }
+
+        void server::on_error(std::shared_ptr<HttpServer::Request>, const SimpleWeb::error_code& code)
+        {
+            std::cout << "error: " << code << std::endl;
         }
     }
 }

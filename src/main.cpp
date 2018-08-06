@@ -4,6 +4,20 @@
 #include "model.h"
 #include "server.h"
 
+template <typename T>
+static std::string from_collection(const std::vector<T>& collection)
+{
+    std::stringstream oss{};
+    oss << "{\"" << T::mongodb_collection << "\":[";
+    for (auto i = collection.begin(); i != collection.end(); ++i) {
+        if (i != collection.begin())
+            oss << ",";
+        oss << i->data();
+    }
+    oss << "]}";
+    return oss.str();
+}
+
 class campaign : public polls::model<campaign>
 {
 public:
@@ -38,9 +52,10 @@ public:
 
 void get_campaigns(polls::http::request req, polls::http::response res)
 {
-    res.send_json(
-        polls::http::status_code::success_ok,
-        polls::http::response::from_collection<campaign>(campaign::all()));
+    res.send_json(polls::http::status_code::success_ok, "{}");
+    //res.send_json(
+    //    polls::http::status_code::success_ok,
+    //    from_collection<campaign>(campaign::all()));
 }
 
 void get_campaigns_item(polls::http::request req, polls::http::response res)
@@ -53,7 +68,7 @@ void get_languages(polls::http::request req, polls::http::response res)
 {
     res.send_json(
         polls::http::status_code::success_ok,
-        polls::http::response::from_collection<language>(language::all()));
+        from_collection<language>(language::all()));
 }
 
 void get_languages_item(polls::http::request req, polls::http::response res)
@@ -66,7 +81,7 @@ void get_audience(polls::http::request req, polls::http::response res)
 {
     res.send_json(
         polls::http::status_code::success_ok,
-        polls::http::response::from_collection<audience>(audience::all()));
+        from_collection<audience>(audience::all()));
 }
 
 void get_audience_item(polls::http::request req, polls::http::response res)
@@ -79,7 +94,7 @@ void get_content(polls::http::request req, polls::http::response res)
 {
     res.send_json(
         polls::http::status_code::success_ok,
-        polls::http::response::from_collection<content>(content::all()));
+        from_collection<content>(content::all()));
 }
 
 void get_content_item(polls::http::request req, polls::http::response res)
