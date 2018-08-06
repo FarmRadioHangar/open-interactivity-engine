@@ -1,6 +1,6 @@
 class Api {
-  static getCampaigns() {
-    return fetch('http://localhost:9080/campaigns')
+  getCampaigns() {
+    return fetch(`${process.env.API_URL}/campaigns`)
       .then(response => {
         return response.json();
       })
@@ -11,4 +11,4 @@ class Api {
   }
 }
 
-export default Api;
+export default new Api();
