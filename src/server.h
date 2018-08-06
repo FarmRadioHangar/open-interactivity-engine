@@ -31,7 +31,7 @@ namespace polls
 
         inline std::string request::param(const int pos) const
         {
-            return _r->path_match.str(pos); 
+            return _r->path_match.str(pos);
         }
 
         /*!
@@ -47,12 +47,15 @@ namespace polls
             void send(status_code code, const std::string& body);
             void send_json(status_code code, const std::string& body);
 
+            template <typename T>
+            static std::string from_collection(const std::vector<T>& collection);
+
         private:
             std::shared_ptr<HttpServer::Response> _r;
             SimpleWeb::CaseInsensitiveMultimap    _headers;
         };
 
-        using request_handler = std::function<void(polls::http::request req, 
+        using request_handler = std::function<void(polls::http::request req,
                                                    polls::http::response res)>;
 
         /*!
@@ -84,14 +87,14 @@ namespace polls
             void run(const uint16_t port);
 
             /*!
-             * \brief Configure the server to listen on the given port for 
+             * \brief Configure the server to listen on the given port for
              * incoming connections.
              */
             void set_port(const uint16_t port) { _port = port; };
 
             void on(
-                const http::method& method, 
-                const std::string& pattern, 
+                const http::method& method,
+                const std::string& pattern,
                 polls::http::request_handler handler
             );
 
@@ -99,5 +102,19 @@ namespace polls
             HttpServer _server;
             uint16_t   _port;
         };
+
+        template <typename T>
+        std::string response::from_collection(const std::vector<T>& collection)
+        {
+            std::ostringstream oss{};
+            oss << "{\"" << T::mongodb_collection << "\":[";
+            for (auto i = collection.begin(); i != collection.end(); ++i) {
+                if (i != collection.begin())
+                    oss << ",";
+                oss << i->data();
+            }
+            oss << "]}";
+            return oss.str();
+        }
     }
 }
