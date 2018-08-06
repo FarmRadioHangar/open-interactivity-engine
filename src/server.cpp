@@ -5,7 +5,7 @@ namespace polls
 {
     namespace http
     {
-        std::string to_string(const method& method)
+        static constexpr const char* to_string(const method& method)
         {
             switch (method)
             {
@@ -18,9 +18,8 @@ namespace polls
             case DELETE:
                 return "DELETE";
             case GET:
-                return "GET";
             default:
-                throw std::runtime_error{"application error"};
+                return "GET";
             }
         }
 
@@ -34,12 +33,25 @@ namespace polls
         {
         }
 
+        /*!
+         * \brief Send generic response.
+         *
+         * \param code HTTP status code
+         * \param body the response body
+         */
         void response::send(status_code code, const std::string& body)
         {
             _headers.emplace("Content-Length", std::to_string(body.length()));
+            _headers.emplace("Access-Control-Allow-Origin", "*");
             _r->write(code, body, _headers);
         }
 
+        /*!
+         * \brief Send JSON response.
+         *
+         * \param code HTTP status code
+         * \param body the response body
+         */
         void response::send_json(status_code code, const std::string& body)
         {
             _headers.emplace("Content-Type", "application/json");
@@ -65,7 +77,7 @@ namespace polls
         }
 
         /*!
-         * \brief Run the server on a specific port
+         * \brief Run the server on a specific port.
          */
         void server::run(const uint16_t port)
         {
@@ -74,12 +86,16 @@ namespace polls
         }
 
         /*!
-         * \brief Register a request handler with the server
+         * \brief Register a request handler with the server.
+         *
+         * \param method HTTP method
+         * \param pattern regular expression to match on
+         * \param handler a request handler that will process the request
          */
         void server::on(
             const http::method& method,
             const std::string& pattern,
-            std::function<void(request req, response res)> handler)
+            polls::http::request_handler handler)
         {
             _server.resource[pattern][http::to_string(method)] = [handler](
                 std::shared_ptr<HttpServer::Response> response,

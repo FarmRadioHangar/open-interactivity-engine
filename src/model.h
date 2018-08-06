@@ -23,10 +23,6 @@ namespace polls
      * \brief MongoDB data model base class
      *
      * ```
-     * #include <iostream>
-     * #include <mongocxx/instance.hpp>
-     * #include "model.h"
-     *
      * class pants : public polls::model<pants>
      * {
      * public:
@@ -188,7 +184,8 @@ namespace polls
     }
 
     /*!
-     * \brief Persist the document to the database.
+     * \brief Persist the document to the database. This method can be used 
+     * to update an existing document, or to create a new one.
      */
     template <typename T> void model<T>::save()
     {

@@ -5,11 +5,12 @@
 
 #include <server_http.hpp>
 
+using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
+
 namespace polls
 {
     namespace http
     {
-        using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
         using status_code = SimpleWeb::StatusCode;
 
         /*!
@@ -51,6 +52,9 @@ namespace polls
             SimpleWeb::CaseInsensitiveMultimap    _headers;
         };
 
+        using request_handler = std::function<void(polls::http::request req, 
+                                                   polls::http::response res)>;
+
         /*!
          * \enum method
          *
@@ -88,7 +92,7 @@ namespace polls
             void on(
                 const http::method& method, 
                 const std::string& pattern, 
-                std::function<void(http::request req, http::response res)> handler
+                polls::http::request_handler handler
             );
 
         private:
