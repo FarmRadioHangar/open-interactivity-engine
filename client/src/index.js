@@ -5,13 +5,14 @@ import { Provider } from 'react-redux';
 import configureStore from './store/configureStore';
 import { loadCampaigns } from './actions/campaignsActions';
 import CampaignsIndex from './components/campaignsIndex';
+import { browserHistory } from 'react-router'
 
 const store = configureStore();
 
 store.dispatch(loadCampaigns());
 
 const BasicExample = () => (
-  <Router>
+  <Router history={browserHistory} >
     <div>
       <ul>
         <li>
