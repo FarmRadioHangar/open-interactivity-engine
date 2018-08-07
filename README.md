@@ -6,3 +6,11 @@ The goal of this project is to create a modular and open architecture for intera
 * Chatbots
 * Speech-to-text
 <!-- between campaign features and an audience -->
+We think of these channels as interfaces in which the operations exposed are determined by the capabilities of the channel:
+```d
+// pseudo-code
+interface SmsChannel
+{
+    void sendSms(Audience recipients, Content message);
+}
+```
