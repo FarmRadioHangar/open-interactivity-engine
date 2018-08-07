@@ -45,3 +45,37 @@ class Content
     private ContentRep[] representations;
 }
 ```
+### Media types
+Content formats conform to the RFC 6838 Media Type (also know as MIME type) specification.
+```d
+// pseudo-code
+enum MediaType
+{
+    AudioMpeg,
+    TextPlain,
+    TextHtml,
+
+    // ...
+}
+
+interface ContentFormat
+{
+    static pure MediaType mediaType();
+}
+
+class TextFormat : ContentFormat
+{
+    static pure MediaType mediaType() 
+    { 
+        return MediaType.TextPlain; 
+    }
+}
+
+class Mp3Format : ContentFormat
+{
+    static pure MediaType mediaType() 
+    { 
+        return MediaType.AudioMpeg; 
+    }
+}
+```
