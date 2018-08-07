@@ -46,7 +46,7 @@ class Content
 }
 ```
 ### Media types
-Content formats conform to the RFC 6838 Media Type (also know as MIME type) specification.
+Content formats conform to the RFC 6838 [Media Type](https://www.iana.org/assignments/media-types/media-types.xhtml) (also know as MIME type) specification.
 ```d
 // pseudo-code
 enum MediaType
