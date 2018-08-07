@@ -6,11 +6,24 @@ The goal of this project is to create a modular and open architecture for intera
 * Chatbots
 * Speech-to-text
 <!-- between campaign features and an audience -->
-We think of these channels as interfaces in which the operations are determined by the capabilities of the channel:
+We think of these *channels* as interfaces in which the operations are determined by the capabilities of the channel:
 ```d
 // pseudo-code
 interface SmsChannel
 {
     void sendSms(Audience recipients, Content message);
+}
+```
+An *adapter* implements a channel interface against a specific backend, service or platform.
+```d
+// pseudo-code
+module nexmo_sms;
+
+class NexmoSmsAdapter : SmsChannel
+{
+    void sendSms(Audience recipients, Content message)
+    {
+        // code that talks to Nexmo's API
+    }
 }
 ```
