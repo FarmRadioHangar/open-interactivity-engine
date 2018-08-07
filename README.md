@@ -1,4 +1,4 @@
-# laserpolls
+# surveypants
 
 The goal of this project is to create a modular and open architecture for interactive radio campaigns. Interactive radio is an umbrella term for digital tools that add participatory elements to radio through the use of mobile phones and other communication technologies. Some of the channels over which this communication can take place are:
 * IVR
