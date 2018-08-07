@@ -13,6 +13,8 @@
 #include <mongocxx/instance.hpp>
 #include <string>
 
+#define COLLECTION(name) static constexpr auto mongodb_collection = "name";
+
 namespace polls
 {
     using bsoncxx::builder::basic::kvp;

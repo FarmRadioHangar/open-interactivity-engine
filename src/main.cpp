@@ -26,7 +26,7 @@ static std::string from_collection(const std::vector<T>& collection)
 class campaign : public polls::model<campaign>
 {
 public:
-    static constexpr auto mongodb_collection = "campaigns";
+    COLLECTION(campaigns)
 
     campaign() : polls::model<campaign>{"uliza", campaign::mongodb_collection} {}
 };
@@ -34,7 +34,7 @@ public:
 class language : public polls::model<language>
 {
 public:
-    static constexpr auto mongodb_collection = "languages";
+    COLLECTION(languages)
 
     language() : polls::model<language>{"uliza", language::mongodb_collection} {}
 };
@@ -42,7 +42,7 @@ public:
 class audience : public polls::model<audience>
 {
 public:
-    static constexpr auto mongodb_collection = "audience";
+    COLLECTION(audience)
 
     audience() : polls::model<audience>{"uliza", audience::mongodb_collection} {}
 };
@@ -50,7 +50,7 @@ public:
 class content : public polls::model<content>
 {
 public:
-    static constexpr auto mongodb_collection = "content";
+    COLLECTION(content)
 
     content() : polls::model<content>{"uliza", content::mongodb_collection} {}
 };
