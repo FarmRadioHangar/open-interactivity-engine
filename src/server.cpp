@@ -1,8 +1,7 @@
 #include "server.h"
 
-#include <cpprest/http_listener.h>
-
 using namespace web;
+using namespace web::http;
 using namespace http::experimental::listener;
 
 namespace polls
@@ -13,7 +12,9 @@ namespace polls
          * \brief Create the server
          */
         server::server()
-          : _port{9080}
+          : _scheme{"http"},
+            _host{"localhost"},
+            _port{9080}
         {
         }
 
@@ -22,6 +23,34 @@ namespace polls
          */
         void server::run()
         {
+            uri_builder builder;
+
+            builder.set_scheme(_scheme);
+            builder.set_host(_host);
+            builder.set_port(std::to_string(_port));
+            builder.set_path(_path);
+
+            _listener = http_listener{builder.to_uri()};
+
+            _listener.support(
+                std::bind(&server::handle_request, this, std::placeholders::_1)
+            );
+
+            try
+            {
+                _listener
+                  .open()
+                  .then([]() {
+                      std::cout << "listening..." << std::endl;
+                  })
+                  .wait();
+
+                while (true);
+            }
+            catch (const std::exception& e)
+            {
+                std::cout << e.what() << std::endl;
+            }
         }
 
         /*!
@@ -31,6 +60,11 @@ namespace polls
         {
             set_port(port);
             run();
+        }
+
+        void server::handle_request(http_request request)
+        {
+            std::cout << "handle request" << std::endl;
         }
     }
 }

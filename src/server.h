@@ -4,6 +4,9 @@
 #pragma once
 
 #include <cinttypes>
+#include <cpprest/asyncrt_utils.h>
+#include <cpprest/http_listener.h>
+#include <string>
 
 namespace polls
 {
@@ -26,8 +29,17 @@ namespace polls
              */
             void set_port(const uint16_t port) { _port = port; };
 
+        protected:
+            void handle_request(web::http::http_request request);
+
         private:
-            uint16_t _port;
+            using http_listener = web::http::experimental::listener::http_listener;
+
+            http_listener _listener;
+            std::string   _scheme;
+            std::string   _host;
+            uint16_t      _port;
+            std::string   _path;
         };
     }
 }
