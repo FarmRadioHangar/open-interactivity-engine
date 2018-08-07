@@ -86,3 +86,17 @@ Interactive radio *campaigns* are schedulable and automated activities to exchan
 *Features* are configurable units of functionality that can be added to campaigns. A channel provides the communication link between the audience and a campaign feature. Multiple channels may be available for one feature.
 
 ## Project structure
+
+### Service layer
+* Modern C++ (C++11)
+* Build tool: CMake
+* Documentation: Doxygen
+* Tests: ?
+
+### Database
+* MongoDB
+
+### Front-end
+* JavaScript (ES6) 
+* React/Redux
+* Webpack
