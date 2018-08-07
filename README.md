@@ -5,8 +5,7 @@ The goal of this project is to create a modular and open architecture for intera
 * SMS
 * Chatbots
 * Speech-to-text
-<!-- between campaign features and an audience -->
-A *channel* is a means for uni- or bidirectional communication with an audience. We think of these channels as interfaces whose operations are determined by the capabilities of the channel:
+In our terminology, a *channel* is a means for uni- or bidirectional communication with an audience. We think of these channels as interfaces whose operations are determined by the capabilities of the channel:
 ```d
 // pseudo-code
 interface SmsChannel
