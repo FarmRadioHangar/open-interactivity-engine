@@ -99,4 +99,4 @@ Interactive radio *campaigns* are schedulable and automated activities to exchan
 ### Front-end
 * JavaScript (ES6) 
 * React/Redux
-* Webpack
+* Babel/Webpack
