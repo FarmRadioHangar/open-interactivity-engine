@@ -81,7 +81,7 @@ class Mp3Format : ContentFormat
     }
 }
 ```
-Interactive radio *campaigns* are schedulable and automated activities to exchange information (content) with the audience.
+Interactive radio *campaigns* are schedulable and automated activities to exchange information (content) with an audience.
 
 *Features* are configurable units of functionality that can be added to campaigns. A channel provides the communication link between the audience and a campaign feature. Multiple channels may be available for one feature.
 
