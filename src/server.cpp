@@ -30,7 +30,7 @@ namespace polls
         void server::run(const uint16_t port)
         {
             set_port(port);
-            run():
+            run();
         }
     }
 }

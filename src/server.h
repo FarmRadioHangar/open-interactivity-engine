@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include <cinttypes>
+
 namespace polls
 {
     namespace http

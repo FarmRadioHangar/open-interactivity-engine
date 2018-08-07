@@ -15,6 +15,7 @@ set(USED_LIBS ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
 
 find_package(libbsoncxx REQUIRED)
 find_package(libmongocxx REQUIRED)
+find_package(OpenSSL REQUIRED)
 find_package(cpprestsdk REQUIRED)
 
 add_executable(polls src/main.cpp src/server.cpp src/model.cpp)
@@ -30,4 +31,5 @@ include_directories("/usr/local/lib")
 target_link_libraries(polls ${Boost_LIBRARIES})
 target_link_libraries(polls ${LIBBSONCXX_LIBRARIES})
 target_link_libraries(polls ${LIBMONGOCXX_LIBRARIES})
+target_link_libraries(polls ${OPENSSL_LIBRARIES})
 target_link_libraries(polls PRIVATE cpprestsdk::cpprest)
