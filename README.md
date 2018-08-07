@@ -27,7 +27,7 @@ class NexmoSmsAdapter : SmsChannel
     }
 }
 ```
-Information available for exchange over a channel is know as *content*. Content comes in different *formats*, and in different *languages*. Examples of formats are text, audio, and video. An Instance of data which renders content in a specific format and in a specific language is referred to as a *representation* of that content.
+Information available for exchange over a channel is know as *content*. Content comes in different *formats*, and in different *languages*. Examples of formats are text, audio, and video. An instance of data which renders content in a specific format and in a specific language is referred to as a *representation* of that content.
 ```d
 // pseudo-code
 class ContentRep
