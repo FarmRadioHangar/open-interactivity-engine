@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.5)
 
 project(polls)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -D_GLIBCXX_USE_CXX11_ABI=0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall")
 
 find_package(Boost COMPONENTS system thread REQUIRED)
 
@@ -28,8 +28,8 @@ include_directories("/usr/local/include/libmongoc-1.0")
 include_directories("/usr/local/include/libbson-1.0")
 include_directories("/usr/local/lib")
 
-target_link_libraries(polls ${Boost_LIBRARIES})
-target_link_libraries(polls ${LIBBSONCXX_LIBRARIES})
-target_link_libraries(polls ${LIBMONGOCXX_LIBRARIES})
-target_link_libraries(polls ${OPENSSL_LIBRARIES})
+target_link_libraries(polls PUBLIC ${Boost_LIBRARIES})
+target_link_libraries(polls PUBLIC ${LIBBSONCXX_LIBRARIES})
+target_link_libraries(polls PUBLIC ${LIBMONGOCXX_LIBRARIES})
+target_link_libraries(polls PUBLIC ${OPENSSL_LIBRARIES})
 target_link_libraries(polls PRIVATE cpprestsdk::cpprest)
