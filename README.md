@@ -89,7 +89,7 @@ Interactive radio *campaigns* are schedulable and automated activities to exchan
 
 ### Service layer
 * RESTful API
-* Modern C++ (C++11)
+* Modern C++
 * Build tool: CMake
 * Documentation: Doxygen
 * Tests: ?
