@@ -1,3 +1,8 @@
+/*!
+ * \file main.cpp
+ *
+ * \mainpage Main
+ */
 #include <iostream>
 #include <mongocxx/instance.hpp>
 #include <thread>
