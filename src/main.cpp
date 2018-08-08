@@ -12,6 +12,20 @@
 #include "model.h"
 #include "server.h"
 
+template <typename T>
+static std::string from_collection(const std::vector<T>& collection)
+{
+    std::stringstream oss{};
+    oss << "{\"" << T::mongodb_collection << "\":[";
+    for (auto i = collection.begin(); i != collection.end(); ++i) {
+        if (i != collection.begin())
+            oss << ",";
+        oss << i->data();
+    }
+    oss << "]}";
+    return oss.str();
+}
+
 class campaign : public polls::model<campaign>
 {
 public:
@@ -89,7 +103,7 @@ public:
 //    res.send_json(polls::http::status_code::success_ok, document.data());
 //}
 
-void get_campaigns(polls::http::request req, polls::http::response res)
+void get_campaigns(web::http::http_request request, const std::smatch& match)
 {
     request.reply(
         web::http::status_codes::OK, 
@@ -109,6 +123,7 @@ int main()
     polls::http::server server{};
 
     server.on(web::http::methods::GET, "^/campaigns/([0-9a-f]+)$", get_campaigns_item);
+    server.on(web::http::methods::GET, "^/campaigns$", get_campaigns);
 
     //
 
