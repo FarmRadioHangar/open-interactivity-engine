@@ -80,7 +80,7 @@ namespace polls
                 if (request.method() == pattern.method &&
                     std::regex_match(path, match, pattern.regex))
                 {
-                    pattern.handler(request);
+                    pattern.handler(request, match);
                 }
             }
 

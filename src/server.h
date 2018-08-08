@@ -17,7 +17,7 @@ namespace polls
         {
             web::http::method method;
             std::regex        regex;
-            std::function<void(web::http::http_request)> handler;
+            std::function<void(web::http::http_request, const std::smatch& match)> handler;
         };
 
         class server
@@ -37,7 +37,11 @@ namespace polls
              */
             void set_port(const uint16_t port) { _port = port; };
 
-            void on(const web::http::method& method, const std::string& pattern, std::function<void(web::http::http_request)> handler);
+            void on(
+                const web::http::method& method, 
+                const std::string& pattern, 
+                std::function<void(web::http::http_request, const std::smatch& match)> handler
+            );
 
         protected:
             void handle_request(web::http::http_request request);

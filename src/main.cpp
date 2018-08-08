@@ -111,7 +111,7 @@
 //    res.send_json(polls::http::status_code::success_ok, document.data());
 //}
 
-void get_campaigns_item(web::http::http_request request)
+void get_campaigns_item(web::http::http_request request, const std::smatch& match)
 {
     request.reply(web::http::status_codes::OK, "get_campaigns_item");
 }
