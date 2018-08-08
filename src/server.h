@@ -13,11 +13,13 @@ namespace polls
 {
     namespace http
     {
+        using request_handler = std::function<void(web::http::http_request, const std::smatch& match)>;
+
         struct request_match
         {
             web::http::method method;
             std::regex        regex;
-            std::function<void(web::http::http_request, const std::smatch& match)> handler;
+            request_handler   handler;
         };
 
         class server
@@ -40,7 +42,7 @@ namespace polls
             void on(
                 const web::http::method& method, 
                 const std::string& pattern, 
-                std::function<void(web::http::http_request, const std::smatch& match)> handler
+                request_handler handler
             );
 
         protected:
@@ -49,11 +51,11 @@ namespace polls
         private:
             using http_listener = web::http::experimental::listener::http_listener;
 
-            http_listener _listener;
-            std::string   _scheme;
-            std::string   _host;
-            uint16_t      _port;
-            std::string   _path;
+            http_listener              _listener;
+            std::string                _scheme;
+            std::string                _host;
+            uint16_t                   _port;
+            std::string                _path;
             std::vector<request_match> _patterns;
         };
     }
