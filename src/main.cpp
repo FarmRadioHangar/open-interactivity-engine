@@ -20,38 +20,30 @@ public:
     campaign() : polls::model<campaign>{"test", campaign::mongodb_collection} {}
 };
 
-//class language : public polls::model<language>
-//{
-//public:
-//    COLLECTION(languages)
-//
-//    language() : polls::model<language>{"test", language::mongodb_collection} {}
-//};
-//
-//class audience : public polls::model<audience>
-//{
-//public:
-//    COLLECTION(audience)
-//
-//    audience() : polls::model<audience>{"test", audience::mongodb_collection} {}
-//};
-//
-//class content : public polls::model<content>
-//{
-//public:
-//    COLLECTION(content)
-//
-//    content() : polls::model<content>{"test", content::mongodb_collection} {}
-//};
-//
-//void get_campaigns(polls::http::request req, polls::http::response res)
-//{
-//    res.send_json(polls::http::status_code::success_ok, "{}");
-//    //res.send_json(
-//    //    polls::http::status_code::success_ok,
-//    //    from_collection<campaign>(campaign::all()));
-//}
-//
+class language : public polls::model<language>
+{
+public:
+    COLLECTION(languages)
+
+    language() : polls::model<language>{"test", language::mongodb_collection} {}
+};
+
+class audience : public polls::model<audience>
+{
+public:
+    COLLECTION(audience)
+
+    audience() : polls::model<audience>{"test", audience::mongodb_collection} {}
+};
+
+class content : public polls::model<content>
+{
+public:
+    COLLECTION(content)
+
+    content() : polls::model<content>{"test", content::mongodb_collection} {}
+};
+
 //void get_campaigns_item(polls::http::request req, polls::http::response res)
 //{
 //    auto document = campaign::get(req.param(1));
@@ -96,6 +88,13 @@ public:
 //    auto document = content::get(req.param(1));
 //    res.send_json(polls::http::status_code::success_ok, document.data());
 //}
+
+void get_campaigns(polls::http::request req, polls::http::response res)
+{
+    request.reply(
+        web::http::status_codes::OK, 
+        from_collection<campaign>(campaign::all()));
+}
 
 void get_campaigns_item(web::http::http_request request, const std::smatch& match)
 {
