@@ -40,9 +40,7 @@ namespace polls
             {
                 _listener
                   .open()
-                  .then([]() {
-                      std::cout << "listening..." << std::endl;
-                  })
+                  .then([]() { std::cout << "listening..." << std::endl; })
                   .wait();
 
                 while (true);
@@ -62,9 +60,31 @@ namespace polls
             run();
         }
 
+        /*!
+         * \brief Register a request handler.
+         */
+        void server::on(
+            const web::http::method& method,
+            const std::string& pattern,
+            std::function<void(http_request)> handler)
+        {
+            _patterns.push_back(request_match{method, std::regex{pattern}, handler});
+        }
+
         void server::handle_request(http_request request)
         {
-            std::cout << "handle request" << std::endl;
+            auto path = uri::decode(request.relative_uri().path());
+            std::smatch match{};
+
+            for (auto& pattern : _patterns) {
+                if (request.method() == pattern.method &&
+                    std::regex_match(path, match, pattern.regex))
+                {
+                    pattern.handler(request);
+                }
+            }
+
+            request.reply(status_codes::OK, "hello");
         }
     }
 }

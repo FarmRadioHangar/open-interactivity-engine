@@ -3,8 +3,11 @@
  *
  * \mainpage Main
  */
+#include <cpprest/asyncrt_utils.h>
+#include <cpprest/http_listener.h>
 #include <iostream>
 #include <mongocxx/instance.hpp>
+#include <regex>
 #include <thread>
 #include "model.h"
 #include "server.h"
@@ -108,11 +111,18 @@
 //    res.send_json(polls::http::status_code::success_ok, document.data());
 //}
 
+void get_campaigns_item(web::http::http_request request)
+{
+    request.reply(web::http::status_codes::OK, "get_campaigns_item");
+}
+
 int main()
 {
     mongocxx::instance instance{};
 
     polls::http::server server{};
+
+    server.on(web::http::methods::GET, "^/campaigns/([0-9a-f]+)$", get_campaigns_item);
 
     //server.on(polls::http::GET, "^/campaigns/([0-9a-f]+)$", get_campaigns_item);
     //server.on(polls::http::GET, "^/campaigns$", get_campaigns);

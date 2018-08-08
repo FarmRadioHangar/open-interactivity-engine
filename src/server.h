@@ -6,12 +6,20 @@
 #include <cinttypes>
 #include <cpprest/asyncrt_utils.h>
 #include <cpprest/http_listener.h>
+#include <regex>
 #include <string>
 
 namespace polls
 {
     namespace http
     {
+        struct request_match
+        {
+            web::http::method method;
+            std::regex        regex;
+            std::function<void(web::http::http_request)> handler;
+        };
+
         class server
         {
         public:
@@ -29,6 +37,8 @@ namespace polls
              */
             void set_port(const uint16_t port) { _port = port; };
 
+            void on(const web::http::method& method, const std::string& pattern, std::function<void(web::http::http_request)> handler);
+
         protected:
             void handle_request(web::http::http_request request);
 
@@ -40,6 +50,7 @@ namespace polls
             std::string   _host;
             uint16_t      _port;
             std::string   _path;
+            std::vector<request_match> _patterns;
         };
     }
 }
