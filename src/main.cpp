@@ -12,27 +12,12 @@
 #include "model.h"
 #include "server.h"
 
-//template <typename T>
-//static std::string from_collection(const std::vector<T>& collection)
-//{
-//    std::stringstream oss{};
-//    oss << "{\"" << T::mongodb_collection << "\":[";
-//    for (auto i = collection.begin(); i != collection.end(); ++i) {
-//        if (i != collection.begin())
-//            oss << ",";
-//        oss << i->data();
-//    }
-//    oss << "]}";
-//    return oss.str();
-//}
-
 class campaign : public polls::model<campaign>
 {
 public:
     COLLECTION(campaigns)
-    //static constexpr auto mongodb_collection = "campaigns";
 
-    campaign() : polls::model<campaign>{"uliza", campaign::mongodb_collection} {}
+    campaign() : polls::model<campaign>{"test", campaign::mongodb_collection} {}
 };
 
 //class language : public polls::model<language>
@@ -40,7 +25,7 @@ public:
 //public:
 //    COLLECTION(languages)
 //
-//    language() : polls::model<language>{"uliza", language::mongodb_collection} {}
+//    language() : polls::model<language>{"test", language::mongodb_collection} {}
 //};
 //
 //class audience : public polls::model<audience>
@@ -48,7 +33,7 @@ public:
 //public:
 //    COLLECTION(audience)
 //
-//    audience() : polls::model<audience>{"uliza", audience::mongodb_collection} {}
+//    audience() : polls::model<audience>{"test", audience::mongodb_collection} {}
 //};
 //
 //class content : public polls::model<content>
@@ -56,7 +41,7 @@ public:
 //public:
 //    COLLECTION(content)
 //
-//    content() : polls::model<content>{"uliza", content::mongodb_collection} {}
+//    content() : polls::model<content>{"test", content::mongodb_collection} {}
 //};
 //
 //void get_campaigns(polls::http::request req, polls::http::response res)
