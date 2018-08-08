@@ -25,15 +25,16 @@
 //    oss << "]}";
 //    return oss.str();
 //}
-//
-//class campaign : public polls::model<campaign>
-//{
-//public:
-//    COLLECTION(campaigns)
-//
-//    campaign() : polls::model<campaign>{"uliza", campaign::mongodb_collection} {}
-//};
-//
+
+class campaign : public polls::model<campaign>
+{
+public:
+    COLLECTION(campaigns)
+    //static constexpr auto mongodb_collection = "campaigns";
+
+    campaign() : polls::model<campaign>{"uliza", campaign::mongodb_collection} {}
+};
+
 //class language : public polls::model<language>
 //{
 //public:
@@ -113,7 +114,8 @@
 
 void get_campaigns_item(web::http::http_request request, const std::smatch& match)
 {
-    request.reply(web::http::status_codes::OK, "get_campaigns_item");
+    auto document = campaign::get(match.str(1));
+    request.reply(web::http::status_codes::OK, document.data());
 }
 
 int main()
@@ -123,6 +125,8 @@ int main()
     polls::http::server server{};
 
     server.on(web::http::methods::GET, "^/campaigns/([0-9a-f]+)$", get_campaigns_item);
+
+    //
 
     //server.on(polls::http::GET, "^/campaigns/([0-9a-f]+)$", get_campaigns_item);
     //server.on(polls::http::GET, "^/campaigns$", get_campaigns);

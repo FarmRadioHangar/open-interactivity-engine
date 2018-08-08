@@ -66,7 +66,7 @@ namespace polls
         void server::on(
             const web::http::method& method,
             const std::string& pattern,
-            std::function<void(http_request)> handler)
+            request_handler handler)
         {
             _patterns.push_back(request_match{method, std::regex{pattern}, handler});
         }
@@ -80,7 +80,12 @@ namespace polls
                 if (request.method() == pattern.method &&
                     std::regex_match(path, match, pattern.regex))
                 {
-                    pattern.handler(request, match);
+                    try {
+                        pattern.handler(request, match);
+                        return;
+                    } catch(std::exception& e) {
+                        std::cout << e.what() << std::endl;
+                    }
                 }
             }
 

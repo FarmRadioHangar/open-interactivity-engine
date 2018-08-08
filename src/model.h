@@ -13,7 +13,7 @@
 #include <mongocxx/instance.hpp>
 #include <string>
 
-#define COLLECTION(name) static constexpr auto mongodb_collection = "name";
+#define COLLECTION(name) static constexpr auto mongodb_collection = #name;
 
 namespace polls
 {
@@ -179,6 +179,7 @@ namespace polls
         auto result = collection().find_one(filter.view());
 
         if (!result) {
+            std::cout << bsoncxx::to_json(filter.view()) << std::endl;
             throw std::runtime_error{"document not found"};
         }
 
