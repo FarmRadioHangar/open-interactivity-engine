@@ -5,6 +5,9 @@ import * as campaignsActions from '../actions/campaignsActions';
 import CampaignsList from './campaignsList';
 
 class CampaignsIndex extends React.Component {  
+  componentDidMount() {
+    this.props.dispatch(campaignsActions.loadCampaigns());
+  }
   render() {
     return(
       <CampaignsList campaigns={this.props.campaigns} />

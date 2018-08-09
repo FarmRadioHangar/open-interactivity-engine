@@ -4,12 +4,12 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { browserHistory } from 'react-router'
 import configureStore from './store/configureStore';
-import { loadCampaigns } from './actions/campaignsActions';
 import CampaignsIndex from './components/campaignsIndex';
+import LanguagesIndex from './components/languagesIndex';
+import ContentIndex from './components/contentIndex';
+import AudienceIndex from './components/audienceIndex';
 
 const store = configureStore();
-
-store.dispatch(loadCampaigns());
 
 const BasicExample = () => (
   <Router history={browserHistory} >
@@ -61,18 +61,21 @@ const Campaigns = () => (
 const Content = () => (
   <div>
     <h2>Content</h2>
+    <ContentIndex />
   </div>
 );
 
 const Audience = () => (
   <div>
     <h2>Audience</h2>
+    <AudienceIndex />
   </div>
 );
 
 const Languages = () => (
   <div>
     <h2>Languages</h2>
+    <LanguagesIndex />
   </div>
 );
 

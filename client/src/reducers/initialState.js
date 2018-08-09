@@ -1,3 +1,6 @@
 export default {  
-  campaigns: []
+  campaigns: [],
+  content: [],
+  audience: [],
+  languages: []
 };
