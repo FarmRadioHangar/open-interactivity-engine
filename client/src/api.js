@@ -42,6 +42,9 @@ class Api {
         return error;
       });
   }
+
+  postLanguage() {
+  }
 }
 
 export default new Api();

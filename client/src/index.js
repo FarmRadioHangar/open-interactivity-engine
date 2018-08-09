@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { browserHistory } from 'react-router'
+import { Formik } from 'formik';
 import configureStore from './store/configureStore';
 import CampaignsIndex from './components/campaignsIndex';
 import LanguagesIndex from './components/languagesIndex';
@@ -40,7 +41,7 @@ const BasicExample = () => (
       <Route exact path='/content' component={Content} />
       <Route exact path='/audience' component={Audience} />
       <Route exact path='/languages' component={Languages} />
-      <Route exact path='/languages/create' component={LanguagesCreate} />
+      <Route exact path='/languages/create' component={CreateLanguage} />
       <Route exact path='/settings' component={Settings} />
     </div>
   </Router>
@@ -80,9 +81,47 @@ const Languages = () => (
   </div>
 );
 
-const LanguagesCreate = () => (
+const CreateLanguage = () => (
   <div>
     <h2>Add language</h2>
+    <Formik
+      initialValues={{
+        name: ''
+      }}
+      validate={values => {
+        let errors = {};
+        if (!values.name) {
+          errors.name = 'This field is required.';
+        } 
+        return errors;
+      }}
+      onSubmit={(values) => {
+        store.dispatch();
+      }}
+      render={({
+        values,
+        errors,
+        touched,
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        isSubmitting
+      }) => (
+        <form onSubmit={handleSubmit}>
+          <input 
+            type='text' 
+            name='name'
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.name} 
+          />
+          {touched.name && errors.name && <div>{errors.name}</div>}
+          <button type='submit' disabled={isSubmitting}>
+            Submit
+          </button>
+        </form>
+      )}
+    />
   </div>
 );
 
