@@ -187,8 +187,8 @@ namespace polls
     }
 
     /*!
-     * \brief Persist the document to the database. This method can be used 
-     * to update an existing document, or to create a new one.
+     * \brief Persist the document to the database. This method can both be 
+     * used to update an existing document, and to create a new one.
      */
     template <typename T> void model<T>::save()
     {
