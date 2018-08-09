@@ -81,8 +81,8 @@ namespace polls
                     std::regex_match(path, match, pattern.regex))
                 {
                     try {
-                        auto headers = request.headers();
-                        headers[""] = "";
+                        web::http::http_headers& headers = request.headers();
+                        headers["Access-Control-Allow-Origin"] = "*";
                         pattern.handler(request, match);
                         return;
                     } catch(std::exception& e) {
@@ -91,7 +91,7 @@ namespace polls
                 }
             }
 
-            request.reply(status_codes::OK, "hello");
+            request.reply(status_codes::NotFound, "{}");
         }
     }
 }
