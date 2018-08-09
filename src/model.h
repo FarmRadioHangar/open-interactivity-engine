@@ -254,7 +254,8 @@ namespace polls
      * \return a STL container of documents
      */
     template <typename T>
-    template <template <typename, typename> class Container, template <typename> class Allocator>
+    template <template <typename, typename> class Container, 
+              template <typename> class Allocator>
     Container<T, Allocator<T>> model<T>::all(std::int64_t skip, std::int64_t limit)
     {
         T model{};

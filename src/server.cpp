@@ -81,6 +81,8 @@ namespace polls
                     std::regex_match(path, match, pattern.regex))
                 {
                     try {
+                        auto headers = request.headers();
+                        headers[""] = "";
                         pattern.handler(request, match);
                         return;
                     } catch(std::exception& e) {
