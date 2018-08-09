@@ -76,23 +76,32 @@ namespace polls
             auto path = uri::decode(request.relative_uri().path());
             std::smatch match{};
 
+            web::http::http_response response{web::http::status_codes::OK};
+            web::http::http_headers& headers = response.headers();
+            headers["Access-Control-Allow-Origin"] = "*";
+            headers["Content-Type"] = "application/json";
+
             for (auto& route : _routes) {
                 if (request.method() == route.method &&
                     std::regex_match(path, match, route.regex))
                 {
                     try {
-                        web::http::http_response response{web::http::status_codes::OK};
-                        web::http::http_headers& headers = response.headers();
-                        headers["Access-Control-Allow-Origin"] = "*";
                         route.handler(request, response, match);
                         return;
                     } catch(std::exception& e) {
                         std::cout << e.what() << std::endl;
+                        std::stringstream oss{};
+                        oss << "{\"error\":\"" << e.what() << "\"}";
+                        response.set_status_code(status_codes::InternalError);
+                        response.set_body(oss.str());
+                        request.reply(response);
+                        return;
                     }
                 }
             }
 
-            request.reply(status_codes::NotFound, "{}");
+            response.set_status_code(status_codes::NotFound);
+            request.reply(response);
         }
     }
 }
