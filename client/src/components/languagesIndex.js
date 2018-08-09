@@ -1,6 +1,7 @@
 import React from 'react';  
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux';  
+import { Link } from 'react-router-dom'
 import * as languagesActions from '../actions/languagesActions';
 import LanguagesList from './languagesList';
 
@@ -10,7 +11,10 @@ class LanguagesIndex extends React.Component {
   }
   render() {
     return(
-      <LanguagesList languages={this.props.languages} />
+      <span>
+        <LanguagesList languages={this.props.languages} />
+        <Link to='/languages/create'>Add language</Link>
+      </span>
     );
   }
 }

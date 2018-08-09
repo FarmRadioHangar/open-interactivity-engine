@@ -36,11 +36,12 @@ const BasicExample = () => (
       </ul>
       <hr />
       <Route exact path='/' component={Home} />
-      <Route path='/campaigns' component={Campaigns} />
-      <Route path='/content' component={Content} />
-      <Route path='/audience' component={Audience} />
-      <Route path='/languages' component={Languages} />
-      <Route path='/settings' component={Settings} />
+      <Route exact path='/campaigns' component={Campaigns} />
+      <Route exact path='/content' component={Content} />
+      <Route exact path='/audience' component={Audience} />
+      <Route exact path='/languages' component={Languages} />
+      <Route exact path='/languages/create' component={LanguagesCreate} />
+      <Route exact path='/settings' component={Settings} />
     </div>
   </Router>
 );
@@ -76,6 +77,12 @@ const Languages = () => (
   <div>
     <h2>Languages</h2>
     <LanguagesIndex />
+  </div>
+);
+
+const LanguagesCreate = () => (
+  <div>
+    <h2>Add language</h2>
   </div>
 );
 
