@@ -64,48 +64,56 @@ namespace polls
 
 using namespace polls;
 
-void get_campaigns(web::http::http_request request, const std::smatch& match)
+void get_campaigns(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
-    request.reply(web::http::status_codes::OK, from_collection<campaign>(campaign::all()));
+    response.set_body(from_collection<campaign>(campaign::all()));
+    request.reply(response);
 }
 
-void get_campaigns_item(web::http::http_request request, const std::smatch& match)
+void get_campaigns_item(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
     auto document = campaign::get(match.str(1));
-    request.reply(web::http::status_codes::OK, document.data());
+    response.set_body(document.data());
+    request.reply(response);
 }
 
-void get_languages(web::http::http_request request, const std::smatch& match)
+void get_languages(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
-    request.reply(web::http::status_codes::OK, from_collection<language>(language::all()));
+    response.set_body(from_collection<language>(language::all()));
+    request.reply(response);
 }
 
-void get_languages_item(web::http::http_request request, const std::smatch& match)
+void get_languages_item(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
     auto document = language::get(match.str(1));
-    request.reply(web::http::status_codes::OK, document.data());
+    response.set_body(document.data());
+    request.reply(response);
 }
 
-void get_audience(web::http::http_request request, const std::smatch& match)
+void get_audience(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
-    request.reply(web::http::status_codes::OK, from_collection<audience>(audience::all()));
+    response.set_body(from_collection<audience>(audience::all()));
+    request.reply(response);
 }
 
-void get_audience_item(web::http::http_request request, const std::smatch& match)
+void get_audience_item(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
     auto document = audience::get(match.str(1));
-    request.reply(web::http::status_codes::OK, document.data());
+    response.set_body(document.data());
+    request.reply(response);
 }
 
-void get_content(web::http::http_request request, const std::smatch& match)
+void get_content(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
-    request.reply(web::http::status_codes::OK, from_collection<content>(content::all()));
+    response.set_body(from_collection<content>(content::all()));
+    request.reply(response);
 }
 
-void get_content_item(web::http::http_request request, const std::smatch& match)
+void get_content_item(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
     auto document = content::get(match.str(1));
-    request.reply(web::http::status_codes::OK, document.data());
+    response.set_body(document.data());
+    request.reply(response);
 }
 
 int main()

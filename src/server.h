@@ -13,9 +13,12 @@ namespace polls
 {
     namespace http
     {
-        using request_handler = std::function<void(web::http::http_request, const std::smatch& match)>;
+        using request_handler = std::function<void(
+            web::http::http_request, 
+            web::http::http_response, 
+            const std::smatch& match)>;
 
-        struct request_match
+        struct request_route
         {
             web::http::method method;
             std::regex        regex;
@@ -56,7 +59,7 @@ namespace polls
             std::string                _host;
             uint16_t                   _port;
             std::string                _path;
-            std::vector<request_match> _patterns;
+            std::vector<request_route> _routes;
         };
     }
 }

@@ -68,7 +68,7 @@ namespace polls
             const std::string& pattern,
             request_handler handler)
         {
-            _patterns.push_back(request_match{method, std::regex{pattern}, handler});
+            _routes.push_back(request_route{method, std::regex{pattern}, handler});
         }
 
         void server::handle_request(http_request request)
@@ -76,14 +76,15 @@ namespace polls
             auto path = uri::decode(request.relative_uri().path());
             std::smatch match{};
 
-            for (auto& pattern : _patterns) {
-                if (request.method() == pattern.method &&
-                    std::regex_match(path, match, pattern.regex))
+            for (auto& route : _routes) {
+                if (request.method() == route.method &&
+                    std::regex_match(path, match, route.regex))
                 {
                     try {
-                        web::http::http_headers& headers = request.headers();
+                        web::http::http_response response{web::http::status_codes::OK};
+                        web::http::http_headers& headers = response.headers();
                         headers["Access-Control-Allow-Origin"] = "*";
-                        pattern.handler(request, match);
+                        route.handler(request, response, match);
                         return;
                     } catch(std::exception& e) {
                         std::cout << e.what() << std::endl;
