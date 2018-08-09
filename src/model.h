@@ -67,7 +67,11 @@ namespace polls
         void remove();
 
         static T get(std::string&& oid);
-        static std::vector<T> all(std::int64_t skip = 0, std::int64_t limit = 60);
+
+        template <template <typename, typename> class Container = std::vector,
+                  template <typename> class Allocator = std::allocator>
+        static Container<T, Allocator<T>> all(std::int64_t skip = 0,
+                                              std::int64_t limit = 60);
 
     protected:
         mongocxx::collection collection() const;
@@ -187,7 +191,7 @@ namespace polls
     }
 
     /*!
-     * \brief Persist the document to the database. This method can both be 
+     * \brief Persist the document to the database. This method can both be
      * used to update an existing document, and to create a new one.
      */
     template <typename T> void model<T>::save()
@@ -215,7 +219,7 @@ namespace polls
     }
 
     /*!
-     * \brief Delete the document from the database. This leaves the object in 
+     * \brief Delete the document from the database. This leaves the object in
      * a fresh (newly constructed) state.
      */
     template <typename T> void model<T>::remove()
@@ -247,11 +251,11 @@ namespace polls
     /*
      * \brief Get all documents from a collection.
      *
-     * \return a vector of documents
+     * \return a STL container of documents
      */
-    template <typename T> std::vector<T> model<T>::all(
-        std::int64_t skip, 
-        std::int64_t limit)
+    template <typename T>
+    template <template <typename, typename> class Container, template <typename> class Allocator>
+    Container<T, Allocator<T>> model<T>::all(std::int64_t skip, std::int64_t limit)
     {
         T model{};
 
@@ -260,9 +264,9 @@ namespace polls
         opts.limit(limit);
 
         auto cursor = model.collection().find({}, opts);
-        std::vector<T> collection{};
+        Container<T, Allocator<T>> collection{};
 
-        for (auto&& doc : cursor) 
+        for (auto&& doc : cursor)
         {
             T document{};
             document._oid  = doc["_id"].get_oid().value;

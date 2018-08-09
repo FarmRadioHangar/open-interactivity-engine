@@ -9,11 +9,12 @@
 #include <mongocxx/instance.hpp>
 #include <regex>
 #include <thread>
+#include <vector>
 #include "model.h"
 #include "server.h"
 
-template <typename T>
-static std::string from_collection(const std::vector<T>& collection)
+template <typename T, typename Collection = std::vector<T>>
+static std::string from_collection(const Collection& collection)
 {
     std::stringstream oss{};
     oss << "{\"" << T::mongodb_collection << "\":[";
