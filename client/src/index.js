@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, Link } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { Formik } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import history from './history';
 import configureStore from './store/configureStore';
 import CampaignsIndex from './components/campaignsIndex';
@@ -99,28 +99,14 @@ const CreateLanguage = () => (
       onSubmit={(values) => {
         store.dispatch(languagesActions.createLanguage(values));
       }}
-      render={({
-        values,
-        errors,
-        touched,
-        handleChange,
-        handleBlur,
-        handleSubmit,
-        isSubmitting
-      }) => (
-        <form onSubmit={handleSubmit}>
-          <input 
-            type='text' 
-            name='name'
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.name} 
-          />
+      render={({ errors, touched, isSubmitting }) => (
+        <Form>
+          <Field type='text' name='name' />
           {touched.name && errors.name && <div>{errors.name}</div>}
           <button type='submit' disabled={isSubmitting}>
             Submit
           </button>
-        </form>
+        </Form>
       )}
     />
   </div>
