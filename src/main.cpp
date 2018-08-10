@@ -90,6 +90,37 @@ void get_languages_item(web::http::http_request request, web::http::http_respons
     request.reply(response);
 }
 
+using namespace web;
+using namespace web::http;
+using namespace web::http::client;
+
+using bsoncxx::builder::basic::kvp;
+
+void post_language(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+{
+    request
+      .extract_json()
+      .then([&request, &response](pplx::task<json::value> task) {
+
+          json::value jval = task.get();
+
+          if (jval.is_null()) {
+              // TODO
+          }
+
+          bsoncxx::builder::basic::document bson_builder{};
+          bson_builder.append(kvp("name", jval["name"].as_string()));
+
+          language document{};
+          document.set_data(bsoncxx::to_json(bson_builder.extract()));
+          document.save();
+
+          response.set_body(document.data());
+          request.reply(response);
+      })
+      .wait();
+}
+
 void get_audience(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
     response.set_body(from_collection<audience>(audience::all()));
@@ -127,6 +158,7 @@ int main()
 
     server.on(web::http::methods::GET, "^/languages/([0-9a-f]+)$", get_languages_item);
     server.on(web::http::methods::GET, "^/languages$", get_languages);
+    server.on(web::http::methods::POST, "^/languages$", post_language);
 
     server.on(web::http::methods::GET, "^/audience/([0-9a-f]+)$", get_audience_item);
     server.on(web::http::methods::GET, "^/audience$", get_audience);
