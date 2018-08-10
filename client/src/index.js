@@ -39,6 +39,7 @@ const BasicExample = () => (
       <hr />
       <Route exact path='/' component={Home} />
       <Route exact path='/campaigns' component={Campaigns} />
+      <Route exact path='/campaigns/create' component={CreateCampaign} />
       <Route exact path='/content' component={Content} />
       <Route exact path='/audience' component={Audience} />
       <Route exact path='/languages' component={Languages} />
@@ -58,6 +59,15 @@ const Campaigns = () => (
   <div>
     <h2>Campaigns</h2>
     <CampaignsIndex />
+  </div>
+);
+
+const CreateCampaign = () => (
+  <div>
+    <h2>Create a campaign</h2>
+    <div>
+      create campaign
+    </div>
   </div>
 );
 
