@@ -97,13 +97,17 @@ const CreateLanguage = () => (
     <h2>Add language</h2>
     <Formik
       initialValues={{
-        name: ''
+        name: '',
+        isoCode: ''
       }}
       validate={values => {
         let errors = {};
         if (!values.name) {
           errors.name = 'This field is required.';
-        } 
+        }
+        if (!values.isoCode) {
+          errors.isoCode = 'This field is required.';
+        }
         return errors;
       }}
       onSubmit={(values) => {
@@ -111,8 +115,14 @@ const CreateLanguage = () => (
       }}
       render={({ errors, touched, isSubmitting }) => (
         <Form>
-          <Field type='text' name='name' />
-          {touched.name && errors.name && <div>{errors.name}</div>}
+          <div>
+            <Field type='text' name='name' />
+            {touched.name && errors.name && <div>{errors.name}</div>}
+          </div>
+          <div>
+            <Field type='text' name='isoCode' />
+            {touched.isoCode && errors.isoCode && <div>{errors.isoCode}</div>}
+          </div>
           <button type='submit' disabled={isSubmitting}>
             Submit
           </button>
@@ -131,6 +141,6 @@ const Settings = () => (
 ReactDOM.render(
   <Provider store={store}>
     <BasicExample />
-  </Provider>, 
+  </Provider>,
   document.getElementById('app')
 );
