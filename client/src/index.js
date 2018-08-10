@@ -1,19 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { Router, Route, Link } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { browserHistory } from 'react-router'
 import { Formik } from 'formik';
+import history from './history';
 import configureStore from './store/configureStore';
 import CampaignsIndex from './components/campaignsIndex';
 import LanguagesIndex from './components/languagesIndex';
 import ContentIndex from './components/contentIndex';
 import AudienceIndex from './components/audienceIndex';
+import * as languagesActions from './actions/languagesActions';
 
 const store = configureStore();
 
 const BasicExample = () => (
-  <Router history={browserHistory} >
+  <Router history={history} >
     <div>
       <ul>
         <li>
@@ -96,7 +97,7 @@ const CreateLanguage = () => (
         return errors;
       }}
       onSubmit={(values) => {
-        store.dispatch();
+        store.dispatch(languagesActions.createLanguage(values));
       }}
       render={({
         values,
