@@ -1,20 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 
-const CampaignsList = ({campaigns}) => {  
+const CampaignsList = ({campaigns}) => {
   return (
     <ul className='list-group'>
-      {campaigns.map(campaign =>
-        <li className='list-group-item' key={campaign['_id']['$oid']}>
-          {campaign.name}
-        </li>
-      )}
+      {campaigns.map(campaign => {
+        const id = campaign['_id']['$oid'];
+        return (
+          <li className='list-group-item' key={id}>
+            <span>{campaign.name}</span>
+            <Link to={`/campaigns/${id}/edit`}>Edit</Link>
+            <Link to={`/campaigns/${id}/delete`}>Delete</Link>
+          </li>
+        );
+      })}
     </ul>
   );
 };
 
-CampaignsList.propTypes = {  
+CampaignsList.propTypes = {
   campaigns: PropTypes.array.isRequired
 };
 
-export default CampaignsList; 
+export default CampaignsList;

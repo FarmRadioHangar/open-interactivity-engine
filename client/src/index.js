@@ -41,8 +41,8 @@ const BasicExample = () => (
       <Route exact path='/' component={Home} />
       <Route exact path='/campaigns' component={Campaigns} />
       <Route exact path='/campaigns/create' component={CreateCampaign} />
-      <Route exact path='/campaigns/:id/edit' component={CreateCampaign} />
-      <Route exact path='/campaigns/:id/delete' component={CreateCampaign} />
+      <Route exact path='/campaigns/:id/edit' component={EditCampaign} />
+      <Route exact path='/campaigns/:id/delete' component={DeleteCampaign} />
       <Route exact path='/content' component={Content} />
       <Route exact path='/audience' component={Audience} />
       <Route exact path='/languages' component={Languages} />
@@ -84,17 +84,23 @@ const CreateCampaign = () => (
       onSubmit={(values) => {
         store.dispatch(campaignsActions.createCampaign(values));
       }}
-      render={({ errors, touched, isSubmitting }) => (
-        <Form>
+      render={({ errors, touched, isSubmitting }) => {
+        return isSubmitting ? (
           <div>
-            <Field type='text' name='name' />
-            {touched.name && errors.name && <div>{errors.name}</div>}
+            Please wait...
           </div>
-          <button type='submit' disabled={isSubmitting}>
-            Submit
-          </button>
-        </Form>
-      )}
+        ) : (
+          <Form>
+            <div>
+              <Field type='text' name='name' />
+              {touched.name && errors.name && <div>{errors.name}</div>}
+            </div>
+            <button type='submit' disabled={isSubmitting}>
+              Submit
+            </button>
+          </Form>
+        );
+      }}
     />
   </div>
 );
@@ -159,21 +165,27 @@ const CreateLanguage = () => (
       onSubmit={(values) => {
         store.dispatch(languagesActions.createLanguage(values));
       }}
-      render={({ errors, touched, isSubmitting }) => (
-        <Form>
+      render={({ errors, touched, isSubmitting }) => {
+        return isSubmitting ? (
           <div>
-            <Field type='text' name='name' />
-            {touched.name && errors.name && <div>{errors.name}</div>}
+            Please wait...
           </div>
-          <div>
-            <Field type='text' name='isoCode' />
-            {touched.isoCode && errors.isoCode && <div>{errors.isoCode}</div>}
-          </div>
-          <button type='submit' disabled={isSubmitting}>
-            Submit
-          </button>
-        </Form>
-      )}
+        ) : (
+          <Form>
+            <div>
+              <Field type='text' name='name' />
+              {touched.name && errors.name && <div>{errors.name}</div>}
+            </div>
+            <div>
+              <Field type='text' name='isoCode' />
+              {touched.isoCode && errors.isoCode && <div>{errors.isoCode}</div>}
+            </div>
+            <button type='submit' disabled={isSubmitting}>
+              Submit
+            </button>
+          </Form>
+        );
+      }}
     />
   </div>
 );

@@ -1,4 +1,4 @@
-import * as types from './actionTypes';  
+import * as types from './actionTypes';
 import history from '../history';
 import api from '../api';
 
@@ -6,8 +6,10 @@ export function createLanguage(data) {
   return function(dispatch) {
     return api.post('languages', data)
       .then(response => {
-        history.push('/languages')
-        //dispatch(createLanguagesSuccess());
+        setTimeout(() => {
+          dispatch(createLanguageSuccess());
+          history.push('/languages')
+        }, 150);
       })
       .catch(error => {
         throw(error);
@@ -15,7 +17,11 @@ export function createLanguage(data) {
   };
 }
 
-export function loadLanguages() {  
+export function createLanguageSuccess() {
+  return {type: types.CREATE_LANGUAGE_SUCCESS};
+}
+
+export function loadLanguages() {
   return function(dispatch) {
     return api.get('languages')
       .then(response => {
@@ -27,6 +33,6 @@ export function loadLanguages() {
   };
 }
 
-export function loadLanguagesSuccess(languages) {  
+export function loadLanguagesSuccess(languages) {
   return {type: types.LOAD_LANGUAGES_SUCCESS, languages};
 }

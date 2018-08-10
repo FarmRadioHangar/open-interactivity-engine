@@ -1,4 +1,4 @@
-import * as types from './actionTypes';  
+import * as types from './actionTypes';
 import history from '../history';
 import api from '../api';
 
@@ -6,8 +6,10 @@ export function createCampaign(data) {
   return function(dispatch) {
     return api.post('campaigns', data)
       .then(response => {
-        history.push('/campaigns')
-        //dispatch(createCampaignsSuccess());
+        setTimeout(() => {
+          dispatch(createCampaignSuccess());
+          history.push('/campaigns')
+        }, 150);
       })
       .catch(error => {
         throw(error);
@@ -15,7 +17,11 @@ export function createCampaign(data) {
   };
 }
 
-export function loadCampaigns() {  
+export function createCampaignSuccess() {
+  return {type: types.CREATE_CAMPAIGN_SUCCESS};
+}
+
+export function loadCampaigns() {
   return function(dispatch) {
     return api.get('campaigns')
       .then(response => {
@@ -27,6 +33,6 @@ export function loadCampaigns() {
   };
 }
 
-export function loadCampaignsSuccess(campaigns) {  
+export function loadCampaignsSuccess(campaigns) {
   return {type: types.LOAD_CAMPAIGNS_SUCCESS, campaigns};
 }
