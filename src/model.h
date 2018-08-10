@@ -251,6 +251,9 @@ namespace polls
     /*
      * \brief Get all documents from a collection.
      *
+     * \param skip offset from where MongoDB begins returning results
+     * \param limit the maximum number of documents to return
+     *
      * \return a STL container of documents
      */
     template <typename T>
