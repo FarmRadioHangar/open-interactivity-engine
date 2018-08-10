@@ -35,6 +35,7 @@ class Api {
   getLanguages() {
     return fetch(`${process.env.API_URL}/languages`)
       .then(response => {
+        console.log(response);
         return response.json();
       })
       .catch(error => {
@@ -43,7 +44,21 @@ class Api {
       });
   }
 
-  postLanguage() {
+  postLanguage(data) {
+    return fetch(`${process.env.API_URL}/languages`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }).then(response => {
+        return response.json();
+      })
+      .catch(error => {
+        console.error(error);
+        return error;
+      });
   }
 }
 
