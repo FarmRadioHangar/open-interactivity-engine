@@ -248,7 +248,7 @@ namespace polls
         return document;
     }
 
-    /*
+    /*!
      * \brief Get all documents from a collection.
      *
      * \param skip offset from where MongoDB begins returning results
