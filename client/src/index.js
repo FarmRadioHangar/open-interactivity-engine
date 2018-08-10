@@ -10,6 +10,7 @@ import LanguagesIndex from './components/languagesIndex';
 import ContentIndex from './components/contentIndex';
 import AudienceIndex from './components/audienceIndex';
 import * as languagesActions from './actions/languagesActions';
+import * as campaignsActions from './actions/campaignsActions';
 
 const store = configureStore();
 
@@ -40,10 +41,14 @@ const BasicExample = () => (
       <Route exact path='/' component={Home} />
       <Route exact path='/campaigns' component={Campaigns} />
       <Route exact path='/campaigns/create' component={CreateCampaign} />
+      <Route exact path='/campaigns/:id/edit' component={CreateCampaign} />
+      <Route exact path='/campaigns/:id/delete' component={CreateCampaign} />
       <Route exact path='/content' component={Content} />
       <Route exact path='/audience' component={Audience} />
       <Route exact path='/languages' component={Languages} />
       <Route exact path='/languages/create' component={CreateLanguage} />
+      <Route exact path='/languages/:id/edit' component={EditLanguage} />
+      <Route exact path='/languages/:id/delete' component={DeleteLanguage} />
       <Route exact path='/settings' component={Settings} />
     </div>
   </Router>
@@ -65,8 +70,49 @@ const Campaigns = () => (
 const CreateCampaign = () => (
   <div>
     <h2>Create a campaign</h2>
+    <Formik
+      initialValues={{
+        name: ''
+      }}
+      validate={values => {
+        let errors = {};
+        if (!values.name) {
+          errors.name = 'This field is required.';
+        }
+        return errors;
+      }}
+      onSubmit={(values) => {
+        store.dispatch(campaignsActions.createCampaign(values));
+      }}
+      render={({ errors, touched, isSubmitting }) => (
+        <Form>
+          <div>
+            <Field type='text' name='name' />
+            {touched.name && errors.name && <div>{errors.name}</div>}
+          </div>
+          <button type='submit' disabled={isSubmitting}>
+            Submit
+          </button>
+        </Form>
+      )}
+    />
+  </div>
+);
+
+const EditCampaign = () => (
+  <div>
+    <h2>Edit campaign</h2>
     <div>
-      create campaign
+      edit
+    </div>
+  </div>
+);
+
+const DeleteCampaign = () => (
+  <div>
+    <h2>Delete campaign</h2>
+    <div>
+      delete campaign?
     </div>
   </div>
 );
@@ -129,6 +175,24 @@ const CreateLanguage = () => (
         </Form>
       )}
     />
+  </div>
+);
+
+const EditLanguage = () => (
+  <div>
+    <h2>Edit language</h2>
+    <div>
+      edit
+    </div>
+  </div>
+);
+
+const DeleteLanguage = () => (
+  <div>
+    <h2>Delete language</h2>
+    <div>
+      delete language?
+    </div>
   </div>
 );
 

@@ -27,6 +27,12 @@ static std::string from_collection(const Collection& collection)
     return oss.str();
 }
 
+using namespace web;
+using namespace web::http;
+using namespace web::http::client;
+
+using bsoncxx::builder::basic::kvp;
+
 namespace polls
 {
     class campaign : public polls::model<campaign>
@@ -77,6 +83,31 @@ void get_campaigns_item(web::http::http_request request, web::http::http_respons
     request.reply(response);
 }
 
+void post_campaign(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+{
+    request
+      .extract_json()
+      .then([&request, &response](pplx::task<json::value> task) {
+
+          json::value jval = task.get();
+
+          if (jval.is_null()) {
+              // TODO
+          }
+
+          bsoncxx::builder::basic::document bson_builder{};
+          bson_builder.append(kvp("name", jval["name"].as_string()));
+
+          campaign document{};
+          document.set_data(bsoncxx::to_json(bson_builder.extract()));
+          document.save();
+
+          response.set_body(document.data());
+          request.reply(response);
+      })
+      .wait();
+}
+
 void get_languages(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
     response.set_body(from_collection<language>(language::all()));
@@ -89,12 +120,6 @@ void get_languages_item(web::http::http_request request, web::http::http_respons
     response.set_body(document.data());
     request.reply(response);
 }
-
-using namespace web;
-using namespace web::http;
-using namespace web::http::client;
-
-using bsoncxx::builder::basic::kvp;
 
 void post_language(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
@@ -155,6 +180,7 @@ int main()
 
     server.on(web::http::methods::GET, "^/campaigns/([0-9a-f]+)$", get_campaigns_item);
     server.on(web::http::methods::GET, "^/campaigns$", get_campaigns);
+    server.on(web::http::methods::POST, "^/campaigns$", post_campaign);
 
     server.on(web::http::methods::GET, "^/languages/([0-9a-f]+)$", get_languages_item);
     server.on(web::http::methods::GET, "^/languages$", get_languages);
