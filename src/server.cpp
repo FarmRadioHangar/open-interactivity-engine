@@ -36,6 +36,15 @@ namespace polls
                 std::bind(&server::handle_request, this, std::placeholders::_1)
             );
 
+            _listener.support(web::http::methods::OPTIONS, [](http_request request) {
+                web::http::http_response response{web::http::status_codes::OK};
+                web::http::http_headers& headers = response.headers();
+                headers["Access-Control-Allow-Origin"] = "*";
+                headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, PUT, DELETE, OPTIONS";
+                headers["Access-Control-Allow-Headers"] = "Origin, Content-Type, X-Auth-Token";
+                request.reply(response);
+            });
+
             try
             {
                 _listener
