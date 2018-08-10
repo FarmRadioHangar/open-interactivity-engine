@@ -3,7 +3,7 @@ import api from '../api';
 
 export function loadAudience() {  
   return function(dispatch) {
-    return api.getAudience()
+    return api.get('audience')
       .then(response => {
         dispatch(loadAudienceSuccess(response.audience));
       })

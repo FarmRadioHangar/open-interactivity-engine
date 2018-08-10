@@ -4,7 +4,7 @@ import api from '../api';
 
 export function createLanguage(data) {
   return function(dispatch) {
-    return api.postLanguage(data)
+    return api.post('languages', data)
       .then(response => {
         history.push('/languages')
         //dispatch(createLanguagesSuccess());
@@ -17,7 +17,7 @@ export function createLanguage(data) {
 
 export function loadLanguages() {  
   return function(dispatch) {
-    return api.getLanguages()
+    return api.get('languages')
       .then(response => {
         dispatch(loadLanguagesSuccess(response.languages));
       })

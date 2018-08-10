@@ -1,6 +1,7 @@
 class Api {
-  getCampaigns() {
-    return fetch(`${process.env.API_URL}/campaigns`)
+
+  get(resource) {
+    return fetch(`${process.env.API_URL}/${resource}`)
       .then(response => {
         return response.json();
       })
@@ -10,42 +11,8 @@ class Api {
       });
   }
 
-  getContent() {
-    return fetch(`${process.env.API_URL}/content`)
-      .then(response => {
-        return response.json();
-      })
-      .catch(error => {
-        console.error(error);
-        return error;
-      });
-  }
-
-  getAudience() {
-    return fetch(`${process.env.API_URL}/audience`)
-      .then(response => {
-        return response.json();
-      })
-      .catch(error => {
-        console.error(error);
-        return error;
-      });
-  }
-
-  getLanguages() {
-    return fetch(`${process.env.API_URL}/languages`)
-      .then(response => {
-        console.log(response);
-        return response.json();
-      })
-      .catch(error => {
-        console.error(error);
-        return error;
-      });
-  }
-
-  postLanguage(data) {
-    return fetch(`${process.env.API_URL}/languages`, {
+  post(resource, data) {
+    return fetch(`${process.env.API_URL}/${resource}`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -60,6 +27,7 @@ class Api {
         return error;
       });
   }
+
 }
 
 export default new Api();

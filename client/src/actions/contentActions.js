@@ -3,7 +3,7 @@ import api from '../api';
 
 export function loadContent() {  
   return function(dispatch) {
-    return api.getContent()
+    return api.get('content')
       .then(response => {
         dispatch(loadContentSuccess(response.content));
       })

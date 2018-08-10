@@ -3,7 +3,7 @@ import api from '../api';
 
 export function loadCampaigns() {  
   return function(dispatch) {
-    return api.getCampaigns()
+    return api.get('campaigns')
       .then(response => {
         dispatch(loadCampaignsSuccess(response.campaigns));
       })
