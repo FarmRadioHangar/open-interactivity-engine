@@ -120,6 +120,9 @@ const DeleteCampaign = () => (
     <div>
       delete campaign?
     </div>
+    <button>
+      Confirm
+    </button>
   </div>
 );
 
@@ -205,6 +208,9 @@ const DeleteLanguage = () => (
     <div>
       delete language?
     </div>
+    <button>
+      Confirm
+    </button>
   </div>
 );
 
