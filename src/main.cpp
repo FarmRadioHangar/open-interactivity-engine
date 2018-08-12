@@ -12,7 +12,18 @@
 #include <vector>
 #include "model.h"
 #include "server.h"
+#include "utils.h"
 
+using namespace web;
+using namespace web::http;
+using namespace web::http::client;
+
+using bsoncxx::builder::basic::kvp;
+using bsoncxx::builder::basic::sub_document;
+using bsoncxx::builder::basic::sub_array;
+
+// TODO: return json::value?
+// TODO: https://github.com/Microsoft/cpprestsdk/wiki/FAQ#what-is-utilitystring_t-and-the-u-macro
 template <typename T, typename Collection = std::vector<T>>
 static std::string from_collection(const Collection& collection)
 {
@@ -26,12 +37,6 @@ static std::string from_collection(const Collection& collection)
     oss << "]}";
     return oss.str();
 }
-
-using namespace web;
-using namespace web::http;
-using namespace web::http::client;
-
-using bsoncxx::builder::basic::kvp;
 
 namespace polls
 {
@@ -87,19 +92,12 @@ void post_campaign(web::http::http_request request, web::http::http_response res
 {
     request
       .extract_json()
-      .then([&request, &response](pplx::task<json::value> task) {
+      .then([&request, &response](pplx::task<json::value> task) 
+      {
+          polls::utils::builder::document<campaign> builder(task.get());
+          builder.add_required_property("name", json::value::value_type::String);
 
-          json::value jval = task.get();
-
-          if (jval.is_null()) {
-              // TODO
-          }
-
-          bsoncxx::builder::basic::document bson_builder{};
-          bson_builder.append(kvp("name", jval["name"].as_string()));
-
-          campaign document{};
-          document.set_data(bsoncxx::to_json(bson_builder.extract()));
+          campaign document = builder.build();
           document.save();
 
           response.set_body(document.data());
@@ -125,19 +123,12 @@ void post_language(web::http::http_request request, web::http::http_response res
 {
     request
       .extract_json()
-      .then([&request, &response](pplx::task<json::value> task) {
+      .then([&request, &response](pplx::task<json::value> task) 
+      {
+          polls::utils::builder::document<language> builder(task.get());
+          builder.add_required_property("name", json::value::value_type::String);
 
-          json::value jval = task.get();
-
-          if (jval.is_null()) {
-              // TODO
-          }
-
-          bsoncxx::builder::basic::document bson_builder{};
-          bson_builder.append(kvp("name", jval["name"].as_string()));
-
-          language document{};
-          document.set_data(bsoncxx::to_json(bson_builder.extract()));
+          language document = builder.build();
           document.save();
 
           response.set_body(document.data());
