@@ -1,6 +1,7 @@
 class Api {
 
   get(resource) {
+    console.log(`GET ${process.env.API_URL}/${resource}`);
     return fetch(`${process.env.API_URL}/${resource}`)
       .then(response => {
         return response.json();
@@ -12,6 +13,7 @@ class Api {
   }
 
   post(resource, data) {
+    console.log(`POST ${process.env.API_URL}/${resource}`);
     return fetch(`${process.env.API_URL}/${resource}`, {
       method: 'POST',
       headers: {
