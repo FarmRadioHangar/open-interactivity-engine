@@ -111,6 +111,10 @@ void get_campaigns_item(web::http::http_request request, web::http::http_respons
 
 void delete_campaigns_item(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
+    auto document = campaign::get(match.str(1));
+    document.remove();
+    response.set_status_code(web::http::status_codes::NoContent);
+    request.reply(response);
 }
 
 void post_campaign(web::http::http_request request, web::http::http_response response, const std::smatch& match)
@@ -151,6 +155,10 @@ void get_languages_item(web::http::http_request request, web::http::http_respons
 
 void delete_languages_item(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
+    auto document = language::get(match.str(1));
+    document.remove();
+    response.set_status_code(web::http::status_codes::NoContent);
+    request.reply(response);
 }
 
 void post_language(web::http::http_request request, web::http::http_response response, const std::smatch& match)
@@ -204,12 +212,12 @@ int main()
     polls::http::server server{};
 
     server.on(web::http::methods::GET, "^/campaigns/([0-9a-f]+)$", get_campaigns_item);
-    server.on(web::http::methods::DELETE, "^/campaigns/([0-9a-f]+)$", delete_campaigns_item);
+    server.on(web::http::methods::DEL, "^/campaigns/([0-9a-f]+)$", delete_campaigns_item);
     server.on(web::http::methods::GET, "^/campaigns$", get_campaigns);
     server.on(web::http::methods::POST, "^/campaigns$", post_campaign);
 
     server.on(web::http::methods::GET, "^/languages/([0-9a-f]+)$", get_languages_item);
-    server.on(web::http::methods::DELETE, "^/languages/([0-9a-f]+)$", delete_languages_item);
+    server.on(web::http::methods::DEL, "^/languages/([0-9a-f]+)$", delete_languages_item);
     server.on(web::http::methods::GET, "^/languages$", get_languages);
     server.on(web::http::methods::POST, "^/languages$", post_language);
 
