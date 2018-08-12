@@ -22,20 +22,18 @@ using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::sub_document;
 using bsoncxx::builder::basic::sub_array;
 
-// TODO: return json::value?
 // TODO: https://github.com/Microsoft/cpprestsdk/wiki/FAQ#what-is-utilitystring_t-and-the-u-macro
+
 template <typename T, typename Collection = std::vector<T>>
-static std::string from_collection(const Collection& collection)
+json::value from_collection(const Collection& collection)
 {
-    std::stringstream oss{};
-    oss << "{\"" << T::mongodb_collection << "\":[";
-    for (auto i = collection.begin(); i != collection.end(); ++i) {
-        if (i != collection.begin())
-            oss << ",";
-        oss << i->data();
+    std::vector<json::value> values;
+    for (auto& value : collection) {
+        values.push_back(json::value::parse(value.data()));
     }
-    oss << "]}";
-    return oss.str();
+    json::value obj;
+    obj[T::mongodb_collection] = web::json::value::array(values);
+    return obj;
 }
 
 namespace polls
