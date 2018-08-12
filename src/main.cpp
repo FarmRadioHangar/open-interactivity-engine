@@ -8,6 +8,7 @@
 #include <iostream>
 #include <mongocxx/instance.hpp>
 #include <regex>
+#include <string>
 #include <thread>
 #include <vector>
 #include "model.h"
@@ -71,11 +72,33 @@ namespace polls
     };
 }
 
+template <typename T>
+T type_conv(const std::string& str) { return T{str}; }
+
+template <>
+int64_t type_conv(const std::string& str) { return std::stoi(str); }
+
+template <typename T>
+int64_t get_param(const std::map<utility::string_t, utility::string_t>& params,
+    const std::string& name, int64_t def)
+{
+    try {
+        return type_conv<T>(params.at(name));
+    } catch(std::exception&) {
+        return def;
+    }
+}
+
 using namespace polls;
 
 void get_campaigns(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
-    response.set_body(from_collection<campaign>(campaign::all()));
+    auto params = web::uri::split_query(request.request_uri().query());
+
+    int64_t skip = get_param<int64_t>(params, "skip", 0);
+    int64_t limit = get_param<int64_t>(params, "limit", 10);
+
+    response.set_body(from_collection<campaign>(campaign::all(skip, limit)));
     request.reply(response);
 }
 
@@ -90,7 +113,7 @@ void post_campaign(web::http::http_request request, web::http::http_response res
 {
     request
       .extract_json()
-      .then([&request, &response](pplx::task<json::value> task) 
+      .then([&request, &response](pplx::task<json::value> task)
       {
           polls::utils::builder::document<campaign> builder(task.get());
           builder.add_required_property("name", json::value::value_type::String);
@@ -121,7 +144,7 @@ void post_language(web::http::http_request request, web::http::http_response res
 {
     request
       .extract_json()
-      .then([&request, &response](pplx::task<json::value> task) 
+      .then([&request, &response](pplx::task<json::value> task)
       {
           polls::utils::builder::document<language> builder(task.get());
           builder.add_required_property("name", json::value::value_type::String);
