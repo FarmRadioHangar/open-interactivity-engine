@@ -2,6 +2,25 @@ import * as types from './actionTypes';
 import history from '../history';
 import api from '../api';
 
+export function deleteLanguage(id) {
+  return function(dispatch) {
+    return api.delete(`languages/${id}`)
+      .then(response => {
+        setTimeout(() => {
+          dispatch(deleteLanguageSuccess());
+          history.push('/languages')
+        }, 150);
+      })
+      .catch(error => {
+        throw(error);
+      });
+  };
+}
+
+export function deleteLanguageSuccess() {
+  return {type: types.DELETE_LANGUAGE_SUCCESS};
+}
+
 export function createLanguage(data) {
   return function(dispatch) {
     return api.post('languages', data)

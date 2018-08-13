@@ -30,6 +30,17 @@ class Api {
       });
   }
 
+  delete(resource) {
+    console.log(`DELETE ${process.env.API_URL}/${resource}`);
+    return fetch(`${process.env.API_URL}/${resource}`, {
+      method: 'DELETE'
+    })
+      .catch(error => {
+        console.error(error);
+        return error;
+      });
+  }
+
 }
 
 export default new Api();

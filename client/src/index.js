@@ -114,17 +114,21 @@ const EditCampaign = () => (
   </div>
 );
 
-const DeleteCampaign = () => (
-  <div>
-    <h2>Delete campaign</h2>
+const DeleteCampaign = ({ match }) => {
+  return (
     <div>
-      delete campaign?
+      <h2>Delete campaign</h2>
+      <div>
+        delete campaign?
+      </div>
+      <button onClick={() => {
+        store.dispatch(campaignsActions.deleteCampaign(match.params.id));
+      }}>
+        Confirm
+      </button>
     </div>
-    <button>
-      Confirm
-    </button>
-  </div>
-);
+  );
+}
 
 const Content = () => (
   <div>
@@ -202,17 +206,21 @@ const EditLanguage = () => (
   </div>
 );
 
-const DeleteLanguage = () => (
-  <div>
-    <h2>Delete language</h2>
+const DeleteLanguage = ({ match }) => {
+  return (
     <div>
-      delete language?
+      <h2>Delete language</h2>
+      <div>
+        delete language?
+      </div>
+      <button onClick={() => {
+        store.dispatch(languagesActions.deleteLanguage(match.params.id));
+      }}>
+        Confirm
+      </button>
     </div>
-    <button>
-      Confirm
-    </button>
-  </div>
-);
+  );
+}
 
 const Settings = () => (
   <div>
