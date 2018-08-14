@@ -142,7 +142,9 @@ void get_languages(web::http::http_request request, web::http::http_response res
     int64_t skip = get_param<int64_t>(params, "skip", 0);
     int64_t limit = get_param<int64_t>(params, "limit", 10);
 
-    response.set_body(from_collection<language>(language::all(skip, limit)));
+    auto obj = from_collection<language>(language::all(skip, limit));
+
+    response.set_body(obj);
     request.reply(response);
 }
 
