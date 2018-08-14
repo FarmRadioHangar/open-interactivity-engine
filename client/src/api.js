@@ -1,8 +1,11 @@
+import './utils';
+
 class Api {
 
-  get(resource) {
-    console.log(`GET ${process.env.API_URL}/${resource}`);
-    return fetch(`${process.env.API_URL}/${resource}`)
+  get(resource, params) {
+    const url = `${process.env.API_URL}/${resource}${params ? utils.param(params) : ''}`;
+    console.log(`GET ${url}`);
+    return fetch(`${url}`)
       .then(response => {
         return response.json();
       })
