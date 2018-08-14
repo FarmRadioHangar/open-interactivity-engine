@@ -72,6 +72,7 @@ namespace polls
                   template <typename> class Allocator = std::allocator>
         static Container<T, Allocator<T>> all(std::int64_t skip = 0,
                                               std::int64_t limit = 60);
+        static std::int64_t count();
 
     protected:
         mongocxx::collection collection() const;
@@ -279,6 +280,11 @@ namespace polls
         }
 
         return collection;
+    }
+
+    template <typename T> std::int64_t model<T>::count()
+    {
+        return T{}.collection().count({});
     }
 
     template <typename T> mongocxx::collection model<T>::collection() const
