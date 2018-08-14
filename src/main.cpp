@@ -25,18 +25,6 @@ using bsoncxx::builder::basic::sub_array;
 
 // TODO: https://github.com/Microsoft/cpprestsdk/wiki/FAQ#what-is-utilitystring_t-and-the-u-macro
 
-template <typename T, typename Collection = std::vector<T>>
-json::value from_collection(const Collection& collection)
-{
-    std::vector<json::value> values;
-    for (auto& value : collection) {
-        values.push_back(json::value::parse(value.data()));
-    }
-    json::value obj;
-    obj[T::mongodb_collection] = web::json::value::array(values);
-    return obj;
-}
-
 namespace polls
 {
     class campaign : public polls::model<campaign>
@@ -98,7 +86,7 @@ void get_campaigns(web::http::http_request request, web::http::http_response res
     int64_t skip = get_param<int64_t>(params, "skip", 0);
     int64_t limit = get_param<int64_t>(params, "limit", 10);
 
-    response.set_body(from_collection<campaign>(campaign::all(skip, limit)));
+    response.set_body(campaign::all(skip, limit).json());
     request.reply(response);
 }
 
@@ -109,7 +97,7 @@ void get_campaigns_item(web::http::http_request request, web::http::http_respons
     request.reply(response);
 }
 
-void delete_campaigns_item(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void delete_campaign(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
     auto document = campaign::get(match.str(1));
     document.remove();
@@ -142,9 +130,7 @@ void get_languages(web::http::http_request request, web::http::http_response res
     int64_t skip = get_param<int64_t>(params, "skip", 0);
     int64_t limit = get_param<int64_t>(params, "limit", 10);
 
-    auto obj = from_collection<language>(language::all(skip, limit));
-
-    response.set_body(obj);
+    response.set_body(language::all(skip, limit).json());
     request.reply(response);
 }
 
@@ -155,7 +141,7 @@ void get_languages_item(web::http::http_request request, web::http::http_respons
     request.reply(response);
 }
 
-void delete_languages_item(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void delete_language(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
     auto document = language::get(match.str(1));
     document.remove();
@@ -183,7 +169,12 @@ void post_language(web::http::http_request request, web::http::http_response res
 
 void get_audience(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
-    response.set_body(from_collection<audience>(audience::all()));
+    auto params = web::uri::split_query(request.request_uri().query());
+
+    int64_t skip = get_param<int64_t>(params, "skip", 0);
+    int64_t limit = get_param<int64_t>(params, "limit", 10);
+
+    response.set_body(audience::all(skip, limit).json());
     request.reply(response);
 }
 
@@ -196,7 +187,12 @@ void get_audience_item(web::http::http_request request, web::http::http_response
 
 void get_content(web::http::http_request request, web::http::http_response response, const std::smatch& match)
 {
-    response.set_body(from_collection<content>(content::all()));
+    auto params = web::uri::split_query(request.request_uri().query());
+
+    int64_t skip = get_param<int64_t>(params, "skip", 0);
+    int64_t limit = get_param<int64_t>(params, "limit", 10);
+
+    response.set_body(content::all(skip, limit).json());
     request.reply(response);
 }
 
@@ -214,12 +210,12 @@ int main()
     polls::http::server server{};
 
     server.on(web::http::methods::GET, "^/campaigns/([0-9a-f]+)$", get_campaigns_item);
-    server.on(web::http::methods::DEL, "^/campaigns/([0-9a-f]+)$", delete_campaigns_item);
+    server.on(web::http::methods::DEL, "^/campaigns/([0-9a-f]+)$", delete_campaign);
     server.on(web::http::methods::GET, "^/campaigns$", get_campaigns);
     server.on(web::http::methods::POST, "^/campaigns$", post_campaign);
 
     server.on(web::http::methods::GET, "^/languages/([0-9a-f]+)$", get_languages_item);
-    server.on(web::http::methods::DEL, "^/languages/([0-9a-f]+)$", delete_languages_item);
+    server.on(web::http::methods::DEL, "^/languages/([0-9a-f]+)$", delete_language);
     server.on(web::http::methods::GET, "^/languages$", get_languages);
     server.on(web::http::methods::POST, "^/languages$", post_language);
 
