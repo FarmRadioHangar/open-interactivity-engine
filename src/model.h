@@ -5,11 +5,13 @@
 
 #include <bsoncxx/exception/exception.hpp>
 #include <bsoncxx/json.hpp>
+#include <cpprest/asyncrt_utils.h>
+#include <cpprest/http_listener.h>
 #include <iostream>
 #include <memory>
 #include <mongocxx/client.hpp>
-#include <mongocxx/cursor.hpp>
 #include <mongocxx/collection.hpp>
+#include <mongocxx/cursor.hpp>
 #include <mongocxx/instance.hpp>
 #include <string>
 
@@ -17,6 +19,10 @@
 
 namespace polls
 {
+    using namespace web;
+    using namespace web::http;
+    using namespace web::http::client;
+
     using bsoncxx::builder::basic::kvp;
 
     template <typename T, typename Collection = std::vector<T>>
@@ -27,6 +33,8 @@ namespace polls
 
         std::int64_t count() const;
         std::int64_t total() const;
+
+        json::value json() const;
 
     private:
         Collection   _collection;
@@ -54,7 +62,7 @@ namespace polls
     template <typename T, typename Collection>
     std::int64_t collection<T, Collection>::count() const
     {
-        return _collection.count();
+        return _collection.size();
     }
 
     /*!
@@ -63,6 +71,23 @@ namespace polls
      */
     template <typename T, typename Collection>
     std::int64_t collection<T, Collection>::total() const { return _total; }
+
+    /*!
+     * \brief Return a JSON object representation of the collection.
+     */
+    template <typename T, typename Collection>
+    json::value collection<T, Collection>::json() const
+    {
+        std::vector<json::value> values;
+        for (auto& value : _collection) {
+            values.push_back(json::value::parse(value.data()));
+        }
+        json::value obj;
+        obj[T::mongodb_collection] = web::json::value::array(values);
+        obj["count"] = count();
+        obj["total"] = total();
+        return obj;
+    }
 
     /*!
      * \class model
