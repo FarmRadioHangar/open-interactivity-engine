@@ -23,14 +23,13 @@ namespace polls
     class collection
     {
     public:
-        collection(Collection&& container, const std::int64_t count, const std::int64_t total);
+        collection(Collection&& container, const std::int64_t total);
 
         std::int64_t count() const;
         std::int64_t total() const;
 
     private:
         Collection   _collection;
-        std::int64_t _count;
         std::int64_t _total;
     };
 
@@ -39,22 +38,28 @@ namespace polls
      */
     template <typename T, typename Collection>
     collection<T, Collection>::collection(Collection&& collection,
-                                          const std::int64_t count,
                                           const std::int64_t total)
       : _collection{std::move(collection)},
-        _count{count},
         _total{total}
     {
     }
 
     /*!
-     * \brief
+     * \brief Return the number of documents in this collection. This number
+     * may be less than the number of documents available in the underlying
+     * MongoDB data store.
+     *
+     * \sa total
      */
     template <typename T, typename Collection>
-    std::int64_t collection<T, Collection>::count() const { return _count; }
+    std::int64_t collection<T, Collection>::count() const
+    {
+        return _collection.count();
+    }
 
     /*!
-     * \brief
+     * \brief Return the \a total number of documents in the underlying MongoDB
+     * collection from which this subset originates.
      */
     template <typename T, typename Collection>
     std::int64_t collection<T, Collection>::total() const { return _total; }
@@ -324,10 +329,14 @@ namespace polls
         }
 
         return polls::collection<T, Container<T, Allocator<T>>>{
-            std::move(container), limit, collection.count({})
+            std::move(container), collection.count({})
         };
     }
 
+    /*!
+     * \brief Return the \a total number of documents available in this
+     * collection.
+     */
     template <typename T> std::int64_t model<T>::count()
     {
         return T{}.collection().count({});
