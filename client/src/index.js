@@ -116,19 +116,31 @@ const EditCampaign = () => (
 
 const DeleteCampaign = ({ match }) => {
   return (
-    <div>
-      <h2>Delete campaign</h2>
-      <div>
-        delete campaign?
-      </div>
-      <button onClick={() => {
+    <Formik
+      onSubmit={(values) => {
         store.dispatch(campaignsActions.deleteCampaign(match.params.id));
-      }}>
-        Confirm
-      </button>
-    </div>
+      }}
+      render={({ isSubmitting }) => {
+        return isSubmitting ? (
+          <div>
+            Please wait...
+          </div>
+        ) : (
+          <Form>
+            <h2>Delete campaign</h2>
+            <div>
+              delete campaign?
+            </div>
+            <button type='submit' disabled={isSubmitting}>
+              Confirm
+            </button>
+          </Form>
+        );
+      }}
+    />
   );
 }
+
 
 const Content = () => (
   <div>
@@ -208,17 +220,28 @@ const EditLanguage = () => (
 
 const DeleteLanguage = ({ match }) => {
   return (
-    <div>
-      <h2>Delete language</h2>
-      <div>
-        delete language?
-      </div>
-      <button onClick={() => {
+    <Formik
+      onSubmit={(values) => {
         store.dispatch(languagesActions.deleteLanguage(match.params.id));
-      }}>
-        Confirm
-      </button>
-    </div>
+      }}
+      render={({ isSubmitting }) => {
+        return isSubmitting ? (
+          <div>
+            Please wait...
+          </div>
+        ) : (
+          <Form>
+            <h2>Delete language</h2>
+            <div>
+              delete language?
+            </div>
+            <button type='submit' disabled={isSubmitting}>
+              Confirm
+            </button>
+          </Form>
+        );
+      }}
+    />
   );
 }
 
