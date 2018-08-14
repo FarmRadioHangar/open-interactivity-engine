@@ -19,6 +19,46 @@ namespace polls
 {
     using bsoncxx::builder::basic::kvp;
 
+    template <typename T, typename Collection = std::vector<T>>
+    class collection
+    {
+    public:
+        collection(Collection&& container, const std::int64_t count, const std::int64_t total);
+
+        std::int64_t count() const;
+        std::int64_t total() const;
+
+    private:
+        Collection   _collection;
+        std::int64_t _count;
+        std::int64_t _total;
+    };
+
+    /*!
+     * \brief Default constructor
+     */
+    template <typename T, typename Collection>
+    collection<T, Collection>::collection(Collection&& collection,
+                                          const std::int64_t count,
+                                          const std::int64_t total)
+      : _collection{std::move(collection)},
+        _count{count},
+        _total{total}
+    {
+    }
+
+    /*!
+     * \brief
+     */
+    template <typename T, typename Collection>
+    std::int64_t collection<T, Collection>::count() const { return _count; }
+
+    /*!
+     * \brief
+     */
+    template <typename T, typename Collection>
+    std::int64_t collection<T, Collection>::total() const { return _total; }
+
     /*!
      * \class model
      *
@@ -70,8 +110,9 @@ namespace polls
 
         template <template <typename, typename> class Container = std::vector,
                   template <typename> class Allocator = std::allocator>
-        static Container<T, Allocator<T>> all(std::int64_t skip = 0,
-                                              std::int64_t limit = 60);
+        static polls::collection<T, Container<T, Allocator<T>>>
+        all(std::int64_t skip = 0, std::int64_t limit = 60);
+
         static std::int64_t count();
 
     protected:
@@ -258,9 +299,10 @@ namespace polls
      * \return a STL container of documents
      */
     template <typename T>
-    template <template <typename, typename> class Container, 
+    template <template <typename, typename> class Container,
               template <typename> class Allocator>
-    Container<T, Allocator<T>> model<T>::all(std::int64_t skip, std::int64_t limit)
+    polls::collection<T, Container<T, Allocator<T>>>
+    model<T>::all(std::int64_t skip, std::int64_t limit)
     {
         T model{};
 
@@ -268,18 +310,22 @@ namespace polls
         opts.skip(skip);
         opts.limit(limit);
 
-        auto cursor = model.collection().find({}, opts);
-        Container<T, Allocator<T>> collection{};
+        auto collection = model.collection();
+        auto cursor = collection.find({}, opts);
+
+        Container<T, Allocator<T>> container{};
 
         for (auto&& doc : cursor)
         {
             T document{};
             document._oid  = doc["_id"].get_oid().value;
             document._data = bsoncxx::to_json(doc);
-            collection.push_back(document);
+            container.push_back(document);
         }
 
-        return collection;
+        return polls::collection<T, Container<T, Allocator<T>>>{
+            std::move(container), limit, collection.count({})
+        };
     }
 
     template <typename T> std::int64_t model<T>::count()
