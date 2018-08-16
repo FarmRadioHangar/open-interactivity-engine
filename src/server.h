@@ -15,33 +15,75 @@ namespace polls
     {
         using query_params = std::map<utility::string_t, utility::string_t>;
 
+        /*!
+         * \brief HTTP request
+         */
         class request
         {
         public:
             request(const web::http::http_request& request, const std::smatch& match);
 
-            template <typename T> T get_param(const std::string& name);
-            template <typename T> T get_param(const std::string& name, T def);
+            template <typename T> T get_query_param(const std::string& name, const T& def);
+            std::string get_uri_param(size_t n) const;
 
         private:
-            template <typename T> T type_conv(const std::string& str);
+            template <typename T> T type_conv(const std::string& str)
+            {
+                return T{};
+            }
 
             web::http::http_request _request;
             std::smatch             _match;
             query_params            _params;
         };
 
+        template <typename T>
+        T request::get_query_param(const std::string& name, const T& def)
+        {
+            try {
+                return type_conv<T>(_params.at(name));
+            } catch (std::exception& e) {
+                return def;
+            }
+        }
+
+        template <> inline std::string request::type_conv(const std::string& str)
+        {
+            return str;
+        }
+
+        template <> inline int64_t request::type_conv(const std::string& str)
+        {
+            return std::stoi(str);
+        }
+
+        inline std::string request::get_uri_param(size_t n) const
+        {
+            return _match.str(n);
+        }
+
+        /*!
+         * \brief HTTP response
+         */
         class response
         {
         public:
             explicit response(const web::http::http_request& request);
 
+            void set_body(const web::json::value& body_data);
+            void set_body(const std::string& body_data);
+            void set_status_code(web::http::status_code code);
             void send();
 
         private:
             web::http::http_request  _request;
             web::http::http_response _response;
         };
+
+        void inline response::set_status_code(web::http::status_code code)
+        {
+            _response.set_status_code(code);
+        }
 
         using request_handler = std::function<void(polls::http::request,
                                                    polls::http::response)>;
@@ -71,8 +113,8 @@ namespace polls
             void set_port(const uint16_t port) { _port = port; };
 
             void on(
-                const web::http::method& method, 
-                const std::string& pattern, 
+                const web::http::method& method,
+                const std::string& pattern,
                 request_handler handler
             );
 

@@ -64,28 +64,26 @@ using namespace polls;
 
 void get_campaigns(polls::http::request request, polls::http::response response)
 {
-    //auto params = web::uri::split_query(request.request_uri().query());
+    auto skip = request.get_query_param<int64_t>("skip", 0);
+    auto limit = request.get_query_param<int64_t>("limit", 10);
 
-    //int64_t skip = get_param<int64_t>(params, "skip", 0);
-    //int64_t limit = get_param<int64_t>(params, "limit", 10);
-
-    //response.set_body(campaign::all(skip, limit).json());
-    //request.reply(response);
+    response.set_body(campaign::all(skip, limit).json());
+    response.send();
 }
 
-void get_campaign_item(polls::http::request request, polls::http::response response)
+void get_campaigns_item(polls::http::request request, polls::http::response response)
 {
-//    auto document = campaign::get(match.str(1));
-//    response.set_body(document.data());
-//    request.reply(response);
+    auto document = campaign::get(request.get_uri_param(1));
+    response.set_body(document.data());
+    response.send();
 }
 
 void delete_campaign(polls::http::request request, polls::http::response response)
 {
-//    auto document = campaign::get(match.str(1));
-//    document.remove();
-//    response.set_status_code(web::polls::http::status_codes::NoContent);
-//    request.reply(response);
+    auto document = campaign::get(request.get_uri_param(1));
+    document.remove();
+    response.set_status_code(status_codes::NoContent);
+    response.send();
 }
 
 void post_campaign(polls::http::request request, polls::http::response response)
@@ -108,28 +106,26 @@ void post_campaign(polls::http::request request, polls::http::response response)
 
 void get_languages(polls::http::request request, polls::http::response response)
 {
-//    auto params = web::uri::split_query(request.request_uri().query());
-//
-//    int64_t skip = get_param<int64_t>(params, "skip", 0);
-//    int64_t limit = get_param<int64_t>(params, "limit", 10);
-//
-//    response.set_body(language::all(skip, limit).json());
-//    request.reply(response);
+    auto skip = request.get_query_param<int64_t>("skip", 0);
+    auto limit = request.get_query_param<int64_t>("limit", 10);
+
+    response.set_body(language::all(skip, limit).json());
+    response.send();
 }
 
 void get_languages_item(polls::http::request request, polls::http::response response)
 {
-//    auto document = language::get(match.str(1));
-//    response.set_body(document.data());
-//    request.reply(response);
+    auto document = language::get(request.get_uri_param(1));
+    response.set_body(document.data());
+    response.send();
 }
 
 void delete_language(polls::http::request request, polls::http::response response)
 {
-//    auto document = language::get(match.str(1));
-//    document.remove();
-//    response.set_status_code(web::polls::http::status_codes::NoContent);
-//    request.reply(response);
+    auto document = language::get(request.get_uri_param(1));
+    document.remove();
+    response.set_status_code(status_codes::NoContent);
+    response.send();
 }
 
 void post_language(polls::http::request request, polls::http::response response)
@@ -153,39 +149,34 @@ void post_language(polls::http::request request, polls::http::response response)
 
 void get_audience(polls::http::request request, polls::http::response response)
 {
-//{
-//    auto params = web::uri::split_query(request.request_uri().query());
-//
-//    int64_t skip = get_param<int64_t>(params, "skip", 0);
-//    int64_t limit = get_param<int64_t>(params, "limit", 10);
-//
-//    response.set_body(audience::all(skip, limit).json());
-//    request.reply(response);
+    auto skip = request.get_query_param<int64_t>("skip", 0);
+    auto limit = request.get_query_param<int64_t>("limit", 10);
+
+    response.set_body(audience::all(skip, limit).json());
+    response.send();
 }
 
 void get_audience_item(polls::http::request request, polls::http::response response)
 {
-//    auto document = audience::get(match.str(1));
-//    response.set_body(document.data());
-//    request.reply(response);
+    auto document = audience::get(request.get_uri_param(1));
+    response.set_body(document.data());
+    response.send();
 }
 
 void get_content(polls::http::request request, polls::http::response response)
 {
-//    auto params = web::uri::split_query(request.request_uri().query());
-//
-//    int64_t skip = get_param<int64_t>(params, "skip", 0);
-//    int64_t limit = get_param<int64_t>(params, "limit", 10);
-//
-//    response.set_body(content::all(skip, limit).json());
-//    request.reply(response);
+    auto skip = request.get_query_param<int64_t>("skip", 0);
+    auto limit = request.get_query_param<int64_t>("limit", 10);
+
+    response.set_body(content::all(skip, limit).json());
+    response.send();
 }
 
 void get_content_item(polls::http::request request, polls::http::response response)
 {
-//    auto document = content::get(match.str(1));
-//    response.set_body(document.data());
-//    request.reply(response);
+    auto document = content::get(request.get_uri_param(1));
+    response.set_body(document.data());
+    response.send();
 }
 
 int main()

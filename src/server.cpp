@@ -15,37 +15,22 @@ namespace polls
         {
         }
 
-        template <typename T> T request::get_param(const std::string& name)
-        {
-            return type_conv<T>(_params.at(name));
-        }
-
-        template <typename T> T request::get_param(const std::string& name, T def)
-        {
-            try {
-                return type_conv<T>(_params.at(name));
-            } catch (std::exception& e) {
-                return def;
-            }
-        }
-
-        template <typename T>
-        T request::type_conv(const std::string& str)
-        {
-            return T{str};
-        }
-
-        template <> int64_t request::type_conv(const std::string& str) 
-        { 
-            return std::stoi(str); 
-        }
-
         response::response(const web::http::http_request& request)
           : _request{request}
         {
             web::http::http_headers& headers = _response.headers();
             headers["Access-Control-Allow-Origin"] = "*";
             headers["Content-Type"] = "application/json";
+        }
+
+        void response::set_body(const json::value& body_data)
+        {
+            _response.set_body(body_data);
+        }
+
+        void response::set_body(const std::string& body_data)
+        {
+            _response.set_body(body_data);
         }
 
         void response::send()
@@ -94,7 +79,7 @@ namespace polls
             {
                 _listener
                   .open()
-                  .then([]() { std::cout << "listening..." << std::endl; })
+                  .then([]() { std::cout << "Listening..." << std::endl; })
                   .wait();
 
                 while (true);
@@ -135,27 +120,27 @@ namespace polls
                     std::regex_match(path, match, route.regex))
                 {
                     try {
-                        //route.handler(
-                        //    polls::http::request{request, match}, 
-                        //    polls::http::response{request}
-                        //);
+                        route.handler(
+                            polls::http::request{request, match},
+                            polls::http::response{request}
+                        );
                         return;
                     } catch(std::exception& e) {
                         std::cout << e.what() << std::endl;
                         std::stringstream oss{};
                         oss << "{\"error\":\"" << e.what() << "\"}";
-                        //web::http::http_response res{};
-                        //res.set_status_code(status_codes::InternalError);
-                        //res.set_body(oss.str());
-                        //request.reply(res);
+                        web::http::http_response response{};
+                        response.set_status_code(status_codes::InternalError);
+                        response.set_body(oss.str());
+                        request.reply(response);
                         return;
                     }
                 }
             }
 
-            //web::http::http_response res{};
-            //res.set_status_code(status_codes::NotFound);
-            //request.reply(res);
+            web::http::http_response response{};
+            response.set_status_code(status_codes::NotFound);
+            request.reply(response);
         }
     }
 }
