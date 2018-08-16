@@ -60,148 +60,132 @@ namespace polls
     };
 }
 
-template <typename T>
-T type_conv(const std::string& str) { return T{str}; }
-
-template <>
-int64_t type_conv(const std::string& str) { return std::stoi(str); }
-
-template <typename T>
-int64_t get_param(const std::map<utility::string_t, utility::string_t>& params,
-    const std::string& name, int64_t def)
-{
-    try {
-        return type_conv<T>(params.at(name));
-    } catch(std::exception&) {
-        return def;
-    }
-}
-
 using namespace polls;
 
-void get_campaigns(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void get_campaigns(polls::http::request request, polls::http::response response)
 {
-    auto params = web::uri::split_query(request.request_uri().query());
+    //auto params = web::uri::split_query(request.request_uri().query());
 
-    int64_t skip = get_param<int64_t>(params, "skip", 0);
-    int64_t limit = get_param<int64_t>(params, "limit", 10);
+    //int64_t skip = get_param<int64_t>(params, "skip", 0);
+    //int64_t limit = get_param<int64_t>(params, "limit", 10);
 
-    response.set_body(campaign::all(skip, limit).json());
-    request.reply(response);
+    //response.set_body(campaign::all(skip, limit).json());
+    //request.reply(response);
 }
 
-void get_campaigns_item(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void get_campaign_item(polls::http::request request, polls::http::response response)
 {
-    auto document = campaign::get(match.str(1));
-    response.set_body(document.data());
-    request.reply(response);
+//    auto document = campaign::get(match.str(1));
+//    response.set_body(document.data());
+//    request.reply(response);
 }
 
-void delete_campaign(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void delete_campaign(polls::http::request request, polls::http::response response)
 {
-    auto document = campaign::get(match.str(1));
-    document.remove();
-    response.set_status_code(web::http::status_codes::NoContent);
-    request.reply(response);
+//    auto document = campaign::get(match.str(1));
+//    document.remove();
+//    response.set_status_code(web::polls::http::status_codes::NoContent);
+//    request.reply(response);
 }
 
-void post_campaign(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void post_campaign(polls::http::request request, polls::http::response response)
 {
-    request
-      .extract_json()
-      .then([&request, &response](pplx::task<json::value> task)
-      {
-          polls::utils::builder::document<campaign> builder(task.get());
-          builder.add_required_property("name", json::value::value_type::String);
-
-          campaign document = builder.build();
-          document.save();
-
-          response.set_body(document.data());
-          request.reply(response);
-      })
-      .wait();
+//    request
+//      .extract_json()
+//      .then([&request, &response](pplx::task<json::value> task)
+//      {
+//          polls::utils::builder::document<campaign> builder(task.get());
+//          builder.add_required_property("name", json::value::value_type::String);
+//
+//          campaign document = builder.build();
+//          document.save();
+//
+//          response.set_body(document.data());
+//          request.reply(response);
+//      })
+//      .wait();
 }
 
-void get_languages(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void get_languages(polls::http::request request, polls::http::response response)
 {
-    auto params = web::uri::split_query(request.request_uri().query());
-
-    int64_t skip = get_param<int64_t>(params, "skip", 0);
-    int64_t limit = get_param<int64_t>(params, "limit", 10);
-
-    response.set_body(language::all(skip, limit).json());
-    request.reply(response);
+//    auto params = web::uri::split_query(request.request_uri().query());
+//
+//    int64_t skip = get_param<int64_t>(params, "skip", 0);
+//    int64_t limit = get_param<int64_t>(params, "limit", 10);
+//
+//    response.set_body(language::all(skip, limit).json());
+//    request.reply(response);
 }
 
-void get_languages_item(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void get_languages_item(polls::http::request request, polls::http::response response)
 {
-    auto document = language::get(match.str(1));
-    response.set_body(document.data());
-    request.reply(response);
+//    auto document = language::get(match.str(1));
+//    response.set_body(document.data());
+//    request.reply(response);
 }
 
-void delete_language(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void delete_language(polls::http::request request, polls::http::response response)
 {
-    auto document = language::get(match.str(1));
-    document.remove();
-    response.set_status_code(web::http::status_codes::NoContent);
-    request.reply(response);
+//    auto document = language::get(match.str(1));
+//    document.remove();
+//    response.set_status_code(web::polls::http::status_codes::NoContent);
+//    request.reply(response);
 }
 
-void post_language(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void post_language(polls::http::request request, polls::http::response response)
 {
-    request
-      .extract_json()
-      .then([&request, &response](pplx::task<json::value> task)
-      {
-          polls::utils::builder::document<language> builder(task.get());
-          builder.add_required_property("name", json::value::value_type::String);
-          builder.add_required_property("iso_code", json::value::value_type::String);
-
-          language document = builder.build();
-          document.save();
-
-          response.set_body(document.data());
-          request.reply(response);
-      })
-      .wait();
+//    request
+//      .extract_json()
+//      .then([&request, &response](pplx::task<json::value> task)
+//      {
+//          polls::utils::builder::document<language> builder(task.get());
+//          builder.add_required_property("name", json::value::value_type::String);
+//          builder.add_required_property("iso_code", json::value::value_type::String);
+//
+//          language document = builder.build();
+//          document.save();
+//
+//          response.set_body(document.data());
+//          request.reply(response);
+//      })
+//      .wait();
 }
 
-void get_audience(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void get_audience(polls::http::request request, polls::http::response response)
 {
-    auto params = web::uri::split_query(request.request_uri().query());
-
-    int64_t skip = get_param<int64_t>(params, "skip", 0);
-    int64_t limit = get_param<int64_t>(params, "limit", 10);
-
-    response.set_body(audience::all(skip, limit).json());
-    request.reply(response);
+//{
+//    auto params = web::uri::split_query(request.request_uri().query());
+//
+//    int64_t skip = get_param<int64_t>(params, "skip", 0);
+//    int64_t limit = get_param<int64_t>(params, "limit", 10);
+//
+//    response.set_body(audience::all(skip, limit).json());
+//    request.reply(response);
 }
 
-void get_audience_item(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void get_audience_item(polls::http::request request, polls::http::response response)
 {
-    auto document = audience::get(match.str(1));
-    response.set_body(document.data());
-    request.reply(response);
+//    auto document = audience::get(match.str(1));
+//    response.set_body(document.data());
+//    request.reply(response);
 }
 
-void get_content(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void get_content(polls::http::request request, polls::http::response response)
 {
-    auto params = web::uri::split_query(request.request_uri().query());
-
-    int64_t skip = get_param<int64_t>(params, "skip", 0);
-    int64_t limit = get_param<int64_t>(params, "limit", 10);
-
-    response.set_body(content::all(skip, limit).json());
-    request.reply(response);
+//    auto params = web::uri::split_query(request.request_uri().query());
+//
+//    int64_t skip = get_param<int64_t>(params, "skip", 0);
+//    int64_t limit = get_param<int64_t>(params, "limit", 10);
+//
+//    response.set_body(content::all(skip, limit).json());
+//    request.reply(response);
 }
 
-void get_content_item(web::http::http_request request, web::http::http_response response, const std::smatch& match)
+void get_content_item(polls::http::request request, polls::http::response response)
 {
-    auto document = content::get(match.str(1));
-    response.set_body(document.data());
-    request.reply(response);
+//    auto document = content::get(match.str(1));
+//    response.set_body(document.data());
+//    request.reply(response);
 }
 
 int main()

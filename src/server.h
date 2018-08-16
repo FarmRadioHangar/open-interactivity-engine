@@ -13,10 +13,38 @@ namespace polls
 {
     namespace http
     {
-        using request_handler = std::function<void(
-            web::http::http_request, 
-            web::http::http_response, 
-            const std::smatch& match)>;
+        using query_params = std::map<utility::string_t, utility::string_t>;
+
+        class request
+        {
+        public:
+            request(const web::http::http_request& request, const std::smatch& match);
+
+            template <typename T> T get_param(const std::string& name);
+            template <typename T> T get_param(const std::string& name, T def);
+
+        private:
+            template <typename T> T type_conv(const std::string& str);
+
+            web::http::http_request _request;
+            std::smatch             _match;
+            query_params            _params;
+        };
+
+        class response
+        {
+        public:
+            explicit response(const web::http::http_request& request);
+
+            void send();
+
+        private:
+            web::http::http_request  _request;
+            web::http::http_response _response;
+        };
+
+        using request_handler = std::function<void(polls::http::request,
+                                                   polls::http::response)>;
 
         struct request_route
         {
