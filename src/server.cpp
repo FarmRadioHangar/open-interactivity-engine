@@ -15,6 +15,11 @@ namespace polls
         {
         }
 
+        void request::with_json(std::function<void(web::json::value)> handler)
+        {
+            _request.extract_json().then(handler).wait();
+        }
+
         response::response(const web::http::http_request& request)
           : _request{request}
         {

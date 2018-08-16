@@ -23,11 +23,13 @@ namespace polls
         public:
             request(const web::http::http_request& request, const std::smatch& match);
 
-            template <typename T> T get_query_param(const std::string& name, const T& def);
+            template <typename T> T get_query_param(const std::string& name, const T& def) const;
             std::string get_uri_param(size_t n) const;
 
+            void with_json(std::function<void(web::json::value)> handler);
+
         private:
-            template <typename T> T type_conv(const std::string& str)
+            template <typename T> T type_conv(const std::string& str) const
             {
                 return T{};
             }
@@ -38,7 +40,7 @@ namespace polls
         };
 
         template <typename T>
-        T request::get_query_param(const std::string& name, const T& def)
+        T request::get_query_param(const std::string& name, const T& def) const
         {
             try {
                 return type_conv<T>(_params.at(name));
@@ -47,12 +49,12 @@ namespace polls
             }
         }
 
-        template <> inline std::string request::type_conv(const std::string& str)
+        template <> inline std::string request::type_conv(const std::string& str) const
         {
             return str;
         }
 
-        template <> inline int64_t request::type_conv(const std::string& str)
+        template <> inline int64_t request::type_conv(const std::string& str) const
         {
             return std::stoi(str);
         }

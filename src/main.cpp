@@ -88,20 +88,17 @@ void delete_campaign(polls::http::request request, polls::http::response respons
 
 void post_campaign(polls::http::request request, polls::http::response response)
 {
-//    request
-//      .extract_json()
-//      .then([&request, &response](pplx::task<json::value> task)
-//      {
-//          polls::utils::builder::document<campaign> builder(task.get());
-//          builder.add_required_property("name", json::value::value_type::String);
-//
-//          campaign document = builder.build();
-//          document.save();
-//
-//          response.set_body(document.data());
-//          request.reply(response);
-//      })
-//      .wait();
+    request.with_json([&response](json::value data) 
+    {
+        polls::utils::builder::document<campaign> builder(data);
+        builder.add_required_property("name", json::value::value_type::String);
+
+        auto document = builder.build();
+        document.save();
+
+        response.set_body(document.data());
+        response.send();
+    });
 }
 
 void get_languages(polls::http::request request, polls::http::response response)
@@ -130,21 +127,18 @@ void delete_language(polls::http::request request, polls::http::response respons
 
 void post_language(polls::http::request request, polls::http::response response)
 {
-//    request
-//      .extract_json()
-//      .then([&request, &response](pplx::task<json::value> task)
-//      {
-//          polls::utils::builder::document<language> builder(task.get());
-//          builder.add_required_property("name", json::value::value_type::String);
-//          builder.add_required_property("iso_code", json::value::value_type::String);
-//
-//          language document = builder.build();
-//          document.save();
-//
-//          response.set_body(document.data());
-//          request.reply(response);
-//      })
-//      .wait();
+    request.with_json([&response](json::value data) 
+    {
+        polls::utils::builder::document<language> builder(data);
+        builder.add_required_property("name", json::value::value_type::String);
+        builder.add_required_property("iso_code", json::value::value_type::String);
+
+        auto document = builder.build();
+        document.save();
+
+        response.set_body(document.data());
+        response.send();
+    });
 }
 
 void get_audience(polls::http::request request, polls::http::response response)
