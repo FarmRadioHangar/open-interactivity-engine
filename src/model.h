@@ -25,6 +25,9 @@ namespace polls
 
     using bsoncxx::builder::basic::kvp;
 
+    /*!
+     * \class collection
+     */
     template <typename T, typename Collection = std::vector<T>>
     class collection
     {
@@ -119,8 +122,10 @@ namespace polls
     template <typename T> class model
     {
     public:
+        static constexpr std::int64_t max_page_limit = 60;
+
         model();
-        explicit model(const std::string& db, const std::string& collection);
+        model(const std::string& db, const std::string& collection);
         model(const model& other);
         model& operator=(const model& other);
 
@@ -141,7 +146,7 @@ namespace polls
         template <template <typename, typename> class Container = std::vector,
                   template <typename> class Allocator = std::allocator>
         static polls::collection<T, Container<T, Allocator<T>>>
-        all(std::int64_t skip = 0, std::int64_t limit = 60);
+        all(std::int64_t skip = 0, std::int64_t limit = max_page_limit);
 
         static std::int64_t count();
 

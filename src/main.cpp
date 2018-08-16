@@ -157,6 +157,7 @@ void post_language(web::http::http_request request, web::http::http_response res
       {
           polls::utils::builder::document<language> builder(task.get());
           builder.add_required_property("name", json::value::value_type::String);
+          builder.add_required_property("iso_code", json::value::value_type::String);
 
           language document = builder.build();
           document.save();
