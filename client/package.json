@@ -21,6 +21,7 @@
     "webpack-dev-server": "^3.1.4"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "formik": "^1.0.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
@@ -28,6 +29,7 @@
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "redux": "^4.0.0",
+    "redux-saga": "^0.16.0",
     "redux-thunk": "^2.3.0"
   }
 }
