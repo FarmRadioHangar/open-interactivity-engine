@@ -5,110 +5,99 @@ import createSagaMiddleware from 'redux-saga';
 import { fork, all, call, put, takeEvery } from 'redux-saga/effects';
 import { Provider, connect } from 'react-redux';
 
-//const initalState = {
-//  languages: []
-//};
-//
-//function reducer(state = initalState, action) {
-//  console.log(action);
-//  switch (action.type) {
-//    case 'FETCH_LANGUAGES_DONE':
-//      return {
-//        languages: action.result
-//      };
-//    default:
-//      return state;
-//  }
-//}
-//
-//const sagaMiddleware = createSagaMiddleware();
-//
-//let store = createStore(
-//  reducer,
-//  applyMiddleware(sagaMiddleware)
-//);
-//
-////
-//
-//function getLanguages() {
-//  return fetch('http://localhost:9080/languages', { mode: 'cors', headers: { 'Content-Type': 'application/json' } })
-//    .then(response => {
-//      console.log(response);
-//    })
-//    .catch(error => {
-//      console.error(error);
-//    });
-//}
-//
-//function* callGetLanguagesSaga(action) {
-//  const response = yield call(getLanguages);
-//  console.log(response);
-//  yield put({ type: 'FETCH_LANGUAGES_DONE', result: 
-//    [{ name: 'English', iso_code: 'en' }, { name: 'Spanish', iso_code: 'es' }] 
-//  })
-//}
-//
-//function* getLanguagesSaga() {
-//  yield takeEvery('FETCH_LANGUAGES', callGetLanguagesSaga);
-//}
-//
-//function* rootSaga() {
-//  yield all([
-//    fork(getLanguagesSaga)
-//  ]);
-//}
-//
-//sagaMiddleware.run(rootSaga);
-//
-////
-//
-//class App extends React.Component {
-//  render() {
-//    return (
-//      <div>
-//        Saga
-//        <ul>
-//          {this.props.languages.map(language => 
-//            <li key={language.iso_code}>
-//              {language.name}
-//            </li>
-//          )}
-//        </ul>
-//        <button onClick={() => {
-//          this.props.dispatch({ type: 'FETCH_LANGUAGES' });
-//        }}>
-//          Load languages
-//        </button>
-//      </div>
-//    );
-//  }
-//}
-//
-//function mapStateToProps(state, ownProps) {
-//  return {
-//    languages: state.languages
-//  };
-//} 
-//
-//const AppComponent = connect(mapStateToProps)(App);
-//
-//ReactDOM.render(
-//  <Provider store={store}>
-//    <AppComponent />
-//  </Provider>,
-//  document.getElementById('app')
-//);
+const initalState = {
+  languages: []
+};
 
-fetch('http://localhost:9080/languages', {})
-  .then(response => {
-    return response.json();
+function reducer(state = initalState, action) {
+  console.log(action);
+  switch (action.type) {
+    case 'FETCH_LANGUAGES_DONE':
+      return {
+        languages: action.result
+      };
+    default:
+      return state;
+  }
+}
+
+const sagaMiddleware = createSagaMiddleware();
+
+let store = createStore(
+  reducer,
+  applyMiddleware(sagaMiddleware)
+);
+
+//
+
+function getLanguages() {
+  return fetch('http://localhost:9080/languages')
+    .then(response => {
+      return response.json();
+    })
+    .catch(error => {
+      console.error(error);
+    });
+}
+
+function* callGetLanguagesSaga(action) {
+  const response = yield call(getLanguages);
+  console.log(response);
+  yield put({ type: 'FETCH_LANGUAGES_DONE', result: 
+    [{ name: 'English', iso_code: 'en' }, { name: 'Spanish', iso_code: 'es' }] 
   })
-  .catch(error => {
-    console.error('Error');
-  })
-  .then(data => {
-    console.log(data);
-  });
+}
+
+function* getLanguagesSaga() {
+  yield takeEvery('FETCH_LANGUAGES', callGetLanguagesSaga);
+}
+
+function* rootSaga() {
+  yield all([
+    fork(getLanguagesSaga)
+  ]);
+}
+
+sagaMiddleware.run(rootSaga);
+
+//
+
+class App extends React.Component {
+  render() {
+    return (
+      <div>
+        Saga
+        <ul>
+          {this.props.languages.map(language => 
+            <li key={language.iso_code}>
+              {language.name}
+            </li>
+          )}
+        </ul>
+        <button onClick={() => {
+          this.props.dispatch({ type: 'FETCH_LANGUAGES' });
+        }}>
+          Load languages
+        </button>
+      </div>
+    );
+  }
+}
+
+function mapStateToProps(state, ownProps) {
+  return {
+    languages: state.languages
+  };
+} 
+
+const AppComponent = connect(mapStateToProps)(App);
+
+ReactDOM.render(
+  <Provider store={store}>
+    <AppComponent />
+  </Provider>,
+  document.getElementById('app')
+);
 
 //import React from 'react';
 //import ReactDOM from 'react-dom';

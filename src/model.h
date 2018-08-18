@@ -236,7 +236,7 @@ namespace polls
     {
         try {
             _oid = bsoncxx::oid{std::move(oid)};
-        } catch(bsoncxx::v_noabi::exception& e) {
+        } catch(bsoncxx::v_noabi::exception&) {
             throw std::runtime_error{"invalid ObjectId"};
         }
     }
@@ -283,7 +283,7 @@ namespace polls
             data = std::make_unique<bsoncxx::document::value>(
                 bsoncxx::from_json(_data)
             );
-        } catch(bsoncxx::v_noabi::exception& e) {
+        } catch(bsoncxx::v_noabi::exception&) {
             throw std::runtime_error{"bad BSON data"};
         }
 
