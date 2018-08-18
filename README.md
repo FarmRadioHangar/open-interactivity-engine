@@ -88,8 +88,8 @@ Interactive radio *campaigns* are schedulable and automated activities to exchan
 ## Project structure
 
 ### Service layer
-* RESTful API
 * Modern C++
+* Microsoft C++ REST SDK (Casablanca)
 * Build tool: CMake
 * Documentation: Doxygen
 * Tests: ?
@@ -99,5 +99,8 @@ Interactive radio *campaigns* are schedulable and automated activities to exchan
 
 ### Front-end
 * JavaScript (ES6) 
-* React/Redux
-* Babel/Webpack
+* React
+* Redux
+* Redux-Sage
+* Babel
+* Webpack
