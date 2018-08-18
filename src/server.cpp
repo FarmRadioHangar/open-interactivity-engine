@@ -21,7 +21,8 @@ namespace polls
         }
 
         response::response(const web::http::http_request& request)
-          : _request{request}
+          : _request{request},
+            _response{status_codes::OK}
         {
             web::http::http_headers& headers = _response.headers();
             headers["Access-Control-Allow-Origin"] = "*";
