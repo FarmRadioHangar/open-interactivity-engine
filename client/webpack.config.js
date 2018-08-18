@@ -11,7 +11,7 @@ module.exports = () => {
 
   return {
     entry: [
-      './src/index.js'
+      'babel-polyfill', './src/index.js'
     ],
     module: {
       rules: [
