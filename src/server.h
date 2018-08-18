@@ -44,7 +44,7 @@ namespace polls
         {
             try {
                 return type_conv<T>(_params.at(name));
-            } catch (std::exception& e) {
+            } catch (std::exception&) {
                 return def;
             }
         }

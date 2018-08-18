@@ -58,7 +58,7 @@ namespace polls
     /*!
      * \brief Return the number of documents in this collection. This number
      * may be less than the number of documents available in the underlying
-     * MongoDB data store.
+     * MongoDB data store collection.
      *
      * \sa total
      */
@@ -70,7 +70,7 @@ namespace polls
 
     /*!
      * \brief Return the \a total number of documents in the underlying MongoDB
-     * collection from which this subset originates.
+     * collection from where this subset was generated.
      */
     template <typename T, typename Collection>
     std::int64_t collection<T, Collection>::total() const { return _total; }
@@ -230,7 +230,7 @@ namespace polls
     /*!
      * \brief Set the document's ObjectId.
      *
-     * \param id a valid MongoDB ObjectId string
+     * \param oid a valid MongoDB ObjectId string
      */
     template <typename T> void model<T>::set_oid(std::string&& oid)
     {
