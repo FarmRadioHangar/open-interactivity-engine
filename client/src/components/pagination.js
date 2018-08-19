@@ -11,7 +11,7 @@ const Pagination = ({ pageSize, total, offset, onChange }) => {
           {page == currentPage ? (
             <span>{page}</span>
           ) : (
-            <a href='#' onClick={() => onChange(page)}>
+            <a href='#' onClick={e => { e.preventDefault(); onChange(page) }}>
               {page}
             </a>
           )}
