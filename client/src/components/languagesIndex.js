@@ -29,7 +29,7 @@ class LanguagesIndex extends React.Component {
       <span>
         <LanguagesList
           languages = {languages}
-          onReload  = {this.fetchData.bind(this)}
+          onReload  = {::this.fetchData}
         />
         <Link to='/languages/create'>Add language</Link>
         <Pagination
