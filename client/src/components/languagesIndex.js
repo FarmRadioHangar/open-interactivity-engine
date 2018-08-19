@@ -6,22 +6,27 @@ import * as languagesActions from '../actions/languagesActions';
 import LanguagesList from './languagesList';
 
 class LanguagesIndex extends React.Component {  
-  componentDidMount() {
-    this.props.dispatch(languagesActions.loadLanguages());
-  }
+  //componentDidMount() {
+  //  this.props.dispatch(languagesActions.loadLanguages());
+  //}
   render() {
     return(
       <span>
-        <LanguagesList languages={this.props.languages} />
+        <LanguagesList 
+          languages={this.props.languages} 
+          onReload={() => {
+            this.props.dispatch(languagesActions.loadLanguages());
+          }}
+        />
         <Link to='/languages/create'>Add language</Link>
       </span>
     );
   }
 }
 
-LanguagesIndex.propTypes = {
-  languages: PropTypes.array.isRequired
-};
+//LanguagesIndex.propTypes = {
+//  languages: PropTypes.array.isRequired
+//};
 
 function mapStateToProps(state, ownProps) {
   return {

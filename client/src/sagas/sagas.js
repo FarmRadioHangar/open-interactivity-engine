@@ -5,6 +5,7 @@ import api from '../api';
 function* callGetLanguagesSaga(action) {
   try {
     const response = yield call(api.get, 'languages', {});
+    console.log(response);
     yield put({ 
       type: types.FETCH_LANGUAGES_DONE, 
       items: response.languages,

@@ -1,100 +1,78 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, applyMiddleware } from 'redux';
-import createSagaMiddleware from 'redux-saga';
-import { fork, all, call, put, takeEvery } from 'redux-saga/effects';
-import { Provider, connect } from 'react-redux';
+import { Provider } from 'react-redux';
+import { Router, Route, Link } from 'react-router-dom';
+import configureStore from './store/configureStore';
+import history from './history';
+import sagaMiddleware from './sagas/sagaMiddleware';
+import { rootSaga } from './sagas/sagas';
+import LanguagesIndex from './components/languagesIndex';
 
-const initalState = {
-  languages: []
-};
-
-function reducer(state = initalState, action) {
-  console.log(action);
-  switch (action.type) {
-    case 'FETCH_LANGUAGES_DONE':
-      return {
-        languages: action.result
-      };
-    default:
-      return state;
-  }
-}
-
-const sagaMiddleware = createSagaMiddleware();
-
-let store = createStore(
-  reducer,
-  applyMiddleware(sagaMiddleware)
-);
-
-//
-
-function getLanguages() {
-  return fetch('http://localhost:9080/languages')
-    .then(response => {
-      return response.json();
-    })
-    .catch(error => {
-      console.error(error);
-    });
-}
-
-function* callGetLanguagesSaga(action) {
-  const response = yield call(getLanguages);
-  console.log(response);
-  yield put({ type: 'FETCH_LANGUAGES_DONE', result: 
-    [{ name: 'English', iso_code: 'en' }, { name: 'Spanish', iso_code: 'es' }] 
-  })
-}
-
-function* getLanguagesSaga() {
-  yield takeEvery('FETCH_LANGUAGES', callGetLanguagesSaga);
-}
-
-function* rootSaga() {
-  yield all([
-    fork(getLanguagesSaga)
-  ]);
-}
+const store = configureStore();
 
 sagaMiddleware.run(rootSaga);
 
+const Main = () => (
+  <Router history={history}>
+    <div>
+      <ul>
+        <li>
+          <Link to='/'>Home</Link>
+        </li>
+        <li>
+          <Link to='/campaigns'>Campaigns</Link>
+        </li>
+        <li>
+          <Link to='/content'>Content</Link>
+        </li>
+        <li>
+          <Link to='/audience'>Audience</Link>
+        </li>
+        <li>
+          <Link to='/languages'>Languages</Link>
+        </li>
+        <li>
+          <Link to='/settings'>Settings</Link>
+        </li>
+      </ul>
+      <hr />
+      <Route exact path='/languages' component={Languages} />
+    </div>
+  </Router>
+);
+
+const Languages = () => (
+  <div>
+    <h2>Languages</h2>
+    <LanguagesIndex />
+  </div>
+);
+
+//      <div>
+//        <ul>
+//          {this.props.languages.items.map((language, i) => 
+//            <li key={i}>
+//              {language.name}{' '}{JSON.stringify(language)}
+//            </li>
+//          )}
+//        </ul>
+//        <button onClick={() => {
+//          this.props.dispatch({ type: 'FETCH_LANGUAGES' });
+//        }}>
+//          Load languages
+//        </button>
+//      </div>
+//function mapStateToProps(state, ownProps) {
+//  return {
+//    languages: state.languages
+//  };
+//} 
 //
-
-class App extends React.Component {
-  render() {
-    return (
-      <div>
-        Saga
-        <ul>
-          {this.props.languages.map(language => 
-            <li key={language.iso_code}>
-              {language.name}
-            </li>
-          )}
-        </ul>
-        <button onClick={() => {
-          this.props.dispatch({ type: 'FETCH_LANGUAGES' });
-        }}>
-          Load languages
-        </button>
-      </div>
-    );
-  }
-}
-
-function mapStateToProps(state, ownProps) {
-  return {
-    languages: state.languages
-  };
-} 
-
-const AppComponent = connect(mapStateToProps)(App);
+//const AppComponent = connect(mapStateToProps)(App);
 
 ReactDOM.render(
   <Provider store={store}>
-    <AppComponent />
+    <Main />
   </Provider>,
   document.getElementById('app')
 );
@@ -358,5 +336,3 @@ ReactDOM.render(
 //  </Provider>,
 //  document.getElementById('app')
 //);
-
-
