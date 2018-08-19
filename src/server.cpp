@@ -1,4 +1,5 @@
 #include "server.h"
+#include <mongocxx/exception/query_exception.hpp>
 
 using namespace web;
 using namespace web::http;
@@ -18,6 +19,16 @@ namespace polls
         void request::with_json(std::function<void(web::json::value)> handler)
         {
             _request.extract_json().then(handler).wait();
+        }
+
+        void request::send_error_response(const std::string& error_message, int status)
+        {
+            std::stringstream oss{};
+            oss << "{\"error\":\"" << error_message << "\",\"status\":" << status << "}";
+            polls::http::response response{_request};
+            response.set_status_code(status_codes::InternalError);
+            response.set_body(oss.str());
+            response.send();
         }
 
         response::response(const web::http::http_request& request)
@@ -131,14 +142,22 @@ namespace polls
                             polls::http::response{request}
                         );
                         return;
+                    } catch(mongocxx::exception& e) {
+                        std::cout << e.what() << std::endl;
+                        polls::http::request req{request};
+                        switch (e.code().value())
+                        {
+                        case 13053:
+                            req.send_error_response("No suitable servers found. Is mongod running?");
+                            break;
+                        default:
+                            req.send_error_response(e.what());
+                        }
+                        return;
                     } catch(std::exception& e) {
                         std::cout << e.what() << std::endl;
-                        std::stringstream oss{};
-                        oss << "{\"error\":\"" << e.what() << "\",\"status\":500}";
-                        polls::http::response response{request};
-                        response.set_status_code(status_codes::InternalError);
-                        response.set_body(oss.str());
-                        response.send();
+                        polls::http::request req{request};
+                        req.send_error_response(e.what());
                         return;
                     }
                 }

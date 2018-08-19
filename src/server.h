@@ -21,12 +21,13 @@ namespace polls
         class request
         {
         public:
-            request(const web::http::http_request& request, const std::smatch& match);
+            explicit request(const web::http::http_request& request, const std::smatch& match = std::smatch{});
 
             template <typename T> T get_query_param(const std::string& name, const T& def) const;
             std::string get_uri_param(size_t n) const;
 
             void with_json(std::function<void(web::json::value)> handler);
+            void send_error_response(const std::string& error_message, int status = 500);
 
         private:
             template <typename T> T type_conv(const std::string& str) const
