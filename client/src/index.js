@@ -37,16 +37,20 @@ const Main = () => (
       </ul>
       <hr />
       <Route exact path='/languages' component={Languages} />
+      <Route exact path='/languages/page/:page' component={Languages} />
     </div>
   </Router>
 );
 
-const Languages = () => (
-  <div>
-    <h2>Languages</h2>
-    <LanguagesIndex />
-  </div>
-);
+const Languages = ({ match }) => {
+  const pageNumber = Number(match.params.page) || 1;
+  return (
+    <div>
+      <h2>Languages</h2>
+      <LanguagesIndex pageNumber={pageNumber} />
+    </div>
+  );
+}
 
 //      <div>
 //        <ul>
