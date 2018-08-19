@@ -134,7 +134,7 @@ namespace polls
                     } catch(std::exception& e) {
                         std::cout << e.what() << std::endl;
                         std::stringstream oss{};
-                        oss << "{\"error\":\"" << e.what() << "\"}";
+                        oss << "{\"error\":\"" << e.what() << "\",\"status\":500}";
                         polls::http::response response{request};
                         response.set_status_code(status_codes::InternalError);
                         response.set_body(oss.str());
