@@ -1,9 +1,9 @@
-//import './utils';
+import * as utils from './utils';
 
 class Api {
 
   get(resource, params) {
-    const url = `${process.env.API_URL}/${resource}`; //${params ? utils.param(params) : ''}`;
+    const url = `${process.env.API_URL}/${resource}${params ? utils.param(params) : ''}`;
     console.log(`GET ${url}`);
     let response;
     return fetch(url)

@@ -1,19 +1,18 @@
 import { fork, all, call, put, takeEvery } from 'redux-saga/effects';
 import * as types from '../actions/actionTypes';  
 import api from '../api';
+import * as languagesActions from '../actions/languagesActions';
 
 function* callGetLanguagesSaga(action) {
   try {
     const response = yield call(api.get, 'languages', {});
-    console.log(response);
-    yield put({ 
-      type: types.FETCH_LANGUAGES_DONE, 
-      items: response.languages,
-      count: response.count,
-      total: response.total
-    });
+    if (response.ok) {
+      yield put(languagesActions.fetchLanguagesDone(response));
+    } else {
+      yield put(languagesActions.fetchLanguagesFailed(`API error: ${response.error}`));
+    }
   } catch(err) {
-    yield put({ type: types.FETCH_LANGUAGES_FAILED });
+    yield put(languagesActions.fetchLanguagesFailed('Could not connect to API server.'));
   }
 }
 

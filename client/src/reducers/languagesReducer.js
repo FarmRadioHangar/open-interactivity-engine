@@ -5,7 +5,7 @@ export default function(state = initialState.languages, action) {
   console.log(action);
   switch(action.type) {
     case types.FETCH_LANGUAGES_FAILED:
-      return state;
+      return { ...state, error: action.error };
     case types.FETCH_LANGUAGES_DONE:
       const { items, count, total } = action;
       const { offset, pageSize } = state;

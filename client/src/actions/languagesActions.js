@@ -1,8 +1,21 @@
 import * as types from './actionTypes';
 import history from '../history';
 
-export function loadLanguages() {
+export function fetchLanguages() {
   return { type: types.FETCH_LANGUAGES };
+}
+
+export function fetchLanguagesDone(response) {
+  return { 
+    type: types.FETCH_LANGUAGES_DONE, 
+    items: response.languages,
+    count: response.count,
+    total: response.total
+  };
+}
+
+export function fetchLanguagesFailed(error) {
+  return { type: types.FETCH_LANGUAGES_FAILED, error };
 }
 
 //export function deleteLanguage(id) {
