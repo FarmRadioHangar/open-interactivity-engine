@@ -14,7 +14,7 @@ sagaMiddleware.run(rootSaga);
 
 const Main = () => (
   <Router history={history}>
-    <div>
+    <React.Fragment>
       <ul>
         <li>
           <Link to='/'>Home</Link>
@@ -38,7 +38,7 @@ const Main = () => (
       <hr />
       <Route exact path='/languages' component={Languages} />
       <Route exact path='/languages/page/:page' component={Languages} />
-    </div>
+    </React.Fragment>
   </Router>
 );
 

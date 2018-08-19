@@ -25,7 +25,7 @@ class LanguagesIndex extends React.Component {
   render() {
     const { languages, dispatch } = this.props;
     return(
-      <span>
+      <React.Fragment>
         <LanguagesList
           languages = {languages}
           onReload  = {::this.fetchData}
@@ -39,7 +39,7 @@ class LanguagesIndex extends React.Component {
             history.push(`/languages/page/${pageNumber}`);
           }}
         />
-      </span>
+      </React.Fragment>
     );
   }
 }
