@@ -9,7 +9,6 @@ import Pagination from './pagination';
 
 class LanguagesIndex extends React.Component {
   componentDidMount() {
-    console.log('componentDidMount');
     this.fetchData();
   }
   componentDidUpdate(prevProps) {

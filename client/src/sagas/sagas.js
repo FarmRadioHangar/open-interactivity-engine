@@ -1,15 +1,12 @@
 import { fork, all, call, put, takeEvery } from 'redux-saga/effects';
 import * as types from '../actions/actionTypes';  
-import api from '../api';
 import * as languagesActions from '../actions/languagesActions';
+import api from '../api';
 
 function* callGetLanguagesSaga(action) {
   try {
     const { offset, limit } = action;
-    const response = yield call(api.get, 'languages', { 
-      skip: offset, 
-      limit 
-    });
+    const response = yield call(api.get, 'languages', { skip: offset, limit });
     if (response.ok) {
       yield put(languagesActions.fetchLanguagesDone(response));
     } else {

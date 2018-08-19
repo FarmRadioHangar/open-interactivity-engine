@@ -5,8 +5,8 @@ import { Router, Route, Link } from 'react-router-dom';
 import configureStore from './store/configureStore';
 import history from './history';
 import sagaMiddleware from './sagas/sagaMiddleware';
-import { rootSaga } from './sagas/sagas';
 import LanguagesIndex from './components/languagesIndex';
+import { rootSaga } from './sagas/sagas';
 
 const store = configureStore();
 

@@ -31,7 +31,8 @@ const LanguagesList = ({ languages, onReload }) => {
 };
 
 LanguagesList.propTypes = {  
-  languages: PropTypes.object.isRequired
+  languages: PropTypes.object.isRequired,
+  onReload: PropTypes.func.isRequired
 };
 
 export default LanguagesList; 

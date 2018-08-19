@@ -17,19 +17,15 @@ class Api {
       });
   }
 
-//  get(resource, params) {
-//    const url = `${process.env.API_URL}/${resource}${params ? utils.param(params) : ''}`;
-//    console.log(`GET ${url}`);
-//    return fetch(`${url}`)
-//      .then(response => {
-//        return response.json();
-//      })
-//      .catch(error => {
-//        console.error(error);
-//        return error;
-//      });
-//  }
-//
+  post(resource, data) {
+  }
+
+  put(resource, data) {
+  }
+
+  delete(resource) {
+  }
+
 //  post(resource, data) {
 //    console.log(`POST ${process.env.API_URL}/${resource}`);
 //    return fetch(`${process.env.API_URL}/${resource}`, {
