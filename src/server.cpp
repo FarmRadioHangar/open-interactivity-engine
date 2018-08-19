@@ -135,18 +135,18 @@ namespace polls
                         std::cout << e.what() << std::endl;
                         std::stringstream oss{};
                         oss << "{\"error\":\"" << e.what() << "\"}";
-                        web::http::http_response response{};
+                        polls::http::response response{request};
                         response.set_status_code(status_codes::InternalError);
                         response.set_body(oss.str());
-                        request.reply(response);
+                        response.send();
                         return;
                     }
                 }
             }
 
-            web::http::http_response response{};
+            polls::http::response response{request};
             response.set_status_code(status_codes::NotFound);
-            request.reply(response);
+            response.send();
         }
     }
 }
