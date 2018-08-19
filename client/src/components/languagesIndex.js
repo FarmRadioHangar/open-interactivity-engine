@@ -9,7 +9,19 @@ import Pagination from './pagination';
 
 class LanguagesIndex extends React.Component {
   componentDidMount() {
-    this.props.dispatch(languagesActions.fetchLanguages());
+    console.log('componentDidMount');
+    this.fetchData();
+  }
+  componentDidUpdate(prevProps) {
+    if (this.props.pageNumber != prevProps.pageNumber) {
+      this.fetchData();
+    }
+  }
+  fetchData() {
+    const { total, pageSize } = this.props.languages;
+    const lastPage = Math.ceil(total/pageSize);
+    const offset = pageSize*(this.props.pageNumber - 1);
+    this.props.dispatch(languagesActions.fetchLanguages(offset, pageSize));
   }
   render() {
     const { languages, dispatch } = this.props;
