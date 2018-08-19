@@ -5,7 +5,11 @@ import * as languagesActions from '../actions/languagesActions';
 
 function* callGetLanguagesSaga(action) {
   try {
-    const response = yield call(api.get, 'languages', {});
+    const { offset, limit } = action;
+    const response = yield call(api.get, 'languages', { 
+      skip: offset, 
+      limit 
+    });
     if (response.ok) {
       yield put(languagesActions.fetchLanguagesDone(response));
     } else {

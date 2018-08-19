@@ -12,7 +12,7 @@ class Api {
         return response.json();
       })
       .then(json => {
-        let { status, ok } = response;
+        const { status, ok } = response;
         return { ...json, status, ok };
       });
   }

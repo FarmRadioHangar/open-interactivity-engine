@@ -1,8 +1,8 @@
 import * as types from './actionTypes';
 import history from '../history';
 
-export function fetchLanguages() {
-  return { type: types.FETCH_LANGUAGES };
+export function fetchLanguages(offset, limit) {
+  return { type: types.FETCH_LANGUAGES, offset, limit };
 }
 
 export function fetchLanguagesDone(response) {

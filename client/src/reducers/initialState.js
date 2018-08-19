@@ -8,6 +8,6 @@ export default {
     total: 0,
     offset: 0,
     pageSize: 10,
-    error: null
+    error: false
   }
 };
