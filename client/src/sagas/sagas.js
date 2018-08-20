@@ -1,6 +1,7 @@
 import { fork, all, call, put, takeEvery } from 'redux-saga/effects';
 import * as types from '../actions/actionTypes';  
 import * as languagesActions from '../actions/languagesActions';
+import history from '../history';
 import api from '../api';
 import * as utils from '../utils';
 
@@ -28,6 +29,7 @@ function* callPostLanguageSaga(action) {
     const response = yield call(api.post, 'languages', utils.underscoreKeys(data));
     if (response.ok) {
       yield put(languagesActions.createLanguageDone(response));
+      yield call(history.push, '/languages');
     } else {
       yield put(languagesActions.createLanguageError(`API error: ${response.error}`));
     }

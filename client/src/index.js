@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { Router, Route, Link } from 'react-router-dom';
+import { Router, Route, Link, push } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import configureStore from './store/configureStore';
 import history from './history';
@@ -79,24 +79,27 @@ const CreateLanguage = () => (
         store.dispatch(languagesActions.createLanguage(values));
       }}
       render={({ errors, touched, isSubmitting }) => {
-        return isSubmitting ? (
-          <div>
-            Please wait...
-          </div>
-        ) : (
-          <Form>
-            <div>
-              <Field type='text' name='name' />
-              {touched.name && errors.name && <div>{errors.name}</div>}
-            </div>
-            <div>
-              <Field type='text' name='isoCode' />
-              {touched.isoCode && errors.isoCode && <div>{errors.isoCode}</div>}
-            </div>
-            <button type='submit' disabled={isSubmitting}>
-              Submit
-            </button>
-          </Form>
+        return (
+          <React.Fragment>
+            {isSubmitting && (
+              <div>
+                Please wait...
+              </div>
+            )}
+            <Form>
+              <div>
+                <Field type='text' name='name' />
+                {touched.name && errors.name && <div>{errors.name}</div>}
+              </div>
+              <div>
+                <Field type='text' name='isoCode' />
+                {touched.isoCode && errors.isoCode && <div>{errors.isoCode}</div>}
+              </div>
+              <button type='submit' disabled={isSubmitting}>
+                Submit
+              </button>
+            </Form>
+          </React.Fragment>
         );
       }}
     />
