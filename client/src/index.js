@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { Router, Route, Link } from 'react-router-dom';
+import { Formik, Form, Field } from 'formik';
 import configureStore from './store/configureStore';
 import history from './history';
 import sagaMiddleware from './sagas/sagaMiddleware';
@@ -38,6 +39,9 @@ const Main = () => (
       <hr />
       <Route exact path='/languages' component={Languages} />
       <Route exact path='/languages/page/:page' component={Languages} />
+      <Route exact path='/languages/create' component={CreateLanguage} />
+      <Route exact path='/languages/:id/edit' component={EditLanguage} />
+      <Route exact path='/languages/:id/delete' component={DeleteLanguage} />
     </React.Fragment>
   </Router>
 );
@@ -52,27 +56,87 @@ const Languages = ({ match }) => {
   );
 }
 
-//      <div>
-//        <ul>
-//          {this.props.languages.items.map((language, i) => 
-//            <li key={i}>
-//              {language.name}{' '}{JSON.stringify(language)}
-//            </li>
-//          )}
-//        </ul>
-//        <button onClick={() => {
-//          this.props.dispatch({ type: 'FETCH_LANGUAGES' });
-//        }}>
-//          Load languages
-//        </button>
-//      </div>
-//function mapStateToProps(state, ownProps) {
-//  return {
-//    languages: state.languages
-//  };
-//} 
-//
-//const AppComponent = connect(mapStateToProps)(App);
+const CreateLanguage = () => (
+  <div>
+    <h2>Add language</h2>
+    <Formik
+      initialValues={{
+        name: '',
+        isoCode: ''
+      }}
+      validate={values => {
+        let errors = {};
+        if (!values.name) {
+          errors.name = 'This field is required.';
+        }
+        if (!values.isoCode) {
+          errors.isoCode = 'This field is required.';
+        }
+        return errors;
+      }}
+      onSubmit={(values) => {
+        store.dispatch(languagesActions.createLanguage(values));
+      }}
+      render={({ errors, touched, isSubmitting }) => {
+        return isSubmitting ? (
+          <div>
+            Please wait...
+          </div>
+        ) : (
+          <Form>
+            <div>
+              <Field type='text' name='name' />
+              {touched.name && errors.name && <div>{errors.name}</div>}
+            </div>
+            <div>
+              <Field type='text' name='isoCode' />
+              {touched.isoCode && errors.isoCode && <div>{errors.isoCode}</div>}
+            </div>
+            <button type='submit' disabled={isSubmitting}>
+              Submit
+            </button>
+          </Form>
+        );
+      }}
+    />
+  </div>
+);
+
+const EditLanguage = () => (
+  <div>
+    <h2>Edit language</h2>
+    <div>
+      edit
+    </div>
+  </div>
+);
+
+const DeleteLanguage = ({ match }) => {
+  return (
+    <Formik
+      onSubmit={(values) => {
+        store.dispatch(languagesActions.deleteLanguage(match.params.id));
+      }}
+      render={({ isSubmitting }) => {
+        return isSubmitting ? (
+          <div>
+            Please wait...
+          </div>
+        ) : (
+          <Form>
+            <h2>Delete language</h2>
+            <div>
+              delete language?
+            </div>
+            <button type='submit' disabled={isSubmitting}>
+              Confirm
+            </button>
+          </Form>
+        );
+      }}
+    />
+  );
+}
 
 ReactDOM.render(
   <Provider store={store}>

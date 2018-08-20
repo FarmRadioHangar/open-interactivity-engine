@@ -18,12 +18,18 @@ class Api {
   }
 
   post(resource, data) {
+    const url = `${process.env.API_URL}/${resource}`;
+    console.log(`POST ${url}`);
   }
 
   put(resource, data) {
+    const url = `${process.env.API_URL}/${resource}`;
+    console.log(`PUT ${url}`);
   }
 
   delete(resource) {
+    const url = `${process.env.API_URL}/${resource}`;
+    console.log(`DELETE ${url}`);
   }
 
 //  post(resource, data) {
