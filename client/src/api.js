@@ -9,6 +9,7 @@ class Api {
     return fetch(url)
       .then(res => {
         response = res;
+        console.log(response);
         return response.json();
       })
       .then(json => {
@@ -31,6 +32,7 @@ class Api {
       })
       .then(res => {
         response = res;
+        console.log(response);
         return response.json();
       })
       .then(json => {
@@ -53,6 +55,7 @@ class Api {
       })
       .then(res => {
         response = res;
+        console.log(response);
         return response.json();
       })
       .then(json => {
@@ -68,6 +71,7 @@ class Api {
     return fetch(url, { method: 'DELETE' })
       .then(res => {
         response = res;
+        console.log(response);
         return response.json();
       })
       .then(json => {

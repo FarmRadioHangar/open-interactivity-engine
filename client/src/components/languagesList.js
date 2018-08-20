@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-const LanguagesList = ({ languages, onReload }) => {  
+const LanguagesList = ({ languages, onReload }) => {
   return (
-    <div>
+    <React.Fragment>
       {languages.error ? (
-        <div>
+        <React.Fragment>
           Error : {languages.error}
-        </div>
+        </React.Fragment>
       ) : (
         <ul className='list-group'>
           {languages.items.map(language => {
@@ -26,13 +26,13 @@ const LanguagesList = ({ languages, onReload }) => {
       <button onClick={onReload}>
         Load
       </button>
-    </div>
+    </React.Fragment>
   );
 };
 
-LanguagesList.propTypes = {  
+LanguagesList.propTypes = {
   languages: PropTypes.object.isRequired,
   onReload: PropTypes.func.isRequired
 };
 
-export default LanguagesList; 
+export default LanguagesList;
