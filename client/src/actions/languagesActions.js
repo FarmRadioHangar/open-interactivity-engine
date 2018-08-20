@@ -22,6 +22,14 @@ export function createLanguage(data) {
   return { type: types.CREATE_LANGUAGE, data };
 }
 
+export function createLanguageDone(response) {
+  return { type: types.CREATE_LANGUAGE_DONE };
+}
+
+export function createLanguageError(error) {
+  return { type: types.CREATE_LANGUAGE_ERROR, error };
+}
+
 //export function createLanguageSuccess() {
 //  return {type: types.CREATE_LANGUAGE_SUCCESS};
 //}

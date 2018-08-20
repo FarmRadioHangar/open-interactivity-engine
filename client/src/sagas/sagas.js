@@ -2,6 +2,7 @@ import { fork, all, call, put, takeEvery } from 'redux-saga/effects';
 import * as types from '../actions/actionTypes';  
 import * as languagesActions from '../actions/languagesActions';
 import api from '../api';
+import * as utils from '../utils';
 
 function* callGetLanguagesSaga(action) {
   try {
@@ -22,15 +23,16 @@ function* getLanguagesSaga() {
 }
 
 function* callPostLanguageSaga(action) {
-  const { data } = action;
-  console.log('Data : --------------------');
-  console.log(data);
-
-  const response = yield call(api.post, 'languages', data);
-
   try {
-    //
+    const { data } = action;
+    const response = yield call(api.post, 'languages', utils.underscoreKeys(data));
+    if (response.ok) {
+      yield put(languagesActions.createLanguageDone(response));
+    } else {
+      yield put(languagesActions.createLanguageError(`API error: ${response.error}`));
+    }
   } catch(err) {
+    yield put(languagesActions.createLanguageError('Could not connect to API server.'));
   }
 }
  
