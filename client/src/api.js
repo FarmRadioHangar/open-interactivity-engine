@@ -20,46 +20,62 @@ class Api {
   post(resource, data) {
     const url = `${process.env.API_URL}/${resource}`;
     console.log(`POST ${url}`);
+    let response;
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(res => {
+        response = res;
+        return response.json();
+      })
+      .then(json => {
+        const { status, ok } = response;
+        return { ...json, status, ok };
+      });
   }
 
   put(resource, data) {
     const url = `${process.env.API_URL}/${resource}`;
     console.log(`PUT ${url}`);
+    let response;
+    return fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(res => {
+        response = res;
+        return response.json();
+      })
+      .then(json => {
+        const { status, ok } = response;
+        return { ...json, status, ok };
+      });
   }
 
   delete(resource) {
     const url = `${process.env.API_URL}/${resource}`;
     console.log(`DELETE ${url}`);
+    let response;
+    return fetch(url, { method: 'DELETE' })
+      .then(res => {
+        response = res;
+        return response.json();
+      })
+      .then(json => {
+        const { status, ok } = response;
+        return { ...json, status, ok };
+      });
   }
 
-//  post(resource, data) {
-//    console.log(`POST ${process.env.API_URL}/${resource}`);
-//    return fetch(`${process.env.API_URL}/${resource}`, {
-//      method: 'POST',
-//      headers: {
-//        'Accept': 'application/json',
-//        'Content-Type': 'application/json'
-//      },
-//      body: JSON.stringify(data)
-//    }).then(response => {
-//        return response.json();
-//      })
-//      .catch(error => {
-//        console.error(error);
-//        return error;
-//      });
-//  }
-//
-//  delete(resource) {
-//    console.log(`DELETE ${process.env.API_URL}/${resource}`);
-//    return fetch(`${process.env.API_URL}/${resource}`, {
-//      method: 'DELETE'
-//    })
-//      .catch(error => {
-//        console.error(error);
-//        return error;
-//      });
-//  }
 }
 
 export default new Api();
