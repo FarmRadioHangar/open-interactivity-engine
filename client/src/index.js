@@ -8,6 +8,7 @@ import history from './history';
 import sagaMiddleware from './sagas/sagaMiddleware';
 import LanguagesIndex from './components/languagesIndex';
 import { rootSaga } from './sagas/sagas';
+import * as languagesActions from './actions/languagesActions';
 
 const store = configureStore();
 

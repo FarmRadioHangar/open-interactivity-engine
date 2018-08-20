@@ -7,7 +7,7 @@ export default function(state = initialState.languages, action) {
     case types.FETCH_LANGUAGES:
       const { offset, limit } = action;
       return { ...state, offset, limit };
-    case types.FETCH_LANGUAGES_FAILED:
+    case types.FETCH_LANGUAGES_ERROR:
       return { ...state, error: action.error };
     case types.FETCH_LANGUAGES_DONE:
       const { items, count, total } = action;

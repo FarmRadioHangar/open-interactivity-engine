@@ -10,10 +10,10 @@ function* callGetLanguagesSaga(action) {
     if (response.ok) {
       yield put(languagesActions.fetchLanguagesDone(response));
     } else {
-      yield put(languagesActions.fetchLanguagesFailed(`API error: ${response.error}`));
+      yield put(languagesActions.fetchLanguagesError(`API error: ${response.error}`));
     }
   } catch(err) {
-    yield put(languagesActions.fetchLanguagesFailed('Could not connect to API server.'));
+    yield put(languagesActions.fetchLanguagesError('Could not connect to API server.'));
   }
 }
 
@@ -21,8 +21,26 @@ function* getLanguagesSaga() {
   yield takeEvery(types.FETCH_LANGUAGES, callGetLanguagesSaga);
 }
 
+function* callPostLanguageSaga(action) {
+  const { data } = action;
+  console.log('Data : --------------------');
+  console.log(data);
+
+  const response = yield call(api.post, 'languages', data);
+
+  try {
+    //
+  } catch(err) {
+  }
+}
+ 
+function* postLanguageSaga() {
+  yield takeEvery(types.CREATE_LANGUAGE, callPostLanguageSaga);
+}
+
 export function* rootSaga() {
   yield all([
-    fork(getLanguagesSaga)
+    fork(getLanguagesSaga),
+    fork(postLanguageSaga)
   ]);
 }

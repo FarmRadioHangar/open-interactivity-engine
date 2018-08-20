@@ -14,9 +14,30 @@ export function fetchLanguagesDone(response) {
   };
 }
 
-export function fetchLanguagesFailed(error) {
-  return { type: types.FETCH_LANGUAGES_FAILED, error };
+export function fetchLanguagesError(error) {
+  return { type: types.FETCH_LANGUAGES_ERROR, error };
 }
+
+export function createLanguage(data) {
+  return { type: types.CREATE_LANGUAGE, data };
+}
+
+//export function createLanguageSuccess() {
+//  return {type: types.CREATE_LANGUAGE_SUCCESS};
+//}
+//
+//export function loadLanguages() {
+//  return function(dispatch) {
+//    return api.get('languages')
+//      .then(response => {
+//        dispatch(loadLanguagesSuccess(response.languages));
+//      })
+//      .catch(error => {
+//        throw(error);
+//      });
+//  };
+//}
+//
 
 //export function deleteLanguage(id) {
 //  return function(dispatch) {
