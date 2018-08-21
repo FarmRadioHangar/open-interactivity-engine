@@ -36,20 +36,21 @@ namespace polls
             };
 
             template <typename T> document<T>::document(web::json::value json)
-              : _json{json} {}
+              : _json{json}
+            {}
 
             template <typename T> document<T>::document(const std::string& data)
-              : _json{web::json::value::parse(data)} {}
+              : _json{web::json::value::parse(data)}
+            {}
 
-            template <typename T>
-            void document<T>::add_required_property(const std::string& name,
-                                                    web::json::value::value_type type)
+            template <typename T> void document<T>::add_required_property(
+                const std::string& name,
+                web::json::value::value_type type)
             {
                 _properties.push_back({name, type});
             }
 
-            template <typename T>
-            T document<T>::build()
+            template <typename T> T document<T>::build()
             {
                 bsoncxx::builder::basic::document builder{};
                 T document;
@@ -60,7 +61,9 @@ namespace polls
 
                 for (auto& property : _properties) {
                     if (!_json.has_field(property.name)) {
-                        throw std::runtime_error{"missing property"};
+                        std::stringstream oss{};
+                        oss << "missing property: " << property.name;
+                        throw std::runtime_error{oss.str()};
                     }
                     auto val = _json[property.name];
                     if (val.type() != property.type) {

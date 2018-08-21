@@ -149,10 +149,14 @@ namespace polls
         all(std::int64_t skip = 0, std::int64_t limit = max_page_limit);
 
         static std::int64_t count();
+        static std::int64_t count(
+            bsoncxx::document::view_or_value filter,
+            mongocxx::options::count options = mongocxx::options::count{}
+        );
 
         static void create_index(
             bsoncxx::document::view_or_value keys,
-            mongocxx::options::index& options
+            mongocxx::options::index& options = mongocxx::options::index{}
         );
 
     protected:
@@ -377,6 +381,16 @@ namespace polls
     template <typename T> std::int64_t model<T>::count()
     {
         return T{}.collection().count({});
+    }
+
+    /*!
+     * \brief Count the number of documents matching the provided filter.
+     */
+    template <typename T> std::int64_t model<T>::count(
+        bsoncxx::document::view_or_value filter,
+        mongocxx::options::count options)
+    {
+        return T{}.collection().count(filter, options);
     }
 
     /*!

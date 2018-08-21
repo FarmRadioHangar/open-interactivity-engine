@@ -39,7 +39,7 @@ function* callPostLanguageSaga(action) {
       yield call([history, 'push'], '/languages');
     } else if (409 == response.status) {
       yield delay(350);
-      yield put(languagesActions.createLanguageError(`The language ${1} already exists.`));
+      yield put(languagesActions.createLanguageError(`Language ${1} exists already.`));
       action.reject();
     } else {
       yield delay(350);

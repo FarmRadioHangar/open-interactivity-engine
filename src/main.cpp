@@ -3,11 +3,12 @@
  *
  * \mainpage Main
  */
+#include <bsoncxx/builder/stream/document.hpp>
+#include <bsoncxx/json.hpp>
 #include <cpprest/asyncrt_utils.h>
 #include <cpprest/http_listener.h>
+#include <iomanip>
 #include <iostream>
-#include <bsoncxx/json.hpp>
-#include <bsoncxx/builder/stream/document.hpp>
 #include <regex>
 #include <string>
 #include <thread>
@@ -146,6 +147,23 @@ void post_language(polls::http::request request, polls::http::response response)
         builder.add_required_property("iso_code", json::value::value_type::String);
 
         auto document = builder.build();
+
+        auto filter = bsoncxx::builder::basic::make_document(
+            kvp("name", data["name"].as_string())
+        );
+
+        if (language::count(filter.view()) > 0) {
+            json::value json_data{};
+            json_data["error"]  = json::value::string("duplicate key");
+            json_data["status"] = json::value::number(409);
+            json_data["key"]    = json::value::string("name");
+            json_data["value"]  = json::value::string(data["name"].as_string());
+            response.set_status_code(409);
+            response.set_body(json_data);
+            response.send();
+            return;
+        }
+
         document.save();
 
         json::value json_data{};
