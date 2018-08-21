@@ -6,7 +6,8 @@
 #include <cpprest/asyncrt_utils.h>
 #include <cpprest/http_listener.h>
 #include <iostream>
-#include <mongocxx/instance.hpp>
+#include <bsoncxx/json.hpp>
+#include <bsoncxx/builder/stream/document.hpp>
 #include <regex>
 #include <string>
 #include <thread>
@@ -92,7 +93,7 @@ void delete_campaign(polls::http::request request, polls::http::response respons
 
 void post_campaign(polls::http::request request, polls::http::response response)
 {
-    request.with_json([&response](json::value data) 
+    request.with_json([&response](json::value data)
     {
         polls::utils::builder::document<campaign> builder(data);
         builder.add_required_property("name", json::value::value_type::String);
@@ -138,7 +139,7 @@ void delete_language(polls::http::request request, polls::http::response respons
 
 void post_language(polls::http::request request, polls::http::response response)
 {
-    request.with_json([&response](json::value data) 
+    request.with_json([&response](json::value data)
     {
         polls::utils::builder::document<language> builder(data);
         builder.add_required_property("name", json::value::value_type::String);
@@ -198,6 +199,15 @@ void get_content_item(polls::http::request request, polls::http::response respon
 int main()
 {
     mongocxx::instance instance{};
+
+    auto spec = bsoncxx::builder::stream::document{}
+        << "name" << 1
+        << bsoncxx::builder::stream::finalize;
+
+    mongocxx::options::index options{};
+    options.unique(true);
+
+    language::create_index(spec.view(), options);
 
     polls::http::server server{};
 

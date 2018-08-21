@@ -150,6 +150,11 @@ namespace polls
 
         static std::int64_t count();
 
+        static void create_index(
+            bsoncxx::document::view_or_value keys,
+            mongocxx::options::index& options
+        );
+
     protected:
         mongocxx::collection collection() const;
 
@@ -218,7 +223,7 @@ namespace polls
     }
 
     /*!
-     * \brief Get the document's data (in string format).
+     * \brief Get the document's data (as a string).
      *
      * \return the serialized string data associated with the document
      */
@@ -372,6 +377,23 @@ namespace polls
     template <typename T> std::int64_t model<T>::count()
     {
         return T{}.collection().count({});
+    }
+
+    /*!
+     * \brief Create an index over the collection for the provided keys with
+     * the provided options.
+     *
+     * \see https://docs.mongodb.com/manual/reference/method/db.collection.createIndex/
+     */
+    template <typename T>
+    void model<T>::create_index(
+        bsoncxx::document::view_or_value keys,
+        mongocxx::options::index& options)
+    {
+        T obj{};
+        mongocxx::collection model_collection = obj.collection();
+
+        model_collection.create_index(std::move(keys), options);
     }
 
     template <typename T> mongocxx::collection model<T>::collection() const
