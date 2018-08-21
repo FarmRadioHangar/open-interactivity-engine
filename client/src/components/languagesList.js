@@ -15,7 +15,7 @@ const LanguagesList = ({ languages, onReload }) => {
             const id = language['_id']['$oid'];
             return (
               <li className='list-group-item' key={id}>
-                <span>{language.name}</span>
+                <span>{language.name} ({language.isoCode})</span>
                 <Link to={`/languages/${id}/edit`}>Edit</Link>
                 <Link to={`/languages/${id}/delete`}>Delete</Link>
               </li>

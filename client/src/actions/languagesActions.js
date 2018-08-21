@@ -1,5 +1,6 @@
 import * as types from './actionTypes';
 import history from '../history';
+import * as utils from '../utils';
 
 export function fetchLanguages(offset, limit) {
   return { type: types.FETCH_LANGUAGES, offset, limit };
@@ -8,7 +9,7 @@ export function fetchLanguages(offset, limit) {
 export function fetchLanguagesDone(response) {
   return { 
     type: types.FETCH_LANGUAGES_DONE, 
-    items: response.languages,
+    items: response.languages.map(lang => utils.translKeys(lang, true)),
     count: response.count,
     total: response.total
   };

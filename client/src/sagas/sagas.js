@@ -26,7 +26,7 @@ function* getLanguagesSaga() {
 function* callPostLanguageSaga(action) {
   try {
     const { data } = action;
-    const response = yield call(api.post, 'languages', utils.underscoreKeys(data));
+    const response = yield call(api.post, 'languages', utils.translKeys(data));
     if (response.ok) {
       yield put(languagesActions.createLanguageDone(response));
       yield call(history.push, '/languages');
