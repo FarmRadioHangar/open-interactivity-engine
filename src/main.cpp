@@ -74,7 +74,11 @@ void get_campaigns(polls::http::request request, polls::http::response response)
 void get_campaigns_item(polls::http::request request, polls::http::response response)
 {
     auto document = campaign::get(request.get_uri_param(1));
-    response.set_body(document.data());
+
+    json::value json_data{};
+    json_data["campaign"] = json::value::parse(document.data());
+
+    response.set_body(json_data);
     response.send();
 }
 
@@ -113,7 +117,11 @@ void get_languages(polls::http::request request, polls::http::response response)
 void get_languages_item(polls::http::request request, polls::http::response response)
 {
     auto document = language::get(request.get_uri_param(1));
-    response.set_body(document.data());
+
+    json::value json_data{};
+    json_data["language"] = json::value::parse(document.data());
+
+    response.set_body(json_data);
     response.send();
 }
 
@@ -153,7 +161,11 @@ void get_audience(polls::http::request request, polls::http::response response)
 void get_audience_item(polls::http::request request, polls::http::response response)
 {
     auto document = audience::get(request.get_uri_param(1));
-    response.set_body(document.data());
+
+    json::value json_data{};
+    json_data["audience"] = json::value::parse(document.data());
+
+    response.set_body(json_data);
     response.send();
 }
 
@@ -169,7 +181,11 @@ void get_content(polls::http::request request, polls::http::response response)
 void get_content_item(polls::http::request request, polls::http::response response)
 {
     auto document = content::get(request.get_uri_param(1));
-    response.set_body(document.data());
+
+    json::value json_data{};
+    json_data["content"] = json::value::parse(document.data());
+
+    response.set_body(json_data);
     response.send();
 }
 

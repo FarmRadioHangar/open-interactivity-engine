@@ -85,7 +85,7 @@ namespace polls
         for (auto& value : _collection) {
             values.push_back(json::value::parse(value.data()));
         }
-        json::value obj;
+        json::value obj{};
         obj[T::mongodb_collection] = web::json::value::array(values);
         obj["count"] = count();
         obj["total"] = total();

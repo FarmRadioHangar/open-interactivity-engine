@@ -92,7 +92,7 @@ Interactive radio *campaigns* are schedulable and automated activities to exchan
 * Microsoft C++ REST SDK (Casablanca)
 * Build tool: CMake
 * Documentation: Doxygen
-* Tests: ?
+* Tests: Google Test
 
 ### Database
 * MongoDB
