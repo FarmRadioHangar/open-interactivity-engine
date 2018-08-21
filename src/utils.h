@@ -89,13 +89,9 @@ namespace polls
                         }
                     }
                     case web::json::value::value_type::Boolean:
-                    {
                         return value{b_bool{json.as_bool()}};
-                    }
-                  case web::json::value::value_type::String:
-                    {
+                    case web::json::value::value_type::String:
                         return value{b_utf8{json.as_string()}};
-                    }
                     case web::json::value::value_type::Object:
                     {
                         bsoncxx::builder::basic::document val{};
@@ -114,9 +110,7 @@ namespace polls
                     }
                     case web::json::value::value_type::Null:
                     default:
-                    {
                         return value{b_null{}};
-                    }
                 }
             }
         }
