@@ -35,7 +35,7 @@ class Api {
       })
       .then(json => {
         const { status, ok } = response;
-        return { payload: json, status, ok };
+        return { ...json, status, ok };
       });
   }
 
