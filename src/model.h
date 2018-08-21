@@ -293,6 +293,8 @@ namespace polls
         options.upsert(true);
 
         collection().replace_one(filter.view(), data->view(), options);
+
+        fetch();
     }
 
     /*!
