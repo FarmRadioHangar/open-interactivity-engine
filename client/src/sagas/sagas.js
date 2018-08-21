@@ -31,12 +31,16 @@ function* callPostLanguageSaga(action) {
   try {
     const { data } = action;
     const response = yield call(api.post, 'languages', utils.translKeys(data));
-    response.language = utils.translKeys(response.language, true);
     console.log(response);
     if (response.ok) {
+      response.language = utils.translKeys(response.language, true);
       yield delay(350);
       yield put(languagesActions.createLanguageDone());
       yield call([history, 'push'], '/languages');
+    } else if (409 == response.status) {
+      yield delay(350);
+      yield put(languagesActions.createLanguageError(`The language ${1} already exists.`));
+      action.reject();
     } else {
       yield delay(350);
       yield put(languagesActions.createLanguageError(`API error: ${response.error}`));
