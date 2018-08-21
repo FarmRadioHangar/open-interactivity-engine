@@ -41,6 +41,7 @@ const Main = () => (
       <Route exact path='/languages' component={Languages} />
       <Route exact path='/languages/page/:page' component={Languages} />
       <Route exact path='/languages/create' component={CreateLanguage} />
+      <Route exact path='/languages/:id/view' component={ShowLanguage} />
       <Route exact path='/languages/:id/edit' component={EditLanguage} />
       <Route exact path='/languages/:id/delete' component={DeleteLanguage} />
     </React.Fragment>
@@ -141,6 +142,15 @@ const DeleteLanguage = ({ match }) => {
     />
   );
 }
+
+const ShowLanguage = () => (
+  <div>
+    <h2>Show language</h2>
+    <div>
+      lang
+    </div>
+  </div>
+);
 
 ReactDOM.render(
   <Provider store={store}>

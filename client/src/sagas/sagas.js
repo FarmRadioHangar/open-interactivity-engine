@@ -29,7 +29,7 @@ function* callPostLanguageSaga(action) {
     const response = yield call(api.post, 'languages', utils.translKeys(data));
     if (response.ok) {
       yield put(languagesActions.createLanguageDone(response));
-      yield call(history.push, '/languages');
+      yield call([history, 'push'], '/languages');
     } else {
       yield put(languagesActions.createLanguageError(`API error: ${response.error}`));
     }
