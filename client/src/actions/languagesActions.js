@@ -1,29 +1,22 @@
 import * as types from './actionTypes';
-import history from '../history';
-import * as utils from '../utils';
 
 export function fetchLanguages(offset, limit) {
   return { type: types.FETCH_LANGUAGES, offset, limit };
 }
 
-export function fetchLanguagesDone(response) {
-  return { 
-    type: types.FETCH_LANGUAGES_DONE, 
-    items: response.languages.map(lang => utils.translKeys(lang, true)),
-    count: response.count,
-    total: response.total
-  };
+export function fetchLanguagesDone(items, count, total) {
+  return { type: types.FETCH_LANGUAGES_DONE, items, count, total };
 }
 
 export function fetchLanguagesError(error) {
   return { type: types.FETCH_LANGUAGES_ERROR, error };
 }
 
-export function createLanguage(data) {
-  return { type: types.CREATE_LANGUAGE, data };
+export function createLanguage(data, resolve, reject) {
+  return { type: types.CREATE_LANGUAGE, data, resolve, reject };
 }
 
-export function createLanguageDone(response) {
+export function createLanguageDone() {
   return { type: types.CREATE_LANGUAGE_DONE };
 }
 

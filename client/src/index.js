@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
+import PropTypes from 'prop-types'
+import { Provider, connect } from 'react-redux';
 import { Router, Route, Link, push } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import configureStore from './store/configureStore';
@@ -40,7 +41,7 @@ const Main = () => (
       <hr />
       <Route exact path='/languages' component={Languages} />
       <Route exact path='/languages/page/:page' component={Languages} />
-      <Route exact path='/languages/create' component={CreateLanguage} />
+      <Route exact path='/languages/create' component={CreateLanguageComponent} />
       <Route exact path='/languages/:id/view' component={ShowLanguage} />
       <Route exact path='/languages/:id/edit' component={EditLanguage} />
       <Route exact path='/languages/:id/delete' component={DeleteLanguage} />
@@ -58,54 +59,77 @@ const Languages = ({ match }) => {
   );
 }
 
-const CreateLanguage = () => (
-  <div>
-    <h2>Add language</h2>
-    <Formik
-      initialValues={{
-        name: '',
-        isoCode: ''
-      }}
-      validate={values => {
-        let errors = {};
-        if (!values.name) {
-          errors.name = 'This field is required.';
-        }
-        if (!values.isoCode) {
-          errors.isoCode = 'This field is required.';
-        }
-        return errors;
-      }}
-      onSubmit={(values) => {
-        store.dispatch(languagesActions.createLanguage(values));
-      }}
-      render={({ errors, touched, isSubmitting }) => {
-        return (
-          <React.Fragment>
-            {isSubmitting && (
-              <div>
-                Please wait...
-              </div>
-            )}
-            <Form>
-              <div>
-                <Field type='text' name='name' />
-                {touched.name && errors.name && <div>{errors.name}</div>}
-              </div>
-              <div>
-                <Field type='text' name='isoCode' />
-                {touched.isoCode && errors.isoCode && <div>{errors.isoCode}</div>}
-              </div>
-              <button type='submit' disabled={isSubmitting}>
-                Submit
-              </button>
-            </Form>
-          </React.Fragment>
-        );
-      }}
-    />
-  </div>
-);
+class CreateLanguage extends React.Component {
+  render() {
+    return (
+      <div>
+        {JSON.stringify(this.props.languages.error)}
+        <h2>Add language</h2>
+        <Formik
+          initialValues={{
+            name: '',
+            isoCode: ''
+          }}
+          validate={values => {
+            let errors = {};
+            if (!values.name) {
+              errors.name = 'This field is required.';
+            }
+            if (!values.isoCode) {
+              errors.isoCode = 'This field is required.';
+            }
+            return errors;
+          }}
+          onSubmit={(values, { setSubmitting }) => {
+            return new Promise((resolve, reject) => {
+              store.dispatch(languagesActions.createLanguage(values, resolve, reject));
+            }).then(() => {
+              console.log('fez');
+            }).catch(() => {
+              setSubmitting(false);
+            });
+          }}
+          render={({ errors, touched, isSubmitting }) => {
+            return (
+              <React.Fragment>
+                {isSubmitting && (
+                  <div>
+                    Please wait...
+                  </div>
+                )}
+                <Form>
+                  <div>
+                    <Field type='text' name='name' />
+                    {touched.name && errors.name && <div>{errors.name}</div>}
+                  </div>
+                  <div>
+                    <Field type='text' name='isoCode' />
+                    {touched.isoCode && errors.isoCode && <div>{errors.isoCode}</div>}
+                  </div>
+                  <button type='submit' disabled={isSubmitting}>
+                    Submit
+                  </button>
+                </Form>
+              </React.Fragment>
+            );
+          }}
+        />
+      </div>
+    );
+  }
+}
+
+CreateLanguage.propTypes = {
+  languages: PropTypes.object.isRequired
+};
+
+function mapStateToProps(state, ownProps) {
+  return {
+    languages: state.languages
+  };
+}
+
+const CreateLanguageComponent = connect(mapStateToProps)(CreateLanguage);
 
 const EditLanguage = () => (
   <div>

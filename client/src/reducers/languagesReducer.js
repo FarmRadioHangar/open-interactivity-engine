@@ -16,6 +16,15 @@ export default function(state = initialState.languages, action) {
       const { items, count, total } = action;
       return { ...state, items, count, total, error: false };
     }
+    case types.CREATE_LANGUAGE: {
+      return { ...state, error: false };
+    }
+    case types.CREATE_LANGUAGE_ERROR: {
+      return { ...state, error: action.error };
+    }
+    case types.CREATE_LANGUAGE_DONE: {
+      return { ...state, error: false };
+    }
     default: 
       return state;
   }
