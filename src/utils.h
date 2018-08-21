@@ -27,10 +27,10 @@ namespace polls
                 void add_required_property(const std::string& name, web::json::value::value_type type);
                 T build();
 
-            private:
-                void append(bsoncxx::builder::basic::document& builder, const std::string& key, const web::json::value json);
-                void append(bsoncxx::builder::basic::array& builder, const web::json::value json);
+            protected:
+                bsoncxx::types::value to_bson_value(const web::json::value& json);
 
+            private:
                 web::json::value      _json;
                 std::vector<property> _properties;
             };
@@ -66,95 +66,57 @@ namespace polls
                     if (val.type() != property.type) {
                         throw std::runtime_error{"type mismatch"};
                     }
-                    append(builder, property.name, val);
+                    builder.append(kvp(property.name, to_bson_value(val)));
                 }
 
                 document.set_data(bsoncxx::to_json(builder.extract()));
                 return document;
             }
 
-            template <typename T> void document<T>::append(
-                bsoncxx::builder::basic::document& builder,
-                const std::string& key,
-                const web::json::value json)
+            template <typename T>
+            bsoncxx::types::value document<T>::to_bson_value(const web::json::value& json)
             {
-                switch (json.type())
-                {
-                case web::json::value::value_type::Number:
-                    builder.append(
-                        kvp(key, json.is_integer() ? json.as_integer()
-                                                   : json.as_double()));
-                    break;
-                case web::json::value::value_type::Boolean:
-                    builder.append(kvp(key, json.as_bool()));
-                    break;
-                case web::json::value::value_type::String:
-                    builder.append(kvp(key, json.as_string()));
-                    break;
-                case web::json::value::value_type::Object:
-                {
-                    bsoncxx::builder::basic::document val{};
-                    for (auto& doc : json.as_object()) {
-                        append(val, doc.first, doc.second);
-                    }
-                    builder.append(kvp(key, val));
-                    break;
-                }
-                case web::json::value::value_type::Array:
-                {
-                    bsoncxx::builder::basic::array docs{};
-                    for (auto& doc : json.as_array()) {
-                        append(docs, doc);
-                    }
-                    builder.append(kvp(key, docs));
-                    break;
-                }
-                case web::json::value::value_type::Null:
-                    builder.append(
-                        kvp(key, bsoncxx::builder::basic::make_document()));
-                default:
-                    ;
-                }
-            }
+                using namespace bsoncxx::types;
 
-            template <typename T> void document<T>::append(
-                bsoncxx::builder::basic::array& builder,
-                const web::json::value json)
-            {
                 switch (json.type())
                 {
-                case web::json::value::value_type::Number:
-                    builder.append(json.is_integer() ? json.as_integer()
-                                                     : json.as_double());
-                    break;
-                case web::json::value::value_type::Boolean:
-                    builder.append(json.as_bool());
-                    break;
-                case web::json::value::value_type::String:
-                    builder.append(json.as_string());
-                    break;
-                case web::json::value::value_type::Object:
-                {
-                    bsoncxx::builder::basic::document val{};
-                    for (auto& doc : json.as_object()) {
-                        append(val, doc.first, doc.second);
+                    case web::json::value::value_type::Number:
+                    {
+                        if (json.is_integer()) {
+                            return value{b_int64{json.as_integer()}};
+                        } else {
+                            return value{b_double{json.as_double()}};
+                        }
                     }
-                    builder.append(val);
-                    break;
-                }
-                case web::json::value::value_type::Array:
-                {
-                    bsoncxx::builder::basic::array docs{};
-                    for (auto& doc : json.as_array()) {
-                        append(docs, doc);
+                    case web::json::value::value_type::Boolean:
+                    {
+                        return value{b_bool{json.as_bool()}};
                     }
-                    builder.append(docs);
-                    break;
-                }
-                case web::json::value::value_type::Null:
-                    builder.append(bsoncxx::builder::basic::make_document());
-                default:
-                    ;
+                  case web::json::value::value_type::String:
+                    {
+                        return value{b_utf8{json.as_string()}};
+                    }
+                    case web::json::value::value_type::Object:
+                    {
+                        bsoncxx::builder::basic::document val{};
+                        for (auto& doc : json.as_object()) {
+                            val.append(kvp(doc.first, to_bson_value(doc.second)));
+                        }
+                        return value{b_document{val.extract()}};
+                    }
+                    case web::json::value::value_type::Array:
+                    {
+                        bsoncxx::builder::basic::array docs{};
+                        for (auto& doc : json.as_array()) {
+                            docs.append(to_bson_value(doc));
+                        }
+                        return value{b_array{docs.extract()}};
+                    }
+                    case web::json::value::value_type::Null:
+                    default:
+                    {
+                        return value{b_null{}};
+                    }
                 }
             }
         }
