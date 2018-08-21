@@ -100,7 +100,10 @@ void post_campaign(polls::http::request request, polls::http::response response)
         auto document = builder.build();
         document.save();
 
-        response.set_body(document.data());
+        json::value json_data{};
+        json_data["campaign"] = json::value::parse(document.data());
+
+        response.set_body(json_data);
         response.send();
     });
 }
@@ -144,7 +147,10 @@ void post_language(polls::http::request request, polls::http::response response)
         auto document = builder.build();
         document.save();
 
-        response.set_body(document.data());
+        json::value json_data{};
+        json_data["language"] = json::value::parse(document.data());
+
+        response.set_body(json_data);
         response.send();
     });
 }
