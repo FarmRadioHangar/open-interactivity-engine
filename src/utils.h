@@ -1,5 +1,7 @@
 /*!
  * \file utils.h
+ *
+ * \todo rename to builder.h?
  */
 #pragma once
 
@@ -15,8 +17,8 @@ namespace polls
             template <typename T> class document
             {
             public:
-                document(const web::json::value& json);
-                document(const std::string& data);
+                explicit document(const web::json::value& json);
+                explicit document(const std::string& data);
 
                 ~document() = default;
                 document(const document&) = delete;
