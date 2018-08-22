@@ -27,6 +27,10 @@ namespace polls
 
     /*!
      * \class collection
+     *
+     * \brief A subset of documents from a MongoDB collection.
+     *
+     * \todo rename to "page"?
      */
     template <typename T, typename Collection = std::vector<T>>
     class collection
@@ -57,7 +61,7 @@ namespace polls
 
     /*!
      * \brief Return the number of documents in this collection. This number
-     * may be less than the number of documents available in the underlying
+     * is often less than the number of documents available in the underlying
      * MongoDB data store collection.
      *
      * \sa total
@@ -77,6 +81,8 @@ namespace polls
 
     /*!
      * \brief Return a JSON object representation of the collection.
+     *
+     * \todo rename to "to_json"?
      */
     template <typename T, typename Collection>
     json::value collection<T, Collection>::json() const
@@ -122,7 +128,7 @@ namespace polls
     template <typename T> class model
     {
     public:
-        static constexpr std::int64_t max_page_limit = 60;
+        static constexpr std::int64_t default_page_limit = 60;
 
         model();
         model(const std::string& db, const std::string& collection);
@@ -146,7 +152,7 @@ namespace polls
         template <template <typename, typename> class Container = std::vector,
                   template <typename> class Allocator = std::allocator>
         static polls::collection<T, Container<T, Allocator<T>>>
-        all(std::int64_t skip = 0, std::int64_t limit = max_page_limit);
+        all(std::int64_t skip = 0, std::int64_t limit = default_page_limit);
 
         static std::int64_t count();
         static std::int64_t count(
@@ -222,6 +228,8 @@ namespace polls
      * \brief Set the document's data.
      *
      * \param data the string data
+     *
+     * \todo store data internally in json format instead?
      */
     template <typename T> void model<T>::set_data(std::string&& data)
     {
@@ -231,7 +239,7 @@ namespace polls
     /*!
      * \brief Get the document's data (as a string).
      *
-     * \return the serialized string data associated with the document
+     * \return the document's data serialized to a string
      */
     template <typename T> std::string model<T>::data() const
     {
@@ -339,12 +347,14 @@ namespace polls
     }
 
     /*!
-     * \brief Get all documents from a collection.
+     * \brief Get a subset of documents from a MongoDB collection.
      *
-     * \param skip offset from where MongoDB begins returning results
+     * \param skip  offset from where MongoDB begins returning results
      * \param limit the maximum number of documents to return
      *
-     * \return a STL container of documents
+     * \return a STL container with a collection of documents
+     *
+     * \todo rename to "page"?
      */
     template <typename T>
     template <template <typename, typename> class Container,
@@ -377,8 +387,8 @@ namespace polls
     }
 
     /*!
-     * \brief Return the \a total number of documents available in this
-     * collection.
+     * \brief Return the \a total number of documents available in the MongoDB
+     * collection to which this model is linked.
      */
     template <typename T> std::int64_t model<T>::count()
     {

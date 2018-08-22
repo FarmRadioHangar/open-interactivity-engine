@@ -6,7 +6,7 @@ The goal of this project is to create a modular and open architecture for *inter
 * Chatbots
 * Speech-to-text
 
-## Plan of action
+## Concept note
 
 In our terminology, a *channel* is a means for uni- or bidirectional communication with an audience. We think of these channels as interfaces whose operations are determined by the capabilities of the channel.
 ```d
@@ -85,7 +85,7 @@ Interactive radio *campaigns* are schedulable and automated activities to exchan
 
 *Features* are configurable units of functionality that can be added to campaigns. A channel provides the communication link between the audience and a campaign feature. Multiple channels may be available for one feature.
 
-## Project structure
+## Plan of action
 
 ### Service layer
 * Modern C++ (C++14)

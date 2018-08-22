@@ -14,7 +14,7 @@ namespace polls
         {
             struct property
             {
-                std::string name;
+                std::string                  name;
                 web::json::value::value_type type;
             };
 
@@ -32,7 +32,7 @@ namespace polls
 
             private:
                 web::json::value      _json;
-                std::vector<property> _properties;
+                std::vector<property> _properties;   // \todo use a map instead of vector?
             };
 
             template <typename T> document<T>::document(web::json::value json)
@@ -58,7 +58,7 @@ namespace polls
                 T document;
 
                 if (!_json.is_object()) {
-                    throw std::runtime_error{"request is not a json object"};
+                    throw std::runtime_error{"json data must be an object"};
                 }
 
                 for (auto& property : _properties) {
@@ -78,8 +78,8 @@ namespace polls
                 return document;
             }
 
-            template <typename T>
-            bsoncxx::types::value document<T>::to_bson_value(const web::json::value& json)
+            template <typename T> bsoncxx::types::value 
+            document<T>::to_bson_value(const web::json::value& json)
             {
                 using namespace bsoncxx::types;
 
