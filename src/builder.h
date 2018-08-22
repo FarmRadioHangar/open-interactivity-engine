@@ -61,17 +61,17 @@ namespace polls
                 _properties.insert({name, type});
             }
 
-            template <typename T>
-            T document<T>::build()
+            template <typename T> T document<T>::build()
             {
                 bsoncxx::builder::basic::document builder{};
-                T document;
+                T document{};
 
                 if (!_json.is_object()) {
                     throw std::runtime_error{"json data must be an object"};
                 }
 
-                for (auto& prop : _properties) {
+                for (auto& prop : _properties) 
+                {
                     if (!_json.has_field(prop.first)) {
                         throw std::runtime_error{"missing property: " + prop.first};
                     }
