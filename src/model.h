@@ -29,7 +29,7 @@ namespace polls
     /*!
      * \class collection
      *
-     * \brief A subset of documents from a MongoDB collection.
+     * \brief A subset of documents extracted from a MongoDB collection.
      *
      * \todo rename to "page"?
      */
@@ -37,24 +37,23 @@ namespace polls
     class collection
     {
     public:
-        collection(Collection&& container, const std::int64_t total);
+        collection(Collection&& container, const std::size_t total);
 
-        std::int64_t count() const;
-        std::int64_t total() const;
+        std::size_t count() const;
+        std::size_t total() const;
 
-        json::value json() const;
+        json::value to_json() const;
 
     private:
-        Collection   _collection;
-        std::int64_t _total;
+        Collection  _collection;
+        std::size_t _total;
     };
 
     /*!
      * \brief Default constructor
      */
     template <typename T, typename Collection>
-    collection<T, Collection>::collection(Collection&& collection,
-                                          const std::int64_t total)
+    collection<T, Collection>::collection(Collection&& collection, const std::size_t total)
       : _collection{std::move(collection)},
         _total{total}
     {
@@ -69,7 +68,7 @@ namespace polls
      * \sa total
      */
     template <typename T, typename Collection>
-    std::int64_t collection<T, Collection>::count() const
+    std::size_t collection<T, Collection>::count() const
     {
         return _collection.size();
     }
@@ -82,15 +81,15 @@ namespace polls
      * collection accommodating this subset, at the time it was generated.
      */
     template <typename T, typename Collection>
-    std::int64_t collection<T, Collection>::total() const { return _total; }
+    std::size_t collection<T, Collection>::total() const { return _total; }
 
     /*!
-     * \brief Return a JSON object representation of the collection.
+     * \brief Create and return a JSON object representation of the collection.
      *
-     * \todo rename to "to_json"?
+     * \returns a json object with an array of documents
      */
     template <typename T, typename Collection>
-    json::value collection<T, Collection>::json() const
+    json::value collection<T, Collection>::to_json() const
     {
         std::vector<json::value> values;
         for (auto& value : _collection) {
@@ -387,7 +386,8 @@ namespace polls
         }
 
         return polls::collection<T, Container<T, Allocator<T>>>{
-            std::move(container), collection.count({})
+            std::move(container),
+            static_cast<std::size_t>(collection.count({}))
         };
     }
 
