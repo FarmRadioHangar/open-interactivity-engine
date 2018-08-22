@@ -110,6 +110,8 @@ namespace polls
 
         /*!
          * \brief Run the server on a specific port.
+         *
+         * \param port the port number
          */
         void server::run(const uint16_t port)
         {

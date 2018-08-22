@@ -9,6 +9,7 @@
 #include <bsoncxx/types/value.hpp>
 #include <cpprest/json.h>
 #include <map>
+#include <set>
 
 namespace polls
 {
@@ -16,6 +17,12 @@ namespace polls
     {
         namespace builder
         {
+            /*!
+             * \class document
+             *
+             * \brief Utility class for creating polls::model documents from
+             * JSON data.
+             */
             template <typename T> class document
             {
             public:
@@ -29,6 +36,8 @@ namespace polls
                 void add_required_property(const std::string& name,
                     web::json::value::value_type type);
 
+                void add_unique_constraint(const std::string& key);
+
                 T build();
 
             protected:
@@ -37,29 +46,55 @@ namespace polls
             private:
                 using prop_map = std::map<std::string, web::json::value::value_type>;
 
-                web::json::value _json;
-                prop_map         _properties;
+                web::json::value      _json;
+                prop_map              _properties;
+                std::set<std::string> _keys;
             };
 
+            /*!
+             * \brief todo
+             */
             template <typename T>
             document<T>::document(const web::json::value& json)
-              : _json{json}
+              : _json{json},
+                _properties{},
+                _keys{}
             {
             }
 
+            /*!
+             * \brief todo
+             */
             template <typename T>
             document<T>::document(const std::string& data)
-              : _json{web::json::value::parse(data)}
+              : _json{web::json::value::parse(data)},
+                _properties{},
+                _keys{}
             {
             }
 
+            /*!
+             * \brief todo
+             */
             template <typename T> void document<T>::add_required_property(
-                const std::string& name,
+                const std::string&           name,
                 web::json::value::value_type type)
             {
                 _properties.insert({name, type});
             }
 
+            /*!
+             * \brief todo
+             */
+            template <typename T>
+            void document<T>::add_unique_constraint(const std::string& key)
+            {
+                _keys.insert(key);
+            }
+
+            /*!
+             * \brief todo
+             */
             template <typename T> T document<T>::build()
             {
                 bsoncxx::builder::basic::document builder{};
@@ -69,15 +104,28 @@ namespace polls
                     throw std::runtime_error{"json data must be an object"};
                 }
 
-                for (auto& prop : _properties) 
+                for (auto& prop : _properties)
                 {
                     if (!_json.has_field(prop.first)) {
                         throw std::runtime_error{"missing property: " + prop.first};
                     }
                     if (_json[prop.first].type() != prop.second) {
-                        throw std::runtime_error{"type mismatch"};
+                        throw std::runtime_error{"type mismatch for key '" + prop.first + "'"};
                     }
                     builder.append(kvp(prop.first, to_bson_value(prop.second)));
+                }
+
+                for (auto& key : _keys)
+                {
+                    if (_json.has_field(key))
+                    {
+                        auto filter = bsoncxx::builder::basic::make_document(
+                            kvp(key, to_bson_value(_json[key]))
+                        );
+                        if (T::count(filter.view()) > 0) {
+                            throw std::runtime_error{"unique constraint violation for key: " + key};
+                        }
+                    }
                 }
 
                 document.set_data(bsoncxx::to_json(builder.extract()));

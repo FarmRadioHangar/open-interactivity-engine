@@ -112,6 +112,8 @@ namespace polls
             /*!
              * \brief Configure the server to listen on the given port for
              * incoming connections.
+             *
+             * \param port the port number
              */
             void set_port(const uint16_t port) { _port = port; };
 

@@ -143,26 +143,25 @@ void post_language(polls::http::request request, polls::http::response response)
     request.with_json([&response](json::value data)
     {
         polls::utils::builder::document<language> builder{data};
+
         builder.add_required_property("name", json::value::value_type::String);
         builder.add_required_property("iso_code", json::value::value_type::String);
 
+        builder.add_unique_constraint("name");
+
         auto document = builder.build();
 
-        auto filter = bsoncxx::builder::basic::make_document(
-            kvp("name", data["name"].as_string())
-        );
-
-        if (language::count(filter.view()) > 0) {
-            json::value json_data{};
-            json_data["error"]  = json::value::string("duplicate key");
-            json_data["status"] = json::value::number(409);
-            json_data["key"]    = json::value::string("name");
-            json_data["value"]  = json::value::string(data["name"].as_string());
-            response.set_status_code(409);
-            response.set_body(json_data);
-            response.send();
-            return;
-        }
+        //if (language::count(filter.view()) > 0) {
+        //    json::value json_data{};
+        //    json_data["error"]  = json::value::string("duplicate key");
+        //    json_data["status"] = json::value::number(409);
+        //    json_data["key"]    = json::value::string("name");
+        //    json_data["value"]  = json::value::string(data["name"].as_string());
+        //    response.set_status_code(409);
+        //    response.set_body(json_data);
+        //    response.send();
+        //    return;
+        //}
 
         document.save();
 
