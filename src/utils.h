@@ -21,8 +21,11 @@ namespace polls
             template <typename T> class document
             {
             public:
-                document(web::json::value json);
+                document(const web::json::value& json);
                 document(const std::string& data);
+                ~document() = default;
+                document(const document&) = delete;
+                document& operator=(const document&) = delete;
 
                 void add_required_property(const std::string& name, web::json::value::value_type type);
                 T build();
@@ -35,7 +38,7 @@ namespace polls
                 std::vector<property> _properties;   // \todo use a map instead of vector?
             };
 
-            template <typename T> document<T>::document(web::json::value json)
+            template <typename T> document<T>::document(const web::json::value& json)
               : _json{json}
             {
             }
