@@ -20,10 +20,6 @@
 
 namespace polls
 {
-    using namespace web;
-    using namespace web::http;
-    using namespace web::http::client;
-
     using bsoncxx::builder::basic::kvp;
 
     /*!
@@ -42,7 +38,7 @@ namespace polls
         std::size_t count() const;
         std::size_t total() const;
 
-        json::value to_json() const;
+        web::json::value to_json() const;
 
     private:
         Collection  _collection;
@@ -57,7 +53,7 @@ namespace polls
       : _collection{std::move(collection)},
         _total{total}
     {
-        //assert(total >= collection.size());
+        assert(total >= collection.size());
     }
 
     /*!
@@ -75,27 +71,30 @@ namespace polls
 
     /*!
      * \brief The total number of documents in the MongoDB collection this
-     * subset is linked to.
+     * subset originates from.
      *
      * \returns the \a total number of documents available in the MongoDB
      * collection accommodating this subset, at the time it was generated.
      */
     template <typename T, typename Collection>
-    std::size_t collection<T, Collection>::total() const { return _total; }
+    std::size_t collection<T, Collection>::total() const
+    {
+        return _total;
+    }
 
     /*!
      * \brief Create and return a JSON object representation of the collection.
      *
-     * \returns a json object with an array of documents
+     * \returns a json object holding an array of documents
      */
     template <typename T, typename Collection>
-    json::value collection<T, Collection>::to_json() const
+    web::json::value collection<T, Collection>::to_json() const
     {
-        std::vector<json::value> values;
+        std::vector<web::json::value> values;
         for (auto& value : _collection) {
-            values.push_back(json::value::parse(value.data()));
+            values.push_back(web::json::value::parse(value.data()));
         }
-        json::value obj{};
+        web::json::value obj{};
         obj[T::mongodb_collection] = web::json::value::array(values);
         obj["count"] = count();
         obj["total"] = total();
