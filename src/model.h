@@ -5,6 +5,7 @@
 
 #include <bsoncxx/exception/exception.hpp>
 #include <bsoncxx/json.hpp>
+#include <cassert>
 #include <cpprest/asyncrt_utils.h>
 #include <cpprest/http_listener.h>
 #include <iostream>
@@ -57,6 +58,7 @@ namespace polls
       : _collection{std::move(collection)},
         _total{total}
     {
+        //assert(total >= collection.size());
     }
 
     /*!
@@ -73,8 +75,11 @@ namespace polls
     }
 
     /*!
-     * \brief Return the \a total number of documents in the underlying MongoDB
-     * collection from where this subset was generated.
+     * \brief The total number of documents in the MongoDB collection this
+     * subset is linked to.
+     *
+     * \returns the \a total number of documents available in the MongoDB
+     * collection accommodating this subset, at the time it was generated.
      */
     template <typename T, typename Collection>
     std::int64_t collection<T, Collection>::total() const { return _total; }
@@ -396,7 +401,8 @@ namespace polls
     }
 
     /*!
-     * \brief Count the number of documents matching the provided filter.
+     * \brief Count the number of documents matching the provided filter in the
+     * MongoDB collection to which this model is linked.
      */
     template <typename T> std::int64_t model<T>::count(
         bsoncxx::document::view_or_value filter,
