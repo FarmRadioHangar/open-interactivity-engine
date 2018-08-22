@@ -69,7 +69,7 @@ void get_campaigns(polls::http::request request, polls::http::response response)
     auto skip = request.get_query_param<int64_t>("skip", 0);
     auto limit = request.get_query_param<int64_t>("limit", 10);
 
-    response.set_body(campaign::all(skip, limit).json());
+    response.set_body(campaign::all(skip, limit).to_json());
     response.send();
 }
 
@@ -115,7 +115,7 @@ void get_languages(polls::http::request request, polls::http::response response)
     auto skip = request.get_query_param<int64_t>("skip", 0);
     auto limit = request.get_query_param<int64_t>("limit", 10);
 
-    response.set_body(language::all(skip, limit).json());
+    response.set_body(language::all(skip, limit).to_json());
     response.send();
 }
 
@@ -179,7 +179,7 @@ void get_audience(polls::http::request request, polls::http::response response)
     auto skip = request.get_query_param<int64_t>("skip", 0);
     auto limit = request.get_query_param<int64_t>("limit", 10);
 
-    response.set_body(audience::all(skip, limit).json());
+    response.set_body(audience::all(skip, limit).to_json());
     response.send();
 }
 
@@ -199,7 +199,7 @@ void get_content(polls::http::request request, polls::http::response response)
     auto skip = request.get_query_param<int64_t>("skip", 0);
     auto limit = request.get_query_param<int64_t>("limit", 10);
 
-    response.set_body(content::all(skip, limit).json());
+    response.set_body(content::all(skip, limit).to_json());
     response.send();
 }
 
