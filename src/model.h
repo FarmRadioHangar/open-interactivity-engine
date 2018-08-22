@@ -173,7 +173,9 @@ namespace polls
     /*!
      * \brief Default constructor
      */
-    template <typename T> model<T>::model() : _client{mongocxx::uri{}} {}
+    template <typename T> model<T>::model() : _client{mongocxx::uri{}}
+    {
+    }
 
     /*!
      * \brief Create a MongoDB document linked to a database and a collection.

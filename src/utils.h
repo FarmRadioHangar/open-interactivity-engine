@@ -37,11 +37,13 @@ namespace polls
 
             template <typename T> document<T>::document(web::json::value json)
               : _json{json}
-            {}
+            {
+            }
 
             template <typename T> document<T>::document(const std::string& data)
               : _json{web::json::value::parse(data)}
-            {}
+            {
+            }
 
             template <typename T> void document<T>::add_required_property(
                 const std::string& name,

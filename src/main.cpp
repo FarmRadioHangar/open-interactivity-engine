@@ -142,7 +142,7 @@ void post_language(polls::http::request request, polls::http::response response)
 {
     request.with_json([&response](json::value data)
     {
-        polls::utils::builder::document<language> builder(data);
+        polls::utils::builder::document<language> builder{data};
         builder.add_required_property("name", json::value::value_type::String);
         builder.add_required_property("iso_code", json::value::value_type::String);
 
