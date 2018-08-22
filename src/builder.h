@@ -1,12 +1,14 @@
 /*!
- * \file utils.h
- *
- * \todo rename to builder.h?
+ * \file builder.h
  */
 #pragma once
 
-#include <cpprest/json.h>
+#include <bsoncxx/builder/basic/array.hpp>
+#include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/json.hpp>
+#include <bsoncxx/types/value.hpp>
+#include <cpprest/json.h>
+#include <map>
 
 namespace polls
 {
@@ -71,12 +73,9 @@ namespace polls
 
                 for (auto& prop : _properties) {
                     if (!_json.has_field(prop.first)) {
-                        std::stringstream oss{};
-                        oss << "missing property: " << prop.first;
-                        throw std::runtime_error{oss.str()};
+                        throw std::runtime_error{"missing property: " + prop.first};
                     }
-                    auto val = _json[prop.first];
-                    if (val.type() != prop.second) {
+                    if (_json[prop.first].type() != prop.second) {
                         throw std::runtime_error{"type mismatch"};
                     }
                     builder.append(kvp(prop.first, to_bson_value(prop.second)));
