@@ -53,8 +53,7 @@ namespace polls
             {
             }
 
-            template <typename T>
-            void document<T>::add_required_property(
+            template <typename T> void document<T>::add_required_property(
                 const std::string& name,
                 web::json::value::value_type type)
             {
