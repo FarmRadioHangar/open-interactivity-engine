@@ -13,8 +13,8 @@ namespace polls
             }
 
             key_validation_error::key_validation_error(error_type type, const std::string& message, const std::string& key)
-              : error(type, message),
-                _key(key)
+              : error{type, message},
+                _key{key}
             {
             }
         }
