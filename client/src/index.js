@@ -4,11 +4,15 @@ import { Provider } from 'react-redux';
 import { Route, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
+import { rootSaga } from './sagas/sagas';
+import sagaMiddleware from './sagas/sagaMiddleware';
 import configureStore from './store/configureStore';
 import history from './history';
 import * as languagesActions from './actions/languagesActions';
 
 const store = configureStore();
+
+sagaMiddleware.run(rootSaga);
 
 const Main = () => (
   <div>
