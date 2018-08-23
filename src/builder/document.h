@@ -157,7 +157,7 @@ namespace polls
                     case web::json::value::value_type::Object:
                     {
                         bsoncxx::builder::basic::document builder{};
-                        for (auto& keyval : json.as_object()) {
+                        for (const auto& keyval : json.as_object()) {
                             builder.append(kvp(keyval.first, to_bson_value(keyval.second)));
                         }
                         return value{b_document{builder.extract()}};
@@ -165,7 +165,7 @@ namespace polls
                     case web::json::value::value_type::Array:
                     {
                         bsoncxx::builder::basic::array builder{};
-                        for (auto& doc : json.as_array()) {
+                        for (const auto& doc : json.as_array()) {
                             builder.append(to_bson_value(doc));
                         }
                         return value{b_array{builder.extract()}};
