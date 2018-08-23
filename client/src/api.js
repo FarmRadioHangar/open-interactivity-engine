@@ -1,6 +1,7 @@
 class Api {
 
   get() {
+    throw 'xyz';
   }
 
   post() {
