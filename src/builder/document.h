@@ -21,8 +21,8 @@ namespace polls
             /*!
              * \class document
              *
-             * \brief Utility class for creating polls::model documents from
-             * JSON data.
+             * \brief Utility class for creating a MongoDB document from a JSON
+             * object.
              */
             template <typename T> class document
             {
