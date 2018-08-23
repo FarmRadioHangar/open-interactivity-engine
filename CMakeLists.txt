@@ -18,7 +18,7 @@ find_package(libmongocxx REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(cpprestsdk REQUIRED)
 
-add_executable(polls src/main.cpp src/server.cpp src/model.cpp src/builder.cpp src/builder/exception.cpp)
+add_executable(polls src/main.cpp src/server.cpp src/model.cpp src/builder/document.cpp src/builder/exception.cpp)
 
 include_directories(${LIBMONGOCXX_INCLUDE_DIR})
 include_directories(${LIBBSONCXX_INCLUDE_DIR})

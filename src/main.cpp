@@ -15,7 +15,7 @@
 #include <vector>
 #include "model.h"
 #include "server.h"
-#include "builder.h"
+#include "builder/document.h"
 
 using namespace web;
 using namespace web::http;

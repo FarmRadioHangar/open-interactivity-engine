@@ -1,5 +1,5 @@
 /*!
- * \file builder.h
+ * \file document.h
  */
 #pragma once
 
@@ -10,7 +10,7 @@
 #include <cpprest/json.h>
 #include <map>
 #include <set>
-#include "builder/exception.h"
+#include "exception.h"
 
 namespace polls
 {
