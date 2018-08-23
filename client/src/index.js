@@ -1,9 +1,12 @@
+import 'babel-polyfill';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { Route, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
+import { Field, reduxForm } from 'redux-form'
 import { rootSaga } from './sagas/sagas';
 import sagaMiddleware from './sagas/sagaMiddleware';
 import configureStore from './store/configureStore';
@@ -45,10 +48,41 @@ const Main = () => (
   </div>
 );
 
+const LanguageForm = ({ handleSubmit }) => {
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="firstName">First Name</label>
+        <Field name="firstName" component="input" type="text" />
+      </div>
+      <div>
+        <label htmlFor="lastName">Last Name</label>
+        <Field name="lastName" component="input" type="text" />
+      </div>
+      <div>
+        <label htmlFor="email">Email</label>
+        <Field name="email" component="input" type="email" />
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+
+const LanguageFormComponent = reduxForm({ 
+  form: 'language' 
+})(LanguageForm);
+
 const Languages = ({ match }) => {
   console.log(JSON.stringify(match));
   return (
     <div>
+      <div>
+        <LanguageFormComponent 
+          onSubmit={() => {
+            console.log('on submit');
+          }}
+        />
+      </div>
       <div>
         Languages
       </div>
