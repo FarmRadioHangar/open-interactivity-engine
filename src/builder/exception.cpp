@@ -6,7 +6,7 @@ namespace polls
     {
         namespace builder
         {
-            error::error(error_type type, const std::string& message) 
+            error::error(error_type type, const std::string& message)
               : std::runtime_error{message},
                 _type{type}
             {
