@@ -37,10 +37,10 @@ namespace polls
                 void add_required_property(const std::string& name, web::json::value::value_type type);
                 void add_unique_constraint(const std::string& key);
 
-                T build();
+                T build() const;
 
             protected:
-                bsoncxx::types::value to_bson_value(const web::json::value& json);
+                bsoncxx::types::value to_bson_value(const web::json::value& json) const;
 
             private:
                 using prop_map = std::map<std::string, web::json::value::value_type>;
@@ -94,7 +94,7 @@ namespace polls
             /*!
              * \brief todo
              */
-            template <typename T> T document<T>::build()
+            template <typename T> T document<T>::build() const
             {
                 bsoncxx::builder::basic::document builder{};
 
@@ -104,7 +104,7 @@ namespace polls
                         "JSON data must be an object"};
                 }
 
-                for (auto& prop : _properties)
+                for (const auto& prop : _properties)
                 {
                     if (!_json.has_field(prop.first)) {
                         throw builder::key_validation_error{
@@ -112,21 +112,21 @@ namespace polls
                             "Missing property: " + prop.first,
                             prop.first};
                     }
-                    if (_json[prop.first].type() != prop.second) {
+                    if (_json.at(prop.first).type() != prop.second) {
                         throw builder::key_validation_error{
                             builder::error_type::type_mismatch,
                             "Type mismatch for key '" + prop.first + "'",
                             prop.first};
                     }
-                    builder.append(kvp(prop.first, to_bson_value(prop.second)));
+                    builder.append(kvp(prop.first, to_bson_value(_json.at(prop.first))));
                 }
 
-                for (auto& key : _unique_keys)
+                for (const auto& key : _unique_keys)
                 {
                     if (_json.has_field(key))
                     {
                         auto filter = bsoncxx::builder::basic::make_document(
-                            kvp(key, to_bson_value(_json[key]))
+                            kvp(key, to_bson_value(_json.at(key)))
                         );
                         if (T::count(filter.view()) > 0) {
                             throw builder::key_validation_error{
@@ -143,7 +143,7 @@ namespace polls
             }
 
             template <typename T> bsoncxx::types::value
-            document<T>::to_bson_value(const web::json::value& json)
+            document<T>::to_bson_value(const web::json::value& json) const
             {
                 using namespace bsoncxx::types;
 

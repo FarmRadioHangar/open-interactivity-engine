@@ -163,6 +163,8 @@ void post_language(polls::http::request request, polls::http::response response)
         //    return;
         //}
 
+        std::cout << document.data() << std::endl;
+
         document.save();
 
         json::value json_data{};
