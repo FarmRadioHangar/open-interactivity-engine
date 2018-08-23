@@ -11,7 +11,7 @@ import { rootSaga } from './sagas/sagas';
 import sagaMiddleware from './sagas/sagaMiddleware';
 import configureStore from './store/configureStore';
 import history from './history';
-import * as languagesActions from './actions/languagesActions';
+import * as languagesActions from './actions/languages';
 
 const store = configureStore();
 
@@ -50,7 +50,7 @@ const Main = () => (
 
 const LanguageForm = ({ handleSubmit }) => {
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(languagesActions.createLanguageAction)}>
       <div>
         <label htmlFor="firstName">First Name</label>
         <Field name="firstName" component="input" type="text" />
