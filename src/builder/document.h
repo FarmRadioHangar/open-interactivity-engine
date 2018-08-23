@@ -27,7 +27,7 @@ namespace polls
             template <typename T> class document
             {
             public:
-                explicit document(const web::json::value& json);
+                explicit document(web::json::value&& json);
                 explicit document(const std::string& data);
 
                 ~document() = default;
@@ -51,18 +51,22 @@ namespace polls
             };
 
             /*!
-             * \brief todo
+             * \brief Create a builder from a JSON object.
+             *
+             * \param json - todo
              */
             template <typename T>
-            document<T>::document(const web::json::value& json)
-              : _json{json},
+            document<T>::document(web::json::value&& json)
+              : _json{std::move(json)},
                 _properties{},
                 _unique_keys{}
             {
             }
 
             /*!
-             * \brief todo
+             * \brief Create a builder from a string.
+             *
+             * \param data - serialized JSON data
              */
             template <typename T>
             document<T>::document(const std::string& data)
@@ -74,17 +78,23 @@ namespace polls
 
             /*!
              * \brief todo
+             *
+             * \param name - todo
+             * \param type - todo
+             * \param required - whether this property is required or not
              */
             template <typename T> void document<T>::add_property(
                 const std::string&                 name,
                 const web::json::value::value_type type,
                 const bool                         required)
             {
-                _properties.insert({name, {type, required}});
+                _properties.insert({name, std::pair<web::json::value::value_type, bool>(type, required)});
             }
 
             /*!
              * \brief todo
+             *
+             * \param key - todo
              */
             template <typename T>
             void document<T>::add_unique_constraint(const std::string& key)
@@ -94,6 +104,8 @@ namespace polls
 
             /*!
              * \brief todo
+             *
+             * \returns todo
              */
             template <typename T> T document<T>::build() const
             {

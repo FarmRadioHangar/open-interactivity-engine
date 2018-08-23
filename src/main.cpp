@@ -96,7 +96,7 @@ void post_campaign(polls::http::request request, polls::http::response response)
 {
     request.with_json([&response](json::value data)
     {
-        polls::utils::builder::document<campaign> builder(data);
+        polls::utils::builder::document<campaign> builder(std::move(data));
         builder.add_property("name", json::value::value_type::String, true);
 
         auto document = builder.build();
@@ -142,7 +142,7 @@ void post_language(polls::http::request request, polls::http::response response)
 {
     request.with_json([&response](json::value data)
     {
-        polls::utils::builder::document<language> builder{data};
+        polls::utils::builder::document<language> builder{std::move(data)};
 
         builder.add_property("name", json::value::value_type::String, true);
         builder.add_property("iso_code", json::value::value_type::String, true);
