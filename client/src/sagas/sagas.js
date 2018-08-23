@@ -1,7 +1,7 @@
 import formActionSaga from 'redux-form-saga';
 import { fork, all, call, put, takeLatest, takeEvery } from 'redux-saga/effects';
 import { createLanguageAction } from '../actions/languages';
-import * as types from '../actions/actionTypes';
+import * as types from '../actions/types';
 import api from '../api';
 
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
