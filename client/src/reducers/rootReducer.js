@@ -1,13 +1,7 @@
 import { combineReducers } from 'redux';
-import campaigns from './campaignsReducer';
-import content from './contentReducer';
-import audience from './audienceReducer';
-import languages from './languagesReducer';
+import languages from './languages';
 
 const rootReducer = combineReducers({
-  campaigns,
-  content,
-  audience,
   languages
 });
 
