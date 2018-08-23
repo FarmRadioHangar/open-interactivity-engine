@@ -97,7 +97,6 @@ namespace polls
             template <typename T> T document<T>::build()
             {
                 bsoncxx::builder::basic::document builder{};
-                T document{};
 
                 if (!_json.is_object()) {
                     throw builder::error{
@@ -138,6 +137,7 @@ namespace polls
                     }
                 }
 
+                T document{};
                 document.set_data(bsoncxx::to_json(builder.extract()));
                 return document;
             }
@@ -149,18 +149,6 @@ namespace polls
 
                 switch (json.type())
                 {
-                    case web::json::value::value_type::Number:
-                    {
-                        if (json.is_integer()) {
-                            return value{b_int64{json.as_integer()}};
-                        } else {
-                            return value{b_double{json.as_double()}};
-                        }
-                    }
-                    case web::json::value::value_type::Boolean:
-                        return value{b_bool{json.as_bool()}};
-                    case web::json::value::value_type::String:
-                        return value{b_utf8{json.as_string()}};
                     case web::json::value::value_type::Object:
                     {
                         bsoncxx::builder::basic::document builder{};
@@ -177,6 +165,18 @@ namespace polls
                         }
                         return value{b_array{builder.extract()}};
                     }
+                    case web::json::value::value_type::Number:
+                    {
+                        if (json.is_integer()) {
+                            return value{b_int64{json.as_integer()}};
+                        } else {
+                            return value{b_double{json.as_double()}};
+                        }
+                    }
+                    case web::json::value::value_type::Boolean:
+                        return value{b_bool{json.as_bool()}};
+                    case web::json::value::value_type::String:
+                        return value{b_utf8{json.as_string()}};
                     case web::json::value::value_type::Null:
                     default:
                         return value{b_null{}};
