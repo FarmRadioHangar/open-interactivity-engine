@@ -1,7 +1,7 @@
-import { fork, all, call, put, takeLatest, takeEvery } from 'redux-saga/effects';
 import formActionSaga from 'redux-form-saga';
-import * as types from '../actions/actionTypes';  
+import { fork, all, call, put, takeLatest, takeEvery } from 'redux-saga/effects';
 import { createLanguageAction } from '../actions/languages';
+import * as types from '../actions/actionTypes';
 import api from '../api';
 
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
@@ -21,8 +21,7 @@ function* getLanguagesSaga() {
 }
 
 function* callPostLanguage(action) {
-  console.log('***********************************');
-  console.log(action);
+  console.log(action.payload);
 }
 
 function* createLanguageSaga() {
