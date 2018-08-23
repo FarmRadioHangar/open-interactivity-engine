@@ -97,7 +97,7 @@ void post_campaign(polls::http::request request, polls::http::response response)
     request.with_json([&response](json::value data)
     {
         polls::utils::builder::document<campaign> builder(data);
-        builder.add_required_property("name", json::value::value_type::String);
+        builder.add_property("name", json::value::value_type::String, true);
 
         auto document = builder.build();
         document.save();
@@ -144,8 +144,8 @@ void post_language(polls::http::request request, polls::http::response response)
     {
         polls::utils::builder::document<language> builder{data};
 
-        builder.add_required_property("name", json::value::value_type::String);
-        builder.add_required_property("iso_code", json::value::value_type::String);
+        builder.add_property("name", json::value::value_type::String, true);
+        builder.add_property("iso_code", json::value::value_type::String, true);
 
         builder.add_unique_constraint("name");
 

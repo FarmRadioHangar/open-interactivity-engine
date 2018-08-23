@@ -34,7 +34,7 @@ namespace polls
                 document(const document&) = delete;
                 document& operator=(const document&) = delete;
 
-                void add_required_property(const std::string& name, web::json::value::value_type type);
+                void add_property(const std::string& name, web::json::value::value_type type, const bool required = false);
                 void add_unique_constraint(const std::string& key);
 
                 T build() const;
@@ -43,7 +43,7 @@ namespace polls
                 bsoncxx::types::value to_bson_value(const web::json::value& json) const;
 
             private:
-                using prop_map = std::map<std::string, web::json::value::value_type>;
+                using prop_map = std::map<std::string, std::pair<web::json::value::value_type, bool>>;
 
                 web::json::value      _json;
                 prop_map              _properties;
@@ -75,11 +75,12 @@ namespace polls
             /*!
              * \brief todo
              */
-            template <typename T> void document<T>::add_required_property(
+            template <typename T> void document<T>::add_property(
                 const std::string&           name,
-                web::json::value::value_type type)
+                web::json::value::value_type type,
+                const bool                   required)
             {
-                _properties.insert({name, type});
+                _properties.insert({name, {type, required}});
             }
 
             /*!
@@ -106,19 +107,23 @@ namespace polls
 
                 for (const auto& prop : _properties)
                 {
-                    if (!_json.has_field(prop.first)) {
+                    const auto& key = prop.first;
+                    const auto type = prop.second.first;
+                    const bool required = prop.second.second;
+
+                    if (required && !_json.has_field(key)) {
                         throw builder::key_validation_error{
                             builder::error_type::missing_property,
-                            "Missing property: " + prop.first,
-                            prop.first};
+                            "Missing property: " + key,
+                            key};
                     }
-                    if (_json.at(prop.first).type() != prop.second) {
+                    if (_json.has_field(key) && _json.at(key).type() != type) {
                         throw builder::key_validation_error{
                             builder::error_type::type_mismatch,
-                            "Type mismatch for key '" + prop.first + "'",
-                            prop.first};
+                            "Type mismatch for key '" + key + "'",
+                            key};
                     }
-                    builder.append(kvp(prop.first, to_bson_value(_json.at(prop.first))));
+                    builder.append(kvp(key, to_bson_value(_json.at(key))));
                 }
 
                 for (const auto& key : _unique_keys)
