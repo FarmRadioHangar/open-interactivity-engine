@@ -10,6 +10,7 @@
 #include <cpprest/json.h>
 #include <map>
 #include <set>
+#include "builder/exception.h"
 
 namespace polls
 {
@@ -33,9 +34,7 @@ namespace polls
                 document(const document&) = delete;
                 document& operator=(const document&) = delete;
 
-                void add_required_property(const std::string& name,
-                    web::json::value::value_type type);
-
+                void add_required_property(const std::string& name, web::json::value::value_type type);
                 void add_unique_constraint(const std::string& key);
 
                 T build();
@@ -48,7 +47,7 @@ namespace polls
 
                 web::json::value      _json;
                 prop_map              _properties;
-                std::set<std::string> _keys;
+                std::set<std::string> _unique_keys;
             };
 
             /*!
@@ -58,7 +57,7 @@ namespace polls
             document<T>::document(const web::json::value& json)
               : _json{json},
                 _properties{},
-                _keys{}
+                _unique_keys{}
             {
             }
 
@@ -69,7 +68,7 @@ namespace polls
             document<T>::document(const std::string& data)
               : _json{web::json::value::parse(data)},
                 _properties{},
-                _keys{}
+                _unique_keys{}
             {
             }
 
@@ -89,7 +88,7 @@ namespace polls
             template <typename T>
             void document<T>::add_unique_constraint(const std::string& key)
             {
-                _keys.insert(key);
+                _unique_keys.insert(key);
             }
 
             /*!
@@ -101,21 +100,29 @@ namespace polls
                 T document{};
 
                 if (!_json.is_object()) {
-                    throw std::runtime_error{"json data must be an object"};
+                    throw builder::error{
+                        builder::error_type::json_not_an_object,
+                        "JSON data must be an object"};
                 }
 
                 for (auto& prop : _properties)
                 {
                     if (!_json.has_field(prop.first)) {
-                        throw std::runtime_error{"missing property: " + prop.first};
+                        throw builder::key_validation_error{
+                            builder::error_type::missing_property,
+                            "Missing property: " + prop.first,
+                            prop.first};
                     }
                     if (_json[prop.first].type() != prop.second) {
-                        throw std::runtime_error{"type mismatch for key '" + prop.first + "'"};
+                        throw builder::key_validation_error{
+                            builder::error_type::type_mismatch,
+                            "Type mismatch for key '" + prop.first + "'",
+                            prop.first};
                     }
                     builder.append(kvp(prop.first, to_bson_value(prop.second)));
                 }
 
-                for (auto& key : _keys)
+                for (auto& key : _unique_keys)
                 {
                     if (_json.has_field(key))
                     {
@@ -123,7 +130,10 @@ namespace polls
                             kvp(key, to_bson_value(_json[key]))
                         );
                         if (T::count(filter.view()) > 0) {
-                            throw std::runtime_error{"unique constraint violation for key: " + key};
+                            throw builder::key_validation_error{
+                                builder::error_type::unique_constraint_violation,
+                                "Unique constraint violation for key: " + key,
+                                key};
                         }
                     }
                 }
