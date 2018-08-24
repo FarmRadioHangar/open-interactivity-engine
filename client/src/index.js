@@ -2,7 +2,7 @@ import 'babel-polyfill';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
+import { Provider, connect } from 'react-redux';
 import { Route, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
@@ -12,6 +12,7 @@ import sagaMiddleware from './sagas/middleware';
 import configureStore from './store/configure';
 import history from './history';
 import * as languagesActions from './actions/languages';
+import LanguagesList from './components/languagesList';
 
 const store = configureStore();
 
@@ -42,7 +43,7 @@ const Main = () => (
     <hr />
     <Switch>
       <Route exact path='/' render={() => (<div>Home</div>)} />
-      <Route exact path='/languages' component={Languages} />
+      <Route exact path='/languages' component={LanguagesComponent} />
       <Route render={() => (<div>Nothing</div>)} />
     </Switch>
   </div>
@@ -93,7 +94,7 @@ const LanguageFormComponent = reduxForm({
   validate
 })(LanguageForm);
 
-const Languages = ({ match }) => {
+const Languages = ({ languages, match }) => {
   console.log(JSON.stringify(match));
   return (
     <div>
@@ -107,6 +108,9 @@ const Languages = ({ match }) => {
       <div>
         Languages
       </div>
+      <div>
+        <LanguagesList languages={languages} />
+      </div>
       <button onClick={() => {
         store.dispatch(languagesActions.fetchLanguages(0, 20));
       }}>
@@ -115,6 +119,14 @@ const Languages = ({ match }) => {
     </div>
   );
 }
+
+function mapStateToProps(state, ownProps) {
+  return {
+    languages: state.languages
+  };
+}
+
+const LanguagesComponent = connect(mapStateToProps)(Languages);
 
 ReactDOM.render(
   <Provider store={store}>

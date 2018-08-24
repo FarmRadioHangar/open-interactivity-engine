@@ -2,10 +2,9 @@ import formActionSaga from 'redux-form-saga';
 import { SubmissionError } from 'redux-form';
 import { fork, all, call, put, takeLatest, takeEvery } from 'redux-saga/effects';
 import { createLanguageAction } from '../actions/languages';
+import * as languagesActions from '../actions/languages';
 import * as types from '../actions/types';
 import api from '../api';
-
-api.get('languages', {a: 1});
 
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
@@ -14,8 +13,16 @@ function* callGetLanguagesSaga(action) {
     const { offset, limit } = action;
     const response = yield call(::api.get, 'languages', { skip: offset, limit });
 
+    if (response.ok) {
+      const { languages, count, total } = response;
+      const items = languages;
+      yield put(languagesActions.fetchLanguagesSuccess(items, count, total));
+    } else {
+      //
+    }
+
   } catch(error) {
-    yield put({ type: types.FETCH_LANGUAGES_FAILURE, error });
+    yield put(languagesActions.fetchLanguagesFailure(error));
   }
 }
 
