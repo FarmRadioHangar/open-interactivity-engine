@@ -15,8 +15,7 @@ function* callGetLanguagesSaga(action) {
 
     if (response.ok) {
       const { languages, count, total } = response;
-      const items = languages;
-      yield put(languagesActions.fetchLanguagesSuccess(items, count, total));
+      yield put(languagesActions.fetchLanguagesSuccess(languages, count, total));
     } else {
       //
     }
