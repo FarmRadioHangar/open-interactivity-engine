@@ -1,7 +1,7 @@
 class Api {
 
   get(resource, params) {
-    const query = params ? '?' + this.toQueryString(params) : '';
+    const query = params ? `?${this.toQueryString(params)}` : '';
     const url = `${process.env.API_URL}/${resource}${query}`;
     console.log(`GET ${url}`);
     return fetch(url).then(this.sendResponse);

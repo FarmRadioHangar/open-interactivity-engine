@@ -59,7 +59,7 @@ namespace polls
     /*!
      * \brief Return the number of documents in this collection. This number
      * is often less than the number of documents available in the underlying
-     * MongoDB data store collection.
+     * MongoDB data store.
      *
      * \sa total
      */
@@ -70,8 +70,8 @@ namespace polls
     }
 
     /*!
-     * \brief The total number of documents in the MongoDB collection this
-     * subset originates from.
+     * \brief The total number of documents in the MongoDB collection from 
+     * where this subset originates.
      *
      * \returns the \a total number of documents available in the MongoDB
      * collection accommodating this subset, at the time it was generated.

@@ -21,7 +21,7 @@ namespace polls
             class error : public std::runtime_error
             {
             public:
-                error(error_type type, const std::string& message);
+                error(const error_type type, const std::string& message);
                 virtual ~error() = default;
 
                 error_type type() const { return _type; }
@@ -33,7 +33,7 @@ namespace polls
             class key_validation_error : public error
             {
             public:
-                key_validation_error(error_type type, const std::string& message, const std::string& key);
+                key_validation_error(const error_type type, const std::string& message, const std::string& key);
                 virtual ~key_validation_error() = default;
 
                 std::string key() const { return _key; }
