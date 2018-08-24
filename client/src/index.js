@@ -4,8 +4,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider, connect } from 'react-redux';
 import { Route, Switch } from 'react-router';
+import { Router } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { ConnectedRouter } from 'connected-react-router';
 import { Field, reduxForm } from 'redux-form'
 import { rootSaga } from './sagas/sagas';
 import sagaMiddleware from './sagas/middleware';
@@ -43,6 +43,7 @@ const Main = () => (
     <hr />
     <Switch>
       <Route exact path='/' render={() => (<div>Home</div>)} />
+      <Route exact path='/languages/page/:page' component={LanguagesComponent} />
       <Route exact path='/languages' component={LanguagesComponent} />
       <Route render={() => (<div>Nothing</div>)} />
     </Switch>
@@ -123,6 +124,11 @@ const Languages = ({ languages, match }) => {
       <div>
         <LanguagesList languages={languages} />
       </div>
+      <div>
+        <Link to='/languages/page/2'>Page 2</Link>
+        <Link to='/languages/page/3'>Page 3</Link>
+        <Link to='/languages/page/4'>Page 4</Link>
+      </div>
       <button onClick={() => {
         store.dispatch(languagesActions.fetchLanguages(0, 20));
       }}>
@@ -142,9 +148,9 @@ const LanguagesComponent = connect(mapStateToProps)(Languages);
 
 ReactDOM.render(
   <Provider store={store}>
-    <ConnectedRouter history={history}>
+    <Router history={history}>
       <Main />
-    </ConnectedRouter>
+    </Router>
   </Provider>,
   document.getElementById('app')
 );
