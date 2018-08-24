@@ -54,30 +54,36 @@ const RenderField = ({ input, label, type, meta: { touched, error, warning } }) 
     <label>{label}</label>
     <div>
       <input {...input} placeholder={label} type={type} />
-      {touched &&
-        ((error && <span>{error}</span>) ||
-          (warning && <span>{warning}</span>))}
+      {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
     </div>
   </div>
 );
 
-const LanguageForm = ({ handleSubmit, pristine, reset, submitting }) => {
+const LanguageForm = (props) => {
+  const { handleSubmit, pristine, reset, submitting } = props;
   return (
-    <form onSubmit={handleSubmit(languagesActions.createLanguageAction)}>
-      <div>
-        <label htmlFor='firstName'>First Name</label>
-        <Field name='firstName' component={RenderField} type='text' />
-      </div>
-      <div>
-        <label htmlFor='lastName'>Last Name</label>
-        <Field name='lastName' component='input' type='text' />
-      </div>
-      <div>
-        <label htmlFor='email'>Email</label>
-        <Field name='email' component='input' type='email' />
-      </div>
-      <button type='submit'>Submit</button>
-    </form>
+    <div>
+      {props.error && (
+        <div style={{border: '1px solid red'}}>
+          {props.error}
+        </div>
+      )}
+      <form onSubmit={handleSubmit(languagesActions.createLanguageAction)}>
+        <div>
+          <label htmlFor='firstName'>First Name</label>
+          <Field name='firstName' component={RenderField} type='text' />
+        </div>
+        <div>
+          <label htmlFor='lastName'>Last Name</label>
+          <Field name='lastName' component='input' type='text' />
+        </div>
+        <div>
+          <label htmlFor='email'>Email</label>
+          <Field name='email' component='input' type='email' />
+        </div>
+        <button type='submit'>Submit</button>
+      </form>
+    </div>
   );
 }
 
@@ -89,9 +95,15 @@ const validate = (values) => {
   return errors;
 }
 
+const warn = (values) => {
+  const warnings = {};
+  return warnings;
+}
+
 const LanguageFormComponent = reduxForm({ 
   form: 'language',
-  validate
+  validate,
+  warn
 })(LanguageForm);
 
 const Languages = ({ languages, match }) => {
