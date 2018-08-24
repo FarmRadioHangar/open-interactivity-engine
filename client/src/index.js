@@ -8,8 +8,8 @@ import { Link } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 import { Field, reduxForm } from 'redux-form'
 import { rootSaga } from './sagas/sagas';
-import sagaMiddleware from './sagas/sagaMiddleware';
-import configureStore from './store/configureStore';
+import sagaMiddleware from './sagas/middleware';
+import configureStore from './store/configure';
 import history from './history';
 import * as languagesActions from './actions/languages';
 
@@ -48,28 +48,49 @@ const Main = () => (
   </div>
 );
 
-const LanguageForm = ({ handleSubmit }) => {
+const RenderField = ({ input, label, type, meta: { touched, error, warning } }) => (
+  <div>
+    <label>{label}</label>
+    <div>
+      <input {...input} placeholder={label} type={type} />
+      {touched &&
+        ((error && <span>{error}</span>) ||
+          (warning && <span>{warning}</span>))}
+    </div>
+  </div>
+);
+
+const LanguageForm = ({ handleSubmit, pristine, reset, submitting }) => {
   return (
     <form onSubmit={handleSubmit(languagesActions.createLanguageAction)}>
       <div>
-        <label htmlFor="firstName">First Name</label>
-        <Field name="firstName" component="input" type="text" />
+        <label htmlFor='firstName'>First Name</label>
+        <Field name='firstName' component={RenderField} type='text' />
       </div>
       <div>
-        <label htmlFor="lastName">Last Name</label>
-        <Field name="lastName" component="input" type="text" />
+        <label htmlFor='lastName'>Last Name</label>
+        <Field name='lastName' component='input' type='text' />
       </div>
       <div>
-        <label htmlFor="email">Email</label>
-        <Field name="email" component="input" type="email" />
+        <label htmlFor='email'>Email</label>
+        <Field name='email' component='input' type='email' />
       </div>
-      <button type="submit">Submit</button>
+      <button type='submit'>Submit</button>
     </form>
   );
 }
 
+const validate = (values) => {
+  const errors = {};
+  if (!values.firstName) {
+    errors.firstName= 'Required'
+  }
+  return errors;
+}
+
 const LanguageFormComponent = reduxForm({ 
-  form: 'language' 
+  form: 'language',
+  validate
 })(LanguageForm);
 
 const Languages = ({ match }) => {

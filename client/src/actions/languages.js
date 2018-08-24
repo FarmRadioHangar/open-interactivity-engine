@@ -5,4 +5,4 @@ export function fetchLanguages(offset, limit) {
   return { type: types.FETCH_LANGUAGES, offset, limit };
 }
 
-export const createLanguageAction = createFormAction('CREATE_LANGUAGE');
+export const createLanguageAction = createFormAction(types.CREATE_LANGUAGE);
