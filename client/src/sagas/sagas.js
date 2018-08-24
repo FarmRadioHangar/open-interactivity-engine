@@ -4,7 +4,9 @@ import { fork, all, call, put, takeLatest, takeEvery } from 'redux-saga/effects'
 import { createLanguageAction } from '../actions/languages';
 import * as languagesActions from '../actions/languages';
 import * as types from '../actions/types';
-import api from '../api';
+import Api from '../api';
+
+const api = new Api();
 
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
@@ -15,7 +17,7 @@ function* callGetLanguagesSaga(action) {
 
     if (response.ok) {
       const { languages, count, total } = response;
-      yield put(languagesActions.fetchLanguagesSuccess(languages, count, total));
+      yield put(languagesActions.fetchLanguagesSuccess(Api.toCamelCase(languages), count, total));
     } else {
       //
     }
@@ -31,11 +33,13 @@ function* getLanguagesSaga() {
 
 function* callPostLanguage(action) {
   try {
-    const response = yield call(::api.post, 'languages', action.payload);
+    const response = yield call(::api.post, 'languages', Api.toSnakeCase(action.payload));
     if (!response.ok) {
       throw 'bananas';
     }
+    console.log(response);
     yield put(createLanguageAction.success());
+    // Api.toCamelCase(...)
   } catch(error) {
     const formError = new SubmissionError({
       firstName: 'User with this login is not found',

@@ -1,4 +1,4 @@
-class Api {
+export default class Api {
 
   get(resource, params) {
     const query = params ? `?${this.toQueryString(params)}` : '';
@@ -55,6 +55,31 @@ class Api {
     });
   }
 
-}
+  static toSnakeCase(payload) {
+    return Api.convertCase(payload, (str) =>
+      str.replace(/([A-Z])/g, (capture) => `_${capture.toLowerCase()}`)
+    );
+  }
 
-export default new Api();
+  static toCamelCase(payload) {
+    return Api.convertCase(payload, (str) => '_id' === str ? str :
+      str.replace(/(_\w)/g, (capture) => `${capture[1].toUpperCase()}`)
+    );
+  }
+
+  static convertCase(data, fun) {
+    if ('object' === typeof(data)) {
+      if (Array.isArray(data)) {
+        return data.map(element => Api.convertCase(element, fun));
+      } else {
+        let result = {};
+        Object.keys(data).forEach(key => {
+          result[fun(key)] = Api.convertCase(data[key], fun);
+        });
+        return result;
+      }
+    }
+    return data;
+  }
+
+}
