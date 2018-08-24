@@ -1,9 +1,11 @@
 import formActionSaga from 'redux-form-saga';
 import { SubmissionError } from 'redux-form';
 import { fork, all, call, put, takeLatest, takeEvery } from 'redux-saga/effects';
+import { router } from 'redux-saga-router';
 import { createLanguageAction } from '../actions/languages';
 import * as languagesActions from '../actions/languages';
 import * as types from '../actions/types';
+import history from '../history';
 import Api from '../api';
 
 const api = new Api();
@@ -46,7 +48,6 @@ function* callPostLanguage(action) {
       _error: 'Login failed, please check your credentials and try again'
     });
     yield put(createLanguageAction.failure(formError));
-    console.log('!!');
   }
 }
 
@@ -54,10 +55,17 @@ function* createLanguageSaga() {
   yield takeEvery(createLanguageAction.REQUEST, callPostLanguage);
 }
 
+const routes = {
+  '/languages/page/:page': function* languagesPageSaga(params) {
+    console.log('page : ' + params.page);
+  }
+};
+
 export function* rootSaga() {
   yield all([
     fork(getLanguagesSaga),
     fork(createLanguageSaga),
-    fork(formActionSaga)
+    fork(formActionSaga),
+    fork(router, history, routes)
   ]);
 }

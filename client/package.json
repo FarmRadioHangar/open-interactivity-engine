@@ -31,6 +31,7 @@
     "redux": "^4.0.0",
     "redux-form": "^7.4.2",
     "redux-form-saga": "^0.2.0",
-    "redux-saga": "^0.16.0"
+    "redux-saga": "^0.16.0",
+    "redux-saga-router": "^2.2.0"
   }
 }
