@@ -2,17 +2,18 @@ import 'babel-polyfill';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Field, reduxForm } from 'redux-form'
+import { Link } from 'react-router-dom';
 import { Provider, connect } from 'react-redux';
 import { Route, Switch } from 'react-router';
 import { Router } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { Field, reduxForm } from 'redux-form'
 import { rootSaga } from './sagas/sagas';
 import sagaMiddleware from './sagas/middleware';
 import configureStore from './store/configure';
 import history from './history';
 import * as languagesActions from './actions/languages';
 import LanguagesList from './components/languagesList';
+import Pagination from './components/pagination';
 
 const store = configureStore();
 
@@ -43,18 +44,48 @@ const Main = () => (
     <hr />
     <Switch>
       <Route exact path='/' render={() => (<div>Home</div>)} />
-      <Route exact path='/languages/page/:page' component={LanguagesComponent} />
       <Route exact path='/languages' component={LanguagesComponent} />
+      <Route exact path='/languages/page/:page' component={LanguagesComponent} />
+      <Route exact path='/languages/create' component={CreateLanguageComponent} />
+      <Route exact path='/languages/:id/view' component={ShowLanguage} />
+      <Route exact path='/languages/:id/edit' component={EditLanguage} />
+      <Route exact path='/languages/:id/delete' component={DeleteLanguage} />
       <Route render={() => (<div>Nothing</div>)} />
     </Switch>
   </div>
 );
+
+const DeleteLanguage = () => {
+  return (
+    <span />
+  );
+}
+
+const EditLanguage = () => {
+  return (
+    <span />
+  );
+}
+
+const ShowLanguage= () => {
+  return (
+    <span />
+  );
+}
+
+const CreateLanguageComponent = () => {
+  return (
+    <LanguageFormComponent />
+  );
+}
 
 const RenderField = ({ input, label, type, meta: { touched, error, warning } }) => (
   <div>
     <label>{label}</label>
     <div>
       <input {...input} placeholder={label} type={type} />
+    </div>
+    <div>
       {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
     </div>
   </div>
@@ -71,18 +102,24 @@ const LanguageForm = (props) => {
       )}
       <form onSubmit={handleSubmit(languagesActions.createLanguageAction)}>
         <div>
-          <label htmlFor='firstName'>First Name</label>
-          <Field name='firstName' component={RenderField} type='text' />
+          <div>
+            <label htmlFor='name'>Name</label>
+          </div>
+          <div>
+            <Field name='name' component={RenderField} type='text' />
+          </div>
         </div>
         <div>
-          <label htmlFor='lastName'>Last Name</label>
-          <Field name='lastName' component='input' type='text' />
+          <div>
+            <label htmlFor='tag'>Tag</label>
+          </div>
+          <div>
+            <Field name='tag' component={RenderField} type='text' />
+          </div>
         </div>
         <div>
-          <label htmlFor='email'>Email</label>
-          <Field name='email' component='input' type='email' />
+          <button type='submit'>Submit</button>
         </div>
-        <button type='submit'>Submit</button>
       </form>
     </div>
   );
@@ -90,8 +127,14 @@ const LanguageForm = (props) => {
 
 const validate = (values) => {
   const errors = {};
-  if (!values.firstName) {
-    errors.firstName= 'Required'
+  if (!values.name) {
+    errors.name = 'This field is required.'
+  }
+  if (!values.tag) {
+    errors.tag = 'This field is required.'
+  }
+  if (values.tag && values.tag.length < 2) {
+    errors.tag = 'The language tag must be at least two characters long.'
   }
   return errors;
 }
@@ -108,32 +151,27 @@ const LanguageFormComponent = reduxForm({
 })(LanguageForm);
 
 const Languages = ({ languages, match }) => {
-  console.log(JSON.stringify(match));
   return (
     <div>
       <div>
-        <LanguageFormComponent 
-          onSubmit={() => {
-            console.log('on submit');
-          }}
-        />
+        Languages
       </div>
       <div>
-        Languages
+        <button onClick={() => { history.push('/languages/create'); }}>
+          Create language
+        </button>
       </div>
       <div>
         <LanguagesList languages={languages} />
       </div>
       <div>
-        <Link to='/languages/page/2'>Page 2</Link>
-        <Link to='/languages/page/3'>Page 3</Link>
-        <Link to='/languages/page/4'>Page 4</Link>
+        <Pagination
+          pageSize = {languages.pageSize}
+          total    = {languages.total}
+          offset   = {languages.offset}
+          onChange = {page => { history.push(`/languages/page/${page}`); }}
+        />
       </div>
-      <button onClick={() => {
-        store.dispatch(languagesActions.fetchLanguages(0, 20));
-      }}>
-        Fetch languages
-      </button>
     </div>
   );
 }
