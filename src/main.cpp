@@ -145,7 +145,7 @@ void post_language(polls::http::request request, polls::http::response response)
         polls::utils::builder::document<language> builder{std::move(data)};
 
         builder.add_property("name", json::value::value_type::String, true);
-        builder.add_property("iso_code", json::value::value_type::String, true);
+        builder.add_property("tag", json::value::value_type::String, true);
 
         builder.add_unique_constraint("name");
 

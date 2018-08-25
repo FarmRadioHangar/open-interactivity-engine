@@ -1,6 +1,7 @@
 #include "server.h"
 #include <iomanip>
 #include <mongocxx/exception/query_exception.hpp>
+#include "builder/exception.h"
 
 using namespace web;
 using namespace web::http;
@@ -26,9 +27,17 @@ namespace polls
         {
             std::stringstream oss{};
             oss << "{\"error\":" << std::quoted(error_message) << ",\"status\":" << status << "}";
-            polls::http::response response{_request};
+            http::response response{_request};
             response.set_status_code(status);
             response.set_body(oss.str());
+            response.send();
+        }
+
+        void request::send_error_response(const web::json::value& body, int status)
+        {
+            http::response response{_request};
+            response.set_status_code(status);
+            response.set_body(body);
             response.send();
         }
 
@@ -142,16 +151,65 @@ namespace polls
                     try 
                     {
                         route.handler(
-                            polls::http::request{request, match},
-                            polls::http::response{request}
-                        );
+                            http::request{request, match},
+                            http::response{request});
                         return;
                     } 
+                    catch (web::json::json_exception& e)
+                    {
+                        http::request req{request};
+                        web::json::value json_response{};
+                        json_response["error"]  = web::json::value::string(e.what());
+                        json_response["status"] = web::json::value::number(400);
+                        json_response["code"] = web::json::value::string("BAD_JSON");
+                        req.send_error_response(json_response, 400);
+                    }
+                    catch (utils::builder::error& e)
+                    {
+                        http::request req{request};
+                        web::json::value json_response{};
+                        json_response["error"]  = web::json::value::string(e.what());
+                        json_response["status"] = web::json::value::number(400);
+
+                        switch (e.type())
+                        {
+                            case utils::builder::error_type::json_not_an_object:
+                            {
+                                json_response["code"] = web::json::value::string("JSON_NOT_AN_OBJECT");
+                                break;
+                            }
+                            case utils::builder::error_type::missing_property:
+                            {
+                                const auto& error = static_cast<utils::builder::key_validation_error&>(e);
+                                json_response["code"] = web::json::value::string("MISSING_PROPERTY");
+                                json_response["key"]  = web::json::value::string(error.key());
+                                break;
+                            }
+                            case utils::builder::error_type::type_mismatch:
+                            {
+                                const auto& error = static_cast<utils::builder::key_validation_error&>(e);
+                                json_response["code"] = web::json::value::string("TYPE_MISMATCH");
+                                json_response["key"]  = web::json::value::string(error.key());
+                                break;
+                            }
+                            case utils::builder::error_type::unique_constraint_violation:
+                            {
+                                const auto& error = static_cast<utils::builder::key_validation_error&>(e);
+                                json_response["status"] = web::json::value::number(409);
+                                json_response["code"]   = web::json::value::string("UNIQUE_CONSTRAINT_VIOLATION");
+                                json_response["key"]    = web::json::value::string(error.key());
+                                req.send_error_response(json_response, 409);
+                            }
+                            default:
+                                ;
+                        }
+                        req.send_error_response(json_response, 400);
+                    }
                     catch (mongocxx::exception& e) 
                     {
                         std::cout << e.what() << std::endl;
                         std::cout << e.code() << std::endl;
-                        polls::http::request req{request};
+                        http::request req{request};
                         switch (e.code().value())
                         {
                         case 13053:
@@ -168,14 +226,14 @@ namespace polls
                     catch (std::exception& e) 
                     {
                         std::cout << e.what() << std::endl;
-                        polls::http::request req{request};
+                        http::request req{request};
                         req.send_error_response(e.what());
                         return;
                     }
                 }
             }
 
-            polls::http::response response{request};
+            http::response response{request};
             response.set_status_code(status_codes::NotFound);
             response.send();
         }

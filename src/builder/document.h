@@ -10,6 +10,7 @@
 #include <cpprest/json.h>
 #include <map>
 #include <set>
+#include <utility>
 #include "exception.h"
 
 namespace polls
@@ -148,7 +149,7 @@ namespace polls
                         if (T::count(filter.view()) > 0) {
                             throw builder::key_validation_error{
                                 builder::error_type::unique_constraint_violation,
-                                "Unique constraint violation for key: " + key,
+                                "Unique constraint violation for key '" + key + "'",
                                 key};
                         }
                     }

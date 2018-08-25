@@ -12,10 +12,10 @@ namespace polls
         namespace builder
         {
             enum error_type {
-              json_not_an_object,
-              missing_property,
-              type_mismatch,
-              unique_constraint_violation
+                json_not_an_object,
+                missing_property,
+                type_mismatch,
+                unique_constraint_violation
             };
 
             class error : public std::runtime_error
