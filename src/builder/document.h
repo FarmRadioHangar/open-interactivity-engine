@@ -126,15 +126,15 @@ namespace polls
 
                     if (required && !_json.has_field(key)) {
                         throw builder::key_validation_error{
+                            key,
                             builder::error_type::missing_property,
-                            "Missing property: " + key,
-                            key};
+                            "Missing property: " + key};
                     }
                     if (_json.has_field(key) && _json.at(key).type() != type) {
                         throw builder::key_validation_error{
+                            key,
                             builder::error_type::type_mismatch,
-                            "Type mismatch for key '" + key + "'",
-                            key};
+                            "Type mismatch for key '" + key + "'"};
                     }
                     builder.append(kvp(key, to_bson_value(_json.at(key))));
                 }
@@ -148,9 +148,10 @@ namespace polls
                         );
                         if (T::count(filter.view()) > 0) {
                             throw builder::key_validation_error{
+                                key,
                                 builder::error_type::unique_constraint_violation,
                                 "Unique constraint violation for key '" + key + "'",
-                                key};
+                                409};
                         }
                     }
                 }
