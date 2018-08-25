@@ -100,6 +100,11 @@ const LanguageForm = (props) => {
           {props.error}
         </div>
       )}
+      {submitting && (
+        <div>
+          Please wait...
+        </div>
+      )}
       <form onSubmit={handleSubmit(languagesActions.createLanguageAction)}>
         <div>
           <div>
@@ -118,7 +123,7 @@ const LanguageForm = (props) => {
           </div>
         </div>
         <div>
-          <button type='submit'>Submit</button>
+          <button type='submit' disabled={submitting}>Submit</button>
         </div>
       </form>
     </div>
@@ -161,17 +166,28 @@ const Languages = ({ languages, match }) => {
           Create language
         </button>
       </div>
-      <div>
-        <LanguagesList languages={languages} />
-      </div>
-      <div>
-        <Pagination
-          pageSize = {languages.pageSize}
-          total    = {languages.total}
-          offset   = {languages.offset}
-          onChange = {page => { history.push(`/languages/page/${page}`); }}
-        />
-      </div>
+      {languages.error ? (
+        <div>
+          Error: {languages.error}
+          <button onClick={() => { history.push(history.location); }}>
+            Try again!
+          </button>
+        </div>
+      ) : (
+        <div>
+          <div>
+            <LanguagesList languages={languages} />
+          </div>
+          <div>
+            <Pagination
+              pageSize = {languages.pageSize}
+              total    = {languages.total}
+              offset   = {languages.offset}
+              onChange = {page => { history.push(`/languages/page/${page}`); }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

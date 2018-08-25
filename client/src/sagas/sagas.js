@@ -25,7 +25,7 @@ function* callGetLanguagesSaga(action) {
     }
 
   } catch(error) {
-    yield put(languagesActions.fetchLanguagesFailure(error));
+    yield put(languagesActions.fetchLanguagesFailure('Could not fetch'));
   }
 }
 
@@ -36,32 +36,26 @@ function* getLanguagesSaga() {
 function* callPostLanguage(action) {
   try {
     const data = Api.toSnakeCase(action.payload);
-    console.log(data);
+    yield delay(350);
     const response = yield call(::api.post, 'languages', data);
     if (response.ok) {
-      yield delay(350);
-      //console.log(response);
       yield put(createLanguageAction.success());
       yield call([history, 'push'], '/languages');
-      // Api.toCamelCase(...)
+      console.log(Api.toCamelCase(response.language));
     } else {
-      let options = { _error: 'An error occurred.' };
+      let options = { _error: 'Language was not saved.' };
       switch(response.code) {
-        case 'UNIQUE_CONSTRAINT_VIOLATION': {
-          options[response.key] = response.error;
+        case 'UNIQUE_CONSTRAINT_VIOLATION':
+          options[response.key] = 'The name must be unique. A language with this name already exists.';
           break;
-        }
         default:
           break;
       }
       yield put(createLanguageAction.failure(new SubmissionError(options)));
     }
   } catch(error) {
-    const formError = new SubmissionError({
-      firstName: 'User with this login is not found',
-      _error: 'Login failed, please check your credentials and try again'
-    });
-    yield put(createLanguageAction.failure(formError));
+    let options = { _error: 'Error communicating with API. Is the server running and accepting connections?' };
+    yield put(createLanguageAction.failure(new SubmissionError(options)));
   }
 }
 
