@@ -13,4 +13,20 @@ export function fetchLanguagesFailure(error) {
   return { type: types.FETCH_LANGUAGES_FAILURE, error };
 }
 
+export function fetchLanguage(id) {
+  return { type: types.FETCH_LANGUAGE, id };
+}
+
+export function fetchLanguageSuccess(language) {
+  return { type: types.FETCH_LANGUAGE_SUCCESS, language };
+}
+
+export function fetchLanguageFailure(error) {
+  return { type: types.FETCH_LANGUAGE_FAILURE, error };
+}
+
+export function editLanguage(id) {
+  return { type: types.EDIT_LANGUAGE, id };
+}
+
 export const createLanguageAction = createFormAction(types.CREATE_LANGUAGE);

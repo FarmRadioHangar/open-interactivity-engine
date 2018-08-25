@@ -9,5 +9,9 @@ export default {
     offset: 0,
     pageSize: 10,
     error: false
+  },
+  language: {
+    item: null,
+    error: false
   }
 };
