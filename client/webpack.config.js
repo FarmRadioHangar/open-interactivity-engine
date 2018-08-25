@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const dotenv = require('dotenv');
 
 module.exports = () => {
+
   const env = dotenv.config().parsed;
 
   const envKeys = Object.keys(env).reduce((prev, next) => {
@@ -38,4 +39,5 @@ module.exports = () => {
       new webpack.DefinePlugin(envKeys)
     ]
   };
+
 };
