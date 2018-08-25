@@ -148,14 +148,14 @@ namespace polls
                 if (request.method() == route.method &&
                     std::regex_match(path, match, route.regex))
                 {
-                    try 
+                    try
                     {
                         route.handler(
                             http::request{request, match},
                             http::response{request});
                         return;
-                    } 
-                    catch (web::json::json_exception& e)
+                    }
+                    catch (const web::json::json_exception& e)
                     {
                         http::request req{request};
                         web::json::value json_response{};
@@ -164,12 +164,12 @@ namespace polls
                         json_response["code"] = web::json::value::string("BAD_JSON");
                         req.send_error_response(json_response, 400);
                     }
-                    catch (utils::builder::error& e)
+                    catch (const utils::builder::error& e)
                     {
                         http::request req{request};
                         req.send_error_response(e.to_json(), e.status_code());
                     }
-                    catch (mongocxx::exception& e) 
+                    catch (const mongocxx::exception& e)
                     {
                         std::cout << e.what() << std::endl;
                         std::cout << e.code() << std::endl;
@@ -186,8 +186,8 @@ namespace polls
                             req.send_error_response(e.what());
                         }
                         return;
-                    } 
-                    catch (std::exception& e) 
+                    }
+                    catch (std::exception& e)
                     {
                         std::cout << e.what() << std::endl;
                         http::request req{request};

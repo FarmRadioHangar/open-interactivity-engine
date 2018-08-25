@@ -29,6 +29,9 @@ namespace polls
                 int status_code() const { return _status; }
                 std::string atom() const;
 
+                /*!
+                 * \brief todo
+                 */
                 web::json::value to_json() const { return to_json_impl(); }
 
             protected:
