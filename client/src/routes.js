@@ -35,6 +35,11 @@ const Routes = () => (
     <Route exact path='/content/:id/edit' component={X} />
     <Route exact path='/content/:id/delete' component={X} />
     <Route exact path='/audience' component={X} />
+    <Route exact path='/audience/page/:page' component={X} />
+    <Route exact path='/audience/create' component={X} />
+    <Route exact path='/audience/:id/view' component={X} />
+    <Route exact path='/audience/:id/edit' component={X} />
+    <Route exact path='/audience/:id/delete' component={X} />
     <Route exact path='/languages' component={X} />
     <Route exact path='/languages/page/:page' component={X} />
     <Route exact path='/languages/create' component={X} />
