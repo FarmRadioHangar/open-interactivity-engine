@@ -1,5 +1,5 @@
 import React from 'react';
-import List from '../list';
+import List from '../utils/list';
 
 const Pagination = ({ pageSize, total, offset, onChange }) => {
   const pageCount = Math.ceil(total/pageSize);
