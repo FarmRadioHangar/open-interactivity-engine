@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 import List from '../utils/list';
 
 const Pagination = ({ pageCount, currentPage, onChange }) => {
