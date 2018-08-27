@@ -197,9 +197,12 @@ namespace polls
                 }
             }
 
-            http::response response{request};
-            response.set_status_code(status_codes::NotFound);
-            response.send();
+            http::request req{request};
+            web::json::value json_response{};
+            json_response["error"]  = web::json::value::string("Not found");
+            json_response["status"] = web::json::value::number(404);
+            json_response["code"] = web::json::value::string("NOT_FOUND");
+            req.send_error_response(json_response, 404);
         }
     }
 }
