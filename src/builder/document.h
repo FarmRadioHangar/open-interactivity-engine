@@ -128,7 +128,7 @@ namespace polls
                         throw builder::key_validation_error{
                             key,
                             builder::error_type::missing_property,
-                            "Missing property: " + key};
+                            "Missing property '" + key + "'"};
                     }
                     if (_json.has_field(key) && _json.at(key).type() != type) {
                         throw builder::key_validation_error{
