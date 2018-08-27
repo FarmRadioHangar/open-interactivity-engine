@@ -1,17 +1,46 @@
 export default {
-  campaigns: {},
-  content: {},
-  audience: {},
-  languages: {
-    items: [],
-    count: 0,
+  campaigns: {
+    item: null,
+    page: [],
+    itemFetching: false,
+    pageFetching: false,
+    itemError: null,
+    pageError: null,
     total: 0,
     offset: 0,
-    pageSize: 10,
-    error: false
+    pageSize: 10
   },
-  language: {
+  content: {
     item: null,
-    error: false
+    page: [],
+    itemFetching: false,
+    pageFetching: false,
+    itemError: null,
+    pageError: null,
+    total: 0,
+    offset: 0,
+    pageSize: 10
+  },
+  audience: {
+    item: null,
+    page: [],
+    itemFetching: false,
+    pageFetching: false,
+    itemError: null,
+    pageError: null,
+    total: 0,
+    offset: 0,
+    pageSize: 10
+  },
+  languages: {
+    item: null,
+    page: [],
+    itemFetching: false,
+    pageFetching: false,
+    itemError: null,
+    pageError: null,
+    total: 0,
+    offset: 0,
+    pageSize: 10
   }
 };

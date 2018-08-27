@@ -1,10 +1,14 @@
+const FETCH_ERROR_MSG = 'Error talking to API. Is the server running and accepting connections?';
+
 export default class Api {
 
   get(resource, params) {
     const query = params ? `?${this.toQueryString(params)}` : '';
     const url = `${process.env.API_URL}/${resource}${query}`;
     console.log(`GET ${url}`);
-    return fetch(url).then(this.sendResponse);
+    return fetch(url)
+      .catch(err => { throw new Error(FETCH_ERROR_MSG); })
+      .then(this.sendResponse);
   }
 
   post(resource, data) {
@@ -18,10 +22,12 @@ export default class Api {
       },
       body: JSON.stringify(data)
     };
-    return fetch(url, options).then(this.sendResponse);
+    return fetch(url, options)
+      .catch(err => { throw new Error(FETCH_ERROR_MSG); })
+      .then(this.sendResponse);
   }
 
-  put() {
+  put(resource, data) {
     const url = `${process.env.API_URL}/${resource}`;
     console.log(`PUT ${url}`);
     const options = {
@@ -32,13 +38,17 @@ export default class Api {
       },
       body: JSON.stringify(data)
     };
-    return fetch(url, options).then(this.sendResponse);
+    return fetch(url, options)
+      .catch(err => { throw new Error(FETCH_ERROR_MSG); })
+      .then(this.sendResponse);
   }
 
-  delete() {
+  httpDelete(resource) {
     const url = `${process.env.API_URL}/${resource}`;
     console.log(`DELETE ${url}`);
-    return fetch(url, { method: 'DELETE' }).then(this.sendResponse);
+    return fetch(url, { method: 'DELETE' })
+      .catch(err => { throw new Error(FETCH_ERROR_MSG); })
+      .then(this.sendResponse);
   }
 
   toQueryString(obj) {

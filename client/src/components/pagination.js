@@ -1,10 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types'
 import List from '../utils/list';
 
-const Pagination = ({ pageSize, total, offset, onChange }) => {
-  const pageCount = Math.ceil(total/pageSize);
-  const currentPage = offset/pageSize + 1;
-  if (pageCount < 2) { return <React.Fragment /> }
+const Pagination = ({ pageCount, currentPage, onChange }) => {
+  if (pageCount < 2) {
+    return <React.Fragment />
+  }
   return (
     <ul>
       {List.enumFrom(1).take(pageCount).toArray().map(page =>
@@ -20,6 +21,16 @@ const Pagination = ({ pageSize, total, offset, onChange }) => {
       )}
     </ul>
   );
+};
+
+Pagination.propTypes = {
+  pageCount: PropTypes.number.isRequired,
+  currentPage: PropTypes.number.isRequired,
+  onChange: PropTypes.func
+};
+
+Pagination.defaultProps = {
+  onChange: () => {}
 };
 
 export default Pagination;

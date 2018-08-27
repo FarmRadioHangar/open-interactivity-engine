@@ -1,14 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types'
+import { reduxForm } from 'redux-form';
+import { LanguagesForm, validate, warn } from './form';
+import * as actions from '../../actions/creators';
 
-const LanguagesCreate = () => {
-  return (
-    <React.Fragment>
-      LanguagesCreate
-    </React.Fragment>
-  );
-};
+const Form = (props) => (
+  <form onSubmit={props.handleSubmit(actions.createLanguageAction)}>
+    <LanguagesForm {...props} />
+  </form>
+);
 
-LanguagesCreate.propTypes = {};
-
-export default LanguagesCreate;
+export default reduxForm({ form: 'languages-create', validate, warn })(Form);
