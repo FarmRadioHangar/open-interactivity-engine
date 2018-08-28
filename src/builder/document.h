@@ -5,7 +5,9 @@
 
 #include <bsoncxx/builder/basic/array.hpp>
 #include <bsoncxx/builder/basic/document.hpp>
+#include <bsoncxx/builder/basic/kvp.hpp>
 #include <bsoncxx/json.hpp>
+#include <bsoncxx/types.hpp>
 #include <bsoncxx/types/value.hpp>
 #include <cpprest/json.h>
 #include <map>
@@ -30,6 +32,7 @@ namespace polls
             public:
                 explicit document(web::json::value&& json);
                 explicit document(const std::string& data);
+                document(const std::string& oid, web::json::value&& json);
 
                 ~document() = default;
                 document(const document&) = delete;
@@ -46,9 +49,10 @@ namespace polls
             private:
                 using prop_map = std::map<std::string, std::pair<web::json::value::value_type, bool>>;
 
-                web::json::value      _json;
-                prop_map              _properties;
-                std::set<std::string> _unique_keys;
+                const web::json::value _json;
+                prop_map               _properties;
+                std::set<std::string>  _unique_keys;
+                std::string            _oid;
             };
 
             /*!
@@ -60,7 +64,8 @@ namespace polls
             document<T>::document(web::json::value&& json)
               : _json{std::move(json)},
                 _properties{},
-                _unique_keys{}
+                _unique_keys{},
+                _oid{}
             {
             }
 
@@ -73,7 +78,23 @@ namespace polls
             document<T>::document(const std::string& data)
               : _json{web::json::value::parse(data)},
                 _properties{},
-                _unique_keys{}
+                _unique_keys{},
+                _oid{}
+            {
+            }
+
+            /*!
+             * \brief todo
+             *
+             * \param id - todo
+             * \param json - todo
+             */
+            template <typename T>
+            document<T>::document(const std::string& oid, web::json::value&& json)
+              : _json{std::move(json)},
+                _properties{},
+                _unique_keys{},
+                _oid{oid}
             {
             }
 
@@ -110,6 +131,8 @@ namespace polls
              */
             template <typename T> T document<T>::build() const
             {
+                using bsoncxx::builder::basic::kvp;
+              
                 bsoncxx::builder::basic::document builder{};
 
                 if (!_json.is_object()) {
@@ -143,9 +166,14 @@ namespace polls
                 {
                     if (_json.has_field(key))
                     {
-                        auto filter = bsoncxx::builder::basic::make_document(
-                            kvp(key, to_bson_value(_json.at(key)))
-                        );
+                        bsoncxx::builder::basic::document filter{};
+                        filter.append(kvp(key, to_bson_value(_json.at(key))));
+
+                        if (!_oid.empty()) {
+                            filter.append(kvp("_id", bsoncxx::builder::basic::make_document(
+                                kvp("$ne", bsoncxx::oid{_oid}))));
+                        }
+                        std::cout << bsoncxx::to_json(filter.view()) << std::endl;
                         if (T::count(filter.view()) > 0) {
                             throw builder::key_validation_error{
                                 key,
@@ -157,6 +185,9 @@ namespace polls
                 }
 
                 T document{};
+                if (!_oid.empty()) {
+                    document.set_oid(_oid);
+                }
                 document.set_data(bsoncxx::to_json(builder.extract()));
                 return document;
             }

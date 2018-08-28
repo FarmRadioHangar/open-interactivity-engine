@@ -143,14 +143,14 @@ namespace polls
         void set_data(std::string&& data);
         std::string data() const;
 
-        void set_oid(std::string&& oid);
+        void set_oid(const std::string& oid);
         std::string oid() const;
 
         void fetch();
         void save();
         void remove();
 
-        static T get(std::string&& oid);
+        static T get(const std::string& oid);
 
         template <template <typename, typename> class Container = std::vector,
                   template <typename> class Allocator = std::allocator>
@@ -254,7 +254,7 @@ namespace polls
      *
      * \param oid a valid MongoDB ObjectId string
      */
-    template <typename T> void model<T>::set_oid(std::string&& oid)
+    template <typename T> void model<T>::set_oid(const std::string& oid)
     {
         try {
             _oid = bsoncxx::oid{std::move(oid)};
@@ -314,6 +314,9 @@ namespace polls
         mongocxx::options::update options{};
         options.upsert(true);
 
+        std::cout << bsoncxx::to_json(filter.view()) << std::endl;
+        std::cout << bsoncxx::to_json(data->view()) << std::endl;
+
         collection().replace_one(filter.view(), data->view(), options);
 
         fetch();
@@ -339,11 +342,11 @@ namespace polls
      *
      * \return a document
      */
-    template <typename T> T model<T>::get(std::string&& oid)
+    template <typename T> T model<T>::get(const std::string& oid)
     {
         T document{};
 
-        document.set_oid(std::move(oid));
+        document.set_oid(oid);
         document.fetch();
 
         return document;

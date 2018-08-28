@@ -60,6 +60,36 @@ namespace polls
 
         content() : polls::model<content>{"test", content::mongodb_collection} {}
     };
+
+    class language_builder : public polls::utils::builder::document<language>
+    {
+    public:
+        explicit language_builder(web::json::value&& json);
+        language_builder(const std::string& oid, web::json::value&& json);
+      
+    private:
+        void init();
+    };
+
+    language_builder::language_builder(web::json::value&& json)
+      : polls::utils::builder::document<language>{std::move(json)}
+    {
+        init();
+    }
+
+    language_builder::language_builder(const std::string& oid, web::json::value&& json)
+      : polls::utils::builder::document<language>{oid, std::move(json)}
+    {
+        init();
+    }
+      
+    void language_builder::init()
+    {
+        add_property("name", json::value::value_type::String, true);
+        add_property("tag", json::value::value_type::String, true);
+
+        add_unique_constraint("name");
+    }
 }
 
 using namespace polls;
@@ -138,39 +168,33 @@ void delete_language(polls::http::request request, polls::http::response respons
     response.send();
 }
 
+void put_language(polls::http::request request, polls::http::response response)
+{
+    request.with_json([&request, &response](json::value data)
+    {
+        auto oid = request.get_uri_param(1);
+        auto document = language_builder{oid, std::move(data)}.build();
+        document.save();
+
+        json::value json_response{};
+        json_response["language"] = json::value::parse(document.data());
+
+        response.set_body(json_response);
+        response.send();
+    });
+}
+
 void post_language(polls::http::request request, polls::http::response response)
 {
     request.with_json([&response](json::value data)
     {
-        polls::utils::builder::document<language> builder{std::move(data)};
-
-        builder.add_property("name", json::value::value_type::String, true);
-        builder.add_property("tag", json::value::value_type::String, true);
-
-        builder.add_unique_constraint("name");
-
-        auto document = builder.build();
-
-        //if (language::count(filter.view()) > 0) {
-        //    json::value json_data{};
-        //    json_data["error"]  = json::value::string("duplicate key");
-        //    json_data["status"] = json::value::number(409);
-        //    json_data["key"]    = json::value::string("name");
-        //    json_data["value"]  = json::value::string(data["name"].as_string());
-        //    response.set_status_code(409);
-        //    response.set_body(json_data);
-        //    response.send();
-        //    return;
-        //}
-
-        std::cout << document.data() << std::endl;
-
+        auto document = language_builder{std::move(data)}.build();
         document.save();
 
-        json::value json_data{};
-        json_data["language"] = json::value::parse(document.data());
+        json::value json_response{};
+        json_response["language"] = json::value::parse(document.data());
 
-        response.set_body(json_data);
+        response.set_body(json_response);
         response.send();
     });
 }
@@ -237,6 +261,7 @@ int main()
 
     server.on(web::http::methods::GET, "^/languages/([0-9a-f]+)$", get_languages_item);
     server.on(web::http::methods::DEL, "^/languages/([0-9a-f]+)$", delete_language);
+    server.on(web::http::methods::PUT, "^/languages/([0-9a-f]+)$", put_language);
     server.on(web::http::methods::GET, "^/languages$", get_languages);
     server.on(web::http::methods::POST, "^/languages$", post_language);
 
