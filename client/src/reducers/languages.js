@@ -45,6 +45,12 @@ export default function(state = initialState.languages, action) {
         pageError: error
       };
     }
+    case 'DELETE_LANGUAGE_REQUEST': {
+      return { ...state, itemFetching: true };
+    }
+    case 'DELETE_LANGUAGE_FAILURE': {
+      return { ...state, itemFetching: false };
+    }
     default:
       return state;
   }
