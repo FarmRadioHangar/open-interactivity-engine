@@ -7,7 +7,7 @@ const LanguagesDelete = ({ item, itemFetching, itemError, dispatch }) => {
   const id = item && item._id['$oid'];
   return (
     <React.Fragment>
-      {itemError ? (
+      {itemError && !item ? (
         <React.Fragment>
           {itemError.message}
         </React.Fragment>
@@ -20,6 +20,11 @@ const LanguagesDelete = ({ item, itemFetching, itemError, dispatch }) => {
           ) : (
             <React.Fragment>
               <h2>{item.name}</h2>
+              {itemError && (
+                <p>
+                  {itemError.message}
+                </p>
+              )}
               <div>
                 <button onClick={() => {
                   dispatch(actions.deleteLanguageRequest(id));

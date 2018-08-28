@@ -25,7 +25,7 @@ function* callDeleteLanguage(action) {
   try {
     tasks = yield all([
       call(::api.httpDelete, `languages/${action.id}`),
-      delay(300)
+      delay(600)
     ]);
   } catch(error) {
     yield put(actions.deleteLanguageFailure(error));
