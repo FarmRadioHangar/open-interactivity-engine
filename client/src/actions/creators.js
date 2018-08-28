@@ -24,5 +24,17 @@ export function fetchItemFailure(resource, error) {
   return { type: `FETCH_${resource.toUpperCase()}_ITEM_FAILURE`, error };
 }
 
+export function deleteLanguageRequest(id) {
+  return { type: 'DELETE_LANGUAGE_REQUEST', id };
+}
+
+export function deleteLanguageSuccess() {
+  return { type: 'DELETE_LANGUAGE_SUCCESS' };
+}
+
+export function deleteLanguageFailure(error) {
+  return { type: 'DELETE_LANGUAGE_FAILURE', error };
+}
+
 export const createLanguageAction = createFormAction('CREATE_LANGUAGE');
 export const updateLanguageAction = createFormAction('UPDATE_LANGUAGE');

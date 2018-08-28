@@ -48,7 +48,10 @@ export default class Api {
     console.log(`DELETE ${url}`);
     return fetch(url, { method: 'DELETE' })
       .catch(err => { throw new Error(FETCH_ERROR_MSG); })
-      .then(this.sendResponse);
+      .then((response) => {
+        const { status, ok } = response;
+        return { status, ok };
+      });
   }
 
   toQueryString(obj) {

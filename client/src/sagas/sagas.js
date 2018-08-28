@@ -12,11 +12,36 @@ const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
 export function* rootSaga() {
   yield all([
+    fork(deleteLanguageSaga),
     fork(createLanguageFormSaga),
     fork(updateLanguageFormSaga),
     fork(formActionSaga),
     fork(router, history, routes)
   ]);
+}
+
+function* callDeleteLanguage(action) {
+  let tasks;
+  try {
+    tasks = yield all([
+      call(::api.httpDelete, `languages/${action.id}`),
+      delay(300)
+    ]);
+  } catch(error) {
+    yield put(actions.deleteLanguageFailure(error));
+    return;
+  }
+  const response = tasks[0];
+  if (response.ok) {
+    yield put(actions.deleteLanguageSuccess());
+    yield call([history, 'push'], '/languages');
+  } else {
+    yield put(actions.deleteLanguageFailure(Error('Language was not deleted.')));
+  }
+}
+
+function* deleteLanguageSaga() {
+  yield takeEvery('DELETE_LANGUAGE_REQUEST', callDeleteLanguage);
 }
 
 function* callPostLanguage(action) {
@@ -106,7 +131,7 @@ function* fetchPage(resource, page = 1) {
     const items = Api.toCamelCase(response[resource]);
     yield put(actions.fetchPageSuccess(resource, items, response.total));
   } else {
-    // TODO
+    yield put(actions.fetchItemFailure(resource, new Error(response.error)));
   }
 }
 
@@ -115,11 +140,23 @@ function* fetchItem(resource, id, process) {
     put(actions.fetchItemRequest(resource)),
     delay(300)
   ]);
-  const response = yield call(::api.get, `languages/${id}`);
+  let response;
+  try {
+    response = yield call(::api.get, `languages/${id}`);
+  } catch(error) {
+    yield put(actions.fetchItemFailure(resource, error));
+    return;
+  }
   if (response.ok) {
-    yield process(response);
+    if ('function' === typeof process) {
+      yield process(response);
+    }
   } else {
-    // TODO
+    if (404 == response.status) {
+      yield put(actions.fetchItemFailure(resource, new Error('This document doesn\'t exist.')));
+    } else {
+      yield put(actions.fetchItemFailure(resource, new Error(response.error)));
+    }
   }
 }
 
@@ -144,10 +181,12 @@ const routes = {
   },
   '/languages/:id/edit': function* (params) { 
     yield* fetchItem('languages', params.id, function* (response) {
+      const data = Api.toCamelCase(response.language);
+      yield put(actions.fetchItemSuccess('languages', data));
       yield put({
         type: '@@redux-form/INITIALIZE',
         meta: { form: 'languages-update' },
-        payload: { ...response.language }
+        payload: { ...data }
       });
     });
   },

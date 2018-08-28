@@ -1,25 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import * as actions from '../../actions/creators';
 
-const LanguagesDelete = ({ item, itemFetching, itemError }) => {
+const LanguagesDelete = ({ item, itemFetching, itemError, dispatch }) => {
+  const id = item && item._id['$oid'];
   return (
     <React.Fragment>
-      {itemFetching ? (
-        <span>Please wait...</span>
+      {itemError ? (
+        <React.Fragment>
+          {itemError.message}
+        </React.Fragment>
       ) : (
         <React.Fragment>
-          {!itemError && (
-            <div>
+          {itemFetching ? (
+            <React.Fragment>
+              Please wait...
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <h2>{item.name}</h2>
               <div>
-                <h2>{item.name}</h2>
-              </div>
-              <div>
-                <button>
+                <button onClick={() => {
+                  dispatch(actions.deleteLanguageRequest(id));
+                }}>
                   Confirm delete
                 </button>
               </div>
-            </div>
+            </React.Fragment>
           )}
         </React.Fragment>
       )}
