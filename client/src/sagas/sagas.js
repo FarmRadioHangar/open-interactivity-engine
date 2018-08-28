@@ -98,7 +98,7 @@ function* callPutLanguage(action) {
   const response = tasks[0];
   if (response.ok) {
     yield put(actions.updateLanguageAction.success());
-    yield call([history, 'push'], '/languages'); // TODO redirect to view
+    yield call([history, 'push'], `/languages/${id}/view`);
   } else {
     let options = { _error: 'Language was not updated.' };
     switch(response.code) {
