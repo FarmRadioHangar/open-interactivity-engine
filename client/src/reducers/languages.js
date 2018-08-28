@@ -4,7 +4,11 @@ export default function(state = initialState.languages, action) {
   switch(action.type) {
     case 'FETCH_LANGUAGES_ITEM_REQUEST': {
       const { item } = initialState.languages;
-      return { ...state, item, itemFetching: true };
+      return { 
+        ...state, item, 
+        itemFetching: true,
+        itemError: null
+      };
     }
     case 'FETCH_LANGUAGES_ITEM_SUCCESS': {
       const { item } = action;
@@ -26,7 +30,11 @@ export default function(state = initialState.languages, action) {
     case 'FETCH_LANGUAGES_PAGE_REQUEST': {
       const { page, total } = initialState.languages;
       const { offset } = action;
-      return { ...state, page, total, offset, pageFetching: true };
+      return { 
+        ...state, page, total, offset, 
+        pageFetching: true,
+        pageError: null
+      };
     }
     case 'FETCH_LANGUAGES_PAGE_SUCCESS': {
       const { page, total } = action;
@@ -46,10 +54,26 @@ export default function(state = initialState.languages, action) {
       };
     }
     case 'DELETE_LANGUAGE_REQUEST': {
-      return { ...state, itemFetching: true };
+      return { 
+        ...state, 
+//        itemFetching: true,
+//        itemError: null
+      };
+    }
+    case 'DELETE_LANGUAGE_SUCCESS': {
+      return { 
+        ...state,
+//        itemFetching: false,
+//        itemError: null
+      };
     }
     case 'DELETE_LANGUAGE_FAILURE': {
-      return { ...state, itemFetching: false };
+      const { error } = action;
+      return { 
+        ...state, 
+//        itemFetching: false,
+//        itemError: error
+      };
     }
     default:
       return state;

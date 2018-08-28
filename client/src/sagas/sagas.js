@@ -32,6 +32,7 @@ function* callDeleteLanguage(action) {
     return;
   }
   const response = tasks[0];
+  console.log(response);
   if (response.ok) {
     yield put(actions.deleteLanguageSuccess());
     yield call([history, 'push'], '/languages');
