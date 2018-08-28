@@ -12,7 +12,7 @@ const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
 export function* rootSaga() {
   yield all([
-    fork(deleteLanguageSaga),
+    fork(deleteLanguageFormSaga),
     fork(createLanguageFormSaga),
     fork(updateLanguageFormSaga),
     fork(formActionSaga),
@@ -24,25 +24,26 @@ function* callDeleteLanguage(action) {
   let tasks;
   try {
     tasks = yield all([
-      call(::api.httpDelete, `languages/${action.id}`),
-      delay(600)
+      call(::api.httpDelete, `languages/${action.payload.id}`),
+      delay(300)
     ]);
   } catch(error) {
-    yield put(actions.deleteLanguageFailure(error));
+    let options = { _error: error.message };
+    yield put(actions.deleteLanguageAction.failure(new SubmissionError(options)));
     return;
   }
   const response = tasks[0];
-  console.log(response);
   if (response.ok) {
-    yield put(actions.deleteLanguageSuccess());
+    yield put(actions.deleteLanguageAction.success());
     yield call([history, 'push'], '/languages');
   } else {
-    yield put(actions.deleteLanguageFailure(Error('Language was not deleted.')));
+    let options = { _error: 'Language was not deleted.' };
+    yield put(actions.deleteLanguageAction.failure(new SubmissionError(options)));
   }
 }
 
-function* deleteLanguageSaga() {
-  yield takeEvery('DELETE_LANGUAGE_REQUEST', callDeleteLanguage);
+function* deleteLanguageFormSaga() {
+  yield takeEvery(actions.deleteLanguageAction.REQUEST, callDeleteLanguage);
 }
 
 function* callPostLanguage(action) {

@@ -51,10 +51,6 @@ export default function(state = initialState.languages, action) {
         pageError: error
       };
     }
-    case 'DELETE_LANGUAGE_FAILURE': {
-      const { error } = action;
-      return { ...state, itemError: error };
-    }
     default:
       return state;
   }

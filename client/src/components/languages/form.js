@@ -55,7 +55,7 @@ export const LanguagesForm = ({ pristine, reset, submitting, error }) => {
 };
 
 export function validate(values) {
-  const errors = {};
+  let errors = {};
   if (!values.name) {
     errors.name = 'This field is required.'
   }
@@ -68,6 +68,6 @@ export function validate(values) {
 }
 
 export function warn(values) {
-  const warnings = {};
+  let warnings = {};
   return warnings;
 }
