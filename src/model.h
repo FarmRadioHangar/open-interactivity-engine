@@ -5,6 +5,7 @@
 
 #include <bsoncxx/exception/exception.hpp>
 #include <bsoncxx/json.hpp>
+#include <cassert>
 #include <cpprest/asyncrt_utils.h>
 #include <cpprest/http_listener.h>
 #include <iostream>
@@ -19,73 +20,81 @@
 
 namespace polls
 {
-    using namespace web;
-    using namespace web::http;
-    using namespace web::http::client;
-
     using bsoncxx::builder::basic::kvp;
 
     /*!
      * \class collection
+     *
+     * \brief A subset of documents extracted from a MongoDB collection.
+     *
+     * \todo rename to "page"?
      */
     template <typename T, typename Collection = std::vector<T>>
     class collection
     {
     public:
-        collection(Collection&& container, const std::int64_t total);
+        collection(Collection&& container, const std::size_t total);
 
-        std::int64_t count() const;
-        std::int64_t total() const;
+        std::size_t count() const;
+        std::size_t total() const;
 
-        json::value json() const;
+        web::json::value to_json() const;
 
     private:
-        Collection   _collection;
-        std::int64_t _total;
+        Collection  _collection;
+        std::size_t _total;
     };
 
     /*!
      * \brief Default constructor
      */
     template <typename T, typename Collection>
-    collection<T, Collection>::collection(Collection&& collection,
-                                          const std::int64_t total)
+    collection<T, Collection>::collection(Collection&& collection, const std::size_t total)
       : _collection{std::move(collection)},
         _total{total}
     {
+        assert(total >= collection.size());
     }
 
     /*!
      * \brief Return the number of documents in this collection. This number
-     * may be less than the number of documents available in the underlying
-     * MongoDB data store collection.
+     * is often less than the number of documents available in the underlying
+     * MongoDB data store.
      *
      * \sa total
      */
     template <typename T, typename Collection>
-    std::int64_t collection<T, Collection>::count() const
+    std::size_t collection<T, Collection>::count() const
     {
         return _collection.size();
     }
 
     /*!
-     * \brief Return the \a total number of documents in the underlying MongoDB
-     * collection from where this subset was generated.
+     * \brief The total number of documents in the MongoDB collection from 
+     * where this subset originates.
+     *
+     * \returns the \a total number of documents available in the MongoDB
+     * collection accommodating this subset, at the time it was generated.
      */
     template <typename T, typename Collection>
-    std::int64_t collection<T, Collection>::total() const { return _total; }
+    std::size_t collection<T, Collection>::total() const
+    {
+        return _total;
+    }
 
     /*!
-     * \brief Return a JSON object representation of the collection.
+     * \brief Create and return a JSON object representation of the collection.
+     *
+     * \returns a json object holding an array of documents
      */
     template <typename T, typename Collection>
-    json::value collection<T, Collection>::json() const
+    web::json::value collection<T, Collection>::to_json() const
     {
-        std::vector<json::value> values;
+        std::vector<web::json::value> values;
         for (auto& value : _collection) {
-            values.push_back(json::value::parse(value.data()));
+            values.push_back(web::json::value::parse(value.data()));
         }
-        json::value obj;
+        web::json::value obj{};
         obj[T::mongodb_collection] = web::json::value::array(values);
         obj["count"] = count();
         obj["total"] = total();
@@ -122,7 +131,7 @@ namespace polls
     template <typename T> class model
     {
     public:
-        static constexpr std::int64_t max_page_limit = 60;
+        static constexpr std::int64_t default_page_limit = 60;
 
         model();
         model(const std::string& db, const std::string& collection);
@@ -134,21 +143,30 @@ namespace polls
         void set_data(std::string&& data);
         std::string data() const;
 
-        void set_oid(std::string&& oid);
+        void set_oid(const std::string& oid);
         std::string oid() const;
 
         void fetch();
         void save();
         void remove();
 
-        static T get(std::string&& oid);
+        static T get(const std::string& oid);
 
         template <template <typename, typename> class Container = std::vector,
                   template <typename> class Allocator = std::allocator>
         static polls::collection<T, Container<T, Allocator<T>>>
-        all(std::int64_t skip = 0, std::int64_t limit = max_page_limit);
+        all(std::int64_t skip = 0, std::int64_t limit = default_page_limit);
 
         static std::int64_t count();
+        static std::int64_t count(
+            bsoncxx::document::view_or_value filter,
+            mongocxx::options::count options = mongocxx::options::count{}
+        );
+
+        static void create_index(
+            bsoncxx::document::view_or_value keys,
+            mongocxx::options::index& options = mongocxx::options::index{}
+        );
 
     protected:
         mongocxx::collection collection() const;
@@ -164,7 +182,9 @@ namespace polls
     /*!
      * \brief Default constructor
      */
-    template <typename T> model<T>::model() : _client{mongocxx::uri{}} {}
+    template <typename T> model<T>::model() : _client{mongocxx::uri{}}
+    {
+    }
 
     /*!
      * \brief Create a MongoDB document linked to a database and a collection.
@@ -211,6 +231,8 @@ namespace polls
      * \brief Set the document's data.
      *
      * \param data the string data
+     *
+     * \todo store data internally in json format instead?
      */
     template <typename T> void model<T>::set_data(std::string&& data)
     {
@@ -218,9 +240,9 @@ namespace polls
     }
 
     /*!
-     * \brief Get the document's data (in string format).
+     * \brief Get the document's data (as a string).
      *
-     * \return the serialized string data associated with the document
+     * \return the document's data serialized to a string
      */
     template <typename T> std::string model<T>::data() const
     {
@@ -232,11 +254,11 @@ namespace polls
      *
      * \param oid a valid MongoDB ObjectId string
      */
-    template <typename T> void model<T>::set_oid(std::string&& oid)
+    template <typename T> void model<T>::set_oid(const std::string& oid)
     {
         try {
             _oid = bsoncxx::oid{std::move(oid)};
-        } catch(bsoncxx::v_noabi::exception&) {
+        } catch (bsoncxx::v_noabi::exception&) {
             throw std::runtime_error{"invalid ObjectId"};
         }
     }
@@ -283,7 +305,7 @@ namespace polls
             data = std::make_unique<bsoncxx::document::value>(
                 bsoncxx::from_json(_data)
             );
-        } catch(bsoncxx::v_noabi::exception&) {
+        } catch (bsoncxx::v_noabi::exception&) {
             throw std::runtime_error{"bad BSON data"};
         }
 
@@ -292,7 +314,12 @@ namespace polls
         mongocxx::options::update options{};
         options.upsert(true);
 
+        std::cout << bsoncxx::to_json(filter.view()) << std::endl;
+        std::cout << bsoncxx::to_json(data->view()) << std::endl;
+
         collection().replace_one(filter.view(), data->view(), options);
+
+        fetch();
     }
 
     /*!
@@ -315,23 +342,25 @@ namespace polls
      *
      * \return a document
      */
-    template <typename T> T model<T>::get(std::string&& oid)
+    template <typename T> T model<T>::get(const std::string& oid)
     {
         T document{};
 
-        document.set_oid(std::move(oid));
+        document.set_oid(oid);
         document.fetch();
 
         return document;
     }
 
     /*!
-     * \brief Get all documents from a collection.
+     * \brief Get a subset of documents from a MongoDB collection.
      *
-     * \param skip offset from where MongoDB begins returning results
+     * \param skip  offset from where MongoDB begins returning results
      * \param limit the maximum number of documents to return
      *
-     * \return a STL container of documents
+     * \return a STL container with a collection of documents
+     *
+     * \todo rename to "page"?
      */
     template <typename T>
     template <template <typename, typename> class Container,
@@ -359,17 +388,46 @@ namespace polls
         }
 
         return polls::collection<T, Container<T, Allocator<T>>>{
-            std::move(container), collection.count({})
+            std::move(container),
+            static_cast<std::size_t>(collection.count({}))
         };
     }
 
     /*!
-     * \brief Return the \a total number of documents available in this
-     * collection.
+     * \brief Return the \a total number of documents available in the MongoDB
+     * collection to which this model is linked.
      */
     template <typename T> std::int64_t model<T>::count()
     {
         return T{}.collection().count({});
+    }
+
+    /*!
+     * \brief Count the number of documents matching the provided filter in the
+     * MongoDB collection to which this model is linked.
+     */
+    template <typename T> std::int64_t model<T>::count(
+        bsoncxx::document::view_or_value filter,
+        mongocxx::options::count options)
+    {
+        return T{}.collection().count(filter, options);
+    }
+
+    /*!
+     * \brief Create an index over the collection for the provided keys with
+     * the provided options.
+     *
+     * \see https://docs.mongodb.com/manual/reference/method/db.collection.createIndex/
+     */
+    template <typename T>
+    void model<T>::create_index(
+        bsoncxx::document::view_or_value keys,
+        mongocxx::options::index& options)
+    {
+        T obj{};
+        mongocxx::collection model_collection = obj.collection();
+
+        model_collection.create_index(std::move(keys), options);
     }
 
     template <typename T> mongocxx::collection model<T>::collection() const

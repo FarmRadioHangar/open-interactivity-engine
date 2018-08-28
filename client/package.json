@@ -12,6 +12,8 @@
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
+    "babel-plugin-transform-function-bind": "^6.22.0",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
@@ -21,13 +23,15 @@
     "webpack-dev-server": "^3.1.4"
   },
   "dependencies": {
-    "formik": "^1.0.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-redux": "^5.0.7",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "redux": "^4.0.0",
-    "redux-thunk": "^2.3.0"
+    "redux-form": "^7.4.2",
+    "redux-form-saga": "^0.2.0",
+    "redux-saga": "^0.16.0",
+    "redux-saga-router": "^2.2.0"
   }
 }

@@ -1,4 +1,7 @@
 #include "server.h"
+#include <iomanip>
+#include <mongocxx/exception/query_exception.hpp>
+#include "builder/exception.h"
 
 using namespace web;
 using namespace web::http;
@@ -18,6 +21,24 @@ namespace polls
         void request::with_json(std::function<void(web::json::value)> handler)
         {
             _request.extract_json().then(handler).wait();
+        }
+
+        void request::send_error_response(const std::string& error_message, int status)
+        {
+            std::stringstream oss{};
+            oss << "{\"error\":" << std::quoted(error_message) << ",\"status\":" << status << "}";
+            http::response response{_request};
+            response.set_status_code(status);
+            response.set_body(oss.str());
+            response.send();
+        }
+
+        void request::send_error_response(const web::json::value& body, int status)
+        {
+            http::response response{_request};
+            response.set_status_code(status);
+            response.set_body(body);
+            response.send();
         }
 
         response::response(const web::http::http_request& request)
@@ -98,6 +119,8 @@ namespace polls
 
         /*!
          * \brief Run the server on a specific port.
+         *
+         * \param port the port number
          */
         void server::run(const uint16_t port)
         {
@@ -125,28 +148,61 @@ namespace polls
                 if (request.method() == route.method &&
                     std::regex_match(path, match, route.regex))
                 {
-                    try {
+                    try
+                    {
                         route.handler(
-                            polls::http::request{request, match},
-                            polls::http::response{request}
-                        );
+                            http::request{request, match},
+                            http::response{request});
                         return;
-                    } catch(std::exception& e) {
+                    }
+                    catch (const web::json::json_exception& e)
+                    {
+                        http::request req{request};
+                        web::json::value json_response{};
+                        json_response["error"]  = web::json::value::string(e.what());
+                        json_response["status"] = web::json::value::number(400);
+                        json_response["code"] = web::json::value::string("BAD_JSON");
+                        req.send_error_response(json_response, 400);
+                    }
+                    catch (const utils::builder::error& e)
+                    {
+                        http::request req{request};
+                        req.send_error_response(e.to_json(), e.status_code());
+                    }
+                    catch (const mongocxx::exception& e)
+                    {
                         std::cout << e.what() << std::endl;
-                        std::stringstream oss{};
-                        oss << "{\"error\":\"" << e.what() << "\",\"status\":500}";
-                        polls::http::response response{request};
-                        response.set_status_code(status_codes::InternalError);
-                        response.set_body(oss.str());
-                        response.send();
+                        std::cout << e.code() << std::endl;
+                        http::request req{request};
+                        switch (e.code().value())
+                        {
+                        case 13053:
+                            req.send_error_response("No suitable servers found. Is mongod running?");
+                            break;
+                        case 11000:
+                            req.send_error_response("Duplicate key error.", 409);
+                            break;
+                        default:
+                            req.send_error_response(e.what());
+                        }
+                        return;
+                    }
+                    catch (std::exception& e)
+                    {
+                        std::cout << e.what() << std::endl;
+                        http::request req{request};
+                        req.send_error_response(e.what());
                         return;
                     }
                 }
             }
 
-            polls::http::response response{request};
-            response.set_status_code(status_codes::NotFound);
-            response.send();
+            http::request req{request};
+            web::json::value json_response{};
+            json_response["error"]  = web::json::value::string("Not found");
+            json_response["status"] = web::json::value::number(404);
+            json_response["code"] = web::json::value::string("NOT_FOUND");
+            req.send_error_response(json_response, 404);
         }
     }
 }

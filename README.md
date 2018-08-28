@@ -1,12 +1,12 @@
 # Open Survey Engine
 
-The goal of this project is to create a modular and open architecture for *interactive radio* campaigns. Interactive radio is an umbrella :umbrella: term for various digital tools that add participatory elements to radio :radio: through the use of mobile phones and other communication technologies. Some of the channels over which this communication can take place are:
+The goal of this project is to create a modular and open architecture for *interactive radio* campaigns. Interactive radio is an umbrella :umbrella: term for a variety of digital tools that add participatory elements to radio :radio: through the use of mobile phones and other communication technologies. Some of the channels over which this communication can take place are:
 * IVR
 * SMS
 * Chatbots
 * Speech-to-text
 
-## Plan of action
+## Concept note
 
 In our terminology, a *channel* is a means for uni- or bidirectional communication with an audience. We think of these channels as interfaces whose operations are determined by the capabilities of the channel.
 ```d
@@ -85,19 +85,22 @@ Interactive radio *campaigns* are schedulable and automated activities to exchan
 
 *Features* are configurable units of functionality that can be added to campaigns. A channel provides the communication link between the audience and a campaign feature. Multiple channels may be available for one feature.
 
-## Project structure
+## Plan of action
 
 ### Service layer
-* RESTful API
-* Modern C++
+* Modern C++ (C++14)
+* Microsoft C++ REST SDK (Casablanca)
 * Build tool: CMake
 * Documentation: Doxygen
-* Tests: ?
+* Tests: Google Test
 
 ### Database
 * MongoDB
 
 ### Front-end
 * JavaScript (ES6) 
-* React/Redux
-* Babel/Webpack
+* React
+* Redux
+* Redux-Saga
+* Babel
+* Webpack

@@ -3,17 +3,19 @@
  *
  * \mainpage Main
  */
+#include <bsoncxx/builder/stream/document.hpp>
+#include <bsoncxx/json.hpp>
 #include <cpprest/asyncrt_utils.h>
 #include <cpprest/http_listener.h>
+#include <iomanip>
 #include <iostream>
-#include <mongocxx/instance.hpp>
 #include <regex>
 #include <string>
 #include <thread>
 #include <vector>
 #include "model.h"
 #include "server.h"
-#include "utils.h"
+#include "builder/document.h"
 
 using namespace web;
 using namespace web::http;
@@ -58,6 +60,36 @@ namespace polls
 
         content() : polls::model<content>{"test", content::mongodb_collection} {}
     };
+
+    class language_builder : public polls::utils::builder::document<language>
+    {
+    public:
+        explicit language_builder(web::json::value&& json);
+        language_builder(const std::string& oid, web::json::value&& json);
+      
+    private:
+        void init();
+    };
+
+    language_builder::language_builder(web::json::value&& json)
+      : polls::utils::builder::document<language>{std::move(json)}
+    {
+        init();
+    }
+
+    language_builder::language_builder(const std::string& oid, web::json::value&& json)
+      : polls::utils::builder::document<language>{oid, std::move(json)}
+    {
+        init();
+    }
+      
+    void language_builder::init()
+    {
+        add_property("name", json::value::value_type::String, true);
+        add_property("tag", json::value::value_type::String, true);
+
+        add_unique_constraint("name");
+    }
 }
 
 using namespace polls;
@@ -67,14 +99,18 @@ void get_campaigns(polls::http::request request, polls::http::response response)
     auto skip = request.get_query_param<int64_t>("skip", 0);
     auto limit = request.get_query_param<int64_t>("limit", 10);
 
-    response.set_body(campaign::all(skip, limit).json());
+    response.set_body(campaign::all(skip, limit).to_json());
     response.send();
 }
 
 void get_campaigns_item(polls::http::request request, polls::http::response response)
 {
     auto document = campaign::get(request.get_uri_param(1));
-    response.set_body(document.data());
+
+    json::value json_data{};
+    json_data["campaign"] = json::value::parse(document.data());
+
+    response.set_body(json_data);
     response.send();
 }
 
@@ -88,15 +124,18 @@ void delete_campaign(polls::http::request request, polls::http::response respons
 
 void post_campaign(polls::http::request request, polls::http::response response)
 {
-    request.with_json([&response](json::value data) 
+    request.with_json([&response](json::value data)
     {
-        polls::utils::builder::document<campaign> builder(data);
-        builder.add_required_property("name", json::value::value_type::String);
+        polls::utils::builder::document<campaign> builder(std::move(data));
+        builder.add_property("name", json::value::value_type::String, true);
 
         auto document = builder.build();
         document.save();
 
-        response.set_body(document.data());
+        json::value json_data{};
+        json_data["campaign"] = json::value::parse(document.data());
+
+        response.set_body(json_data);
         response.send();
     });
 }
@@ -106,14 +145,18 @@ void get_languages(polls::http::request request, polls::http::response response)
     auto skip = request.get_query_param<int64_t>("skip", 0);
     auto limit = request.get_query_param<int64_t>("limit", 10);
 
-    response.set_body(language::all(skip, limit).json());
+    response.set_body(language::all(skip, limit).to_json());
     response.send();
 }
 
 void get_languages_item(polls::http::request request, polls::http::response response)
 {
     auto document = language::get(request.get_uri_param(1));
-    response.set_body(document.data());
+
+    json::value json_data{};
+    json_data["language"] = json::value::parse(document.data());
+
+    response.set_body(json_data);
     response.send();
 }
 
@@ -125,18 +168,33 @@ void delete_language(polls::http::request request, polls::http::response respons
     response.send();
 }
 
-void post_language(polls::http::request request, polls::http::response response)
+void put_language(polls::http::request request, polls::http::response response)
 {
-    request.with_json([&response](json::value data) 
+    request.with_json([&request, &response](json::value data)
     {
-        polls::utils::builder::document<language> builder(data);
-        builder.add_required_property("name", json::value::value_type::String);
-        builder.add_required_property("iso_code", json::value::value_type::String);
-
-        auto document = builder.build();
+        auto oid = request.get_uri_param(1);
+        auto document = language_builder{oid, std::move(data)}.build();
         document.save();
 
-        response.set_body(document.data());
+        json::value json_response{};
+        json_response["language"] = json::value::parse(document.data());
+
+        response.set_body(json_response);
+        response.send();
+    });
+}
+
+void post_language(polls::http::request request, polls::http::response response)
+{
+    request.with_json([&response](json::value data)
+    {
+        auto document = language_builder{std::move(data)}.build();
+        document.save();
+
+        json::value json_response{};
+        json_response["language"] = json::value::parse(document.data());
+
+        response.set_body(json_response);
         response.send();
     });
 }
@@ -146,14 +204,18 @@ void get_audience(polls::http::request request, polls::http::response response)
     auto skip = request.get_query_param<int64_t>("skip", 0);
     auto limit = request.get_query_param<int64_t>("limit", 10);
 
-    response.set_body(audience::all(skip, limit).json());
+    response.set_body(audience::all(skip, limit).to_json());
     response.send();
 }
 
 void get_audience_item(polls::http::request request, polls::http::response response)
 {
     auto document = audience::get(request.get_uri_param(1));
-    response.set_body(document.data());
+
+    json::value json_data{};
+    json_data["audience"] = json::value::parse(document.data());
+
+    response.set_body(json_data);
     response.send();
 }
 
@@ -162,20 +224,33 @@ void get_content(polls::http::request request, polls::http::response response)
     auto skip = request.get_query_param<int64_t>("skip", 0);
     auto limit = request.get_query_param<int64_t>("limit", 10);
 
-    response.set_body(content::all(skip, limit).json());
+    response.set_body(content::all(skip, limit).to_json());
     response.send();
 }
 
 void get_content_item(polls::http::request request, polls::http::response response)
 {
     auto document = content::get(request.get_uri_param(1));
-    response.set_body(document.data());
+
+    json::value json_data{};
+    json_data["content"] = json::value::parse(document.data());
+
+    response.set_body(json_data);
     response.send();
 }
 
 int main()
 {
     mongocxx::instance instance{};
+
+    auto spec = bsoncxx::builder::stream::document{}
+        << "name" << 1
+        << bsoncxx::builder::stream::finalize;
+
+    mongocxx::options::index options{};
+    options.unique(true);
+
+    language::create_index(spec.view(), options);
 
     polls::http::server server{};
 
@@ -186,6 +261,7 @@ int main()
 
     server.on(web::http::methods::GET, "^/languages/([0-9a-f]+)$", get_languages_item);
     server.on(web::http::methods::DEL, "^/languages/([0-9a-f]+)$", delete_language);
+    server.on(web::http::methods::PUT, "^/languages/([0-9a-f]+)$", put_language);
     server.on(web::http::methods::GET, "^/languages$", get_languages);
     server.on(web::http::methods::POST, "^/languages$", post_language);
 
