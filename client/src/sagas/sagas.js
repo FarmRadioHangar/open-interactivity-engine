@@ -8,6 +8,8 @@ import Api from '../api';
 
 const api = new Api();
 
+const FLICKER_TRESHOLD = 220;
+
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
 export function* rootSaga() {
@@ -25,7 +27,7 @@ function* callDeleteLanguage(action) {
   try {
     tasks = yield all([
       call(::api.httpDelete, `languages/${action.payload.id}`),
-      delay(300)
+      delay(FLICKER_TRESHOLD)
     ]);
   } catch(error) {
     let options = { _error: error.message };
@@ -52,7 +54,7 @@ function* callPostLanguage(action) {
   try {
     tasks = yield all([
       call(::api.post, 'languages', data),
-      delay(300)
+      delay(FLICKER_TRESHOLD)
     ]);
   } catch(error) {
     let options = { _error: error.message };
@@ -86,7 +88,7 @@ function* callPutLanguage(action) {
   try {
     tasks = yield all([
       call(::api.put, `languages/${id}`, data),
-      delay(300)
+      delay(FLICKER_TRESHOLD)
     ]);
   } catch(error) {
     let options = { _error: error.message };
@@ -119,7 +121,7 @@ function* fetchPage(resource, page = 1) {
   const offset = pageSize*(page - 1);
   yield all([
     put(actions.fetchPageRequest(resource, offset)),
-    delay(300)
+    delay(FLICKER_TRESHOLD)
   ]);
   let response;
   try {
@@ -140,7 +142,7 @@ function* fetchPage(resource, page = 1) {
 function* fetchItem(resource, id, process) {
   yield all([
     put(actions.fetchItemRequest(resource)),
-    delay(300)
+    delay(FLICKER_TRESHOLD)
   ]);
   let response;
   try {
