@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <mongocxx/exception/query_exception.hpp>
 #include "builder/exception.h"
+#include "model/exception.h"
 
 using namespace web;
 using namespace web::http;
@@ -169,11 +170,27 @@ namespace polls
                         http::request req{request};
                         req.send_error_response(e.to_json(), e.status_code());
                     }
+                    catch (const polls::model_error& e)
+                    {
+                        std::cout << e.what() << std::endl;
+
+                        http::request req{request};
+
+                        switch (e.type())
+                        {
+                        case polls::model_error::document_not_found:
+                            req.send_error_response("Document not found.", 404);
+                        default:
+                            req.send_error_response(e.what());
+                        }
+                    }
                     catch (const mongocxx::exception& e)
                     {
                         std::cout << e.what() << std::endl;
                         std::cout << e.code() << std::endl;
+
                         http::request req{request};
+
                         switch (e.code().value())
                         {
                         case 13053:

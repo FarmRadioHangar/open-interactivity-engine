@@ -15,6 +15,7 @@
 #include <mongocxx/cursor.hpp>
 #include <mongocxx/instance.hpp>
 #include <string>
+#include "model/exception.h"
 
 #define COLLECTION(name) static constexpr auto mongodb_collection = #name;
 
@@ -259,7 +260,7 @@ namespace polls
         try {
             _oid = bsoncxx::oid{std::move(oid)};
         } catch (bsoncxx::v_noabi::exception&) {
-            throw std::runtime_error{"invalid ObjectId"};
+            throw model_error{model_error::bad_oid, "invalid ObjectId"};
         }
     }
 
@@ -283,7 +284,7 @@ namespace polls
 
         if (!result) {
             std::cout << bsoncxx::to_json(filter.view()) << std::endl;
-            throw std::runtime_error{"document not found"};
+            throw model_error{model_error::document_not_found, "Not found."};
         }
 
         _data = bsoncxx::to_json(result.value());
@@ -298,7 +299,7 @@ namespace polls
         std::unique_ptr<bsoncxx::document::value> data;
 
         if (_data.empty()) {
-            throw std::runtime_error{"empty (null) document"};
+            throw model_error{model_error::empty_document, "Empty document."};
         }
 
         try {
@@ -306,7 +307,7 @@ namespace polls
                 bsoncxx::from_json(_data)
             );
         } catch (bsoncxx::v_noabi::exception&) {
-            throw std::runtime_error{"bad BSON data"};
+            throw model_error{model_error::bad_bson, "Bad BSON data."};
         }
 
         auto filter = bsoncxx::builder::basic::make_document(kvp("_id", _oid));
