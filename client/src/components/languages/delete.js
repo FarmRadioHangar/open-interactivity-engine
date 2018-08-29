@@ -7,32 +7,24 @@ import * as actions from '../../actions/creators';
 const Form = ({ item, itemFetching, itemError, handleSubmit, initialized, submitting, error, ...props }) => {
   return (
     <form onSubmit={handleSubmit(actions.deleteLanguageAction)}>
-      {itemFetching ? (
-        <React.Fragment>
-          Please wait...
-        </React.Fragment>
-      ) : (
-        <React.Fragment>
-          <h2>
-            Delete {item.name}
-          </h2>
-          {submitting && (
-            <p>
-              Submitting
-            </p>
-          )}
-          {error && (
-            <div style={{border: '1px solid red'}}>
-              {error}
-            </div>
-          )}
-          <div>
-            <button disabled={submitting} type='submit'>
-              Confirm delete
-            </button>
-          </div>
-        </React.Fragment>
+      <h2>
+        Delete {item.name}
+      </h2>
+      {submitting && (
+        <p>
+          Submitting
+        </p>
       )}
+      {error && (
+        <div style={{border: '1px solid red'}}>
+          {error}
+        </div>
+      )}
+      <div>
+        <button disabled={submitting} type='submit'>
+          Confirm delete
+        </button>
+      </div>
     </form>
   );
 };
@@ -41,25 +33,33 @@ const validate = (values) => {
   return {};
 };
 
-const LanguagesDelete = (props) => {
+const LanguagesDelete = ({ itemFetching, itemError, ...props }) => {
   const id = props.item && props.item._id['$oid'];
-  if (props.itemError) {
+  if (itemFetching) {
     return (
       <React.Fragment>
-        {props.itemError.message}
+        Please wait...
       </React.Fragment>
     );
   } else {
-    const ReduxForm = reduxForm({
-      form: 'languages-delete',
-      initialValues: { id },
-      validate
-    })(Form);
-    return (
-      <React.Fragment>
-        <ReduxForm {...props} />
-      </React.Fragment>
-    );
+    if (itemError) {
+      return (
+        <React.Fragment>
+          {itemError.message}
+        </React.Fragment>
+      );
+    } else {
+      const ReduxForm = reduxForm({
+        form: 'languages-delete',
+        initialValues: { id },
+        validate
+      })(Form);
+      return (
+        <React.Fragment>
+          <ReduxForm {...props} />
+        </React.Fragment>
+      );
+    }
   }
 };
 
@@ -70,6 +70,8 @@ LanguagesDelete.propTypes = {
 };
 
 function mapStateToProps(state, ownProps) {
+  console.log(state);
+  console.log('&&&&&&&&&&&&&&&&&&&&&&&&*');
   return state.languages;
 }
 

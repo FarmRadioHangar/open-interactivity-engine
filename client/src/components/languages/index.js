@@ -29,9 +29,7 @@ LanguagesList.propTypes = {
   languages: PropTypes.array.isRequired
 };
 
-const LanguagesIndex = ({ offset, total, page, pageSize, pageFetching, pageError }) => {
-  const pageCount = Math.ceil(total/pageSize);
-  const currentPage = offset/pageSize + 1;
+const LanguagesIndex = ({ pagination, page, pageFetching, pageError }) => {
   return (
     <React.Fragment>
       {pageFetching ? (
@@ -45,11 +43,9 @@ const LanguagesIndex = ({ offset, total, page, pageSize, pageFetching, pageError
           ) : (
             <React.Fragment>
               <LanguagesList languages={page} />
-              <Pagination
-                pageCount   = {pageCount}
-                currentPage = {currentPage}
-                onChange    = {(page) => { history.push(`/languages/page/${page}`); }}
-              />
+              <Pagination {...pagination} onChange={(page) => { 
+                history.push(`/languages/page/${page}`); 
+              }} />
               <button onClick={() => {
                 history.push('/languages/create');
               }}>
@@ -64,10 +60,8 @@ const LanguagesIndex = ({ offset, total, page, pageSize, pageFetching, pageError
 };
 
 LanguagesIndex.propTypes = {
-  offset: PropTypes.number,
-  total: PropTypes.number,
+  pagination: PropTypes.object,
   page: PropTypes.array,
-  pageSize: PropTypes.number,
   pageFetching: PropTypes.bool,
   pageError: PropTypes.object
 };

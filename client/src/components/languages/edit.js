@@ -7,20 +7,22 @@ import * as actions from '../../actions/creators';
 
 const Form = ({ itemFetching, itemError, handleSubmit, initialized, ...props }) => (
   <React.Fragment>
-    {itemError ? (
+    {initialized ? (
       <React.Fragment>
-        {itemError.message}
+        {itemError ? (
+          <React.Fragment>
+            {itemError.message}
+          </React.Fragment>
+        ) : (
+          <form onSubmit={handleSubmit(actions.updateLanguageAction)}>
+            <LanguagesForm {...props} />
+          </form>
+        )}
       </React.Fragment>
     ) : (
-      <form onSubmit={handleSubmit(actions.updateLanguageAction)}>
-        {initialized && !itemFetching ? (
-          <LanguagesForm {...props} />
-        ) : (
-          <React.Fragment>
-            Please wait...
-          </React.Fragment>
-        )}
-      </form>
+      <React.Fragment>
+        Please wait...
+      </React.Fragment>
     )}
   </React.Fragment>
 );

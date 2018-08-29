@@ -39,7 +39,11 @@ export default function(state = initialState.languages, action) {
       return {
         ...state, page, total,
         pageFetching: false,
-        pageError: null
+        pageError: null,
+        pagination: { 
+          pageCount: Math.ceil(total/state.pageSize),
+          currentPage: state.offset/state.pageSize + 1 
+        }
       };
     }
     case 'FETCH_LANGUAGES_PAGE_FAILURE': {
