@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import * as actions from '../../actions/creators';
 
-const Form = ({ item, itemFetching, itemError, handleSubmit, initialized, submitting, error, ...props }) => {
+const Form = ({ item, submitAction, handleSubmit, submitting, error, ...props }) => {
   return (
-    <form onSubmit={handleSubmit(actions.deleteLanguageAction)}>
+    <form onSubmit={handleSubmit(submitAction)}>
       <h2>
         Delete {item.name}
       </h2>
@@ -33,34 +33,27 @@ const validate = (values) => {
   return {};
 };
 
-const LanguagesDelete = ({ itemFetching, itemError, ...props }) => {
-  const id = props.item && props.item._id['$oid'];
-  if (itemFetching) {
-    return (
-      <React.Fragment>
-        Please wait...
-      </React.Fragment>
-    );
-  } else {
-    if (itemError) {
-      return (
+const LanguagesDelete = ({ item, itemFetching, itemError, initialized, ...props }) => {
+  return (
+    <React.Fragment>
+      {itemFetching ? (
+        <span>Please wait...</span>
+      ) : (
         <React.Fragment>
-          {itemError.message}
+          {itemError ? (
+            <React.Fragment>
+              {itemError.message}
+            </React.Fragment>
+          ) : (
+            <Form {...props}
+              item         = {item}
+              submitAction = {actions.deleteLanguageAction}
+            />
+          )}
         </React.Fragment>
-      );
-    } else {
-      const ReduxForm = reduxForm({
-        form: 'languages-delete',
-        initialValues: { id },
-        validate
-      })(Form);
-      return (
-        <React.Fragment>
-          <ReduxForm {...props} />
-        </React.Fragment>
-      );
-    }
-  }
+      )}
+    </React.Fragment>
+  );
 };
 
 LanguagesDelete.propTypes = {
@@ -70,9 +63,9 @@ LanguagesDelete.propTypes = {
 };
 
 function mapStateToProps(state, ownProps) {
-  console.log(state);
-  console.log('&&&&&&&&&&&&&&&&&&&&&&&&*');
   return state.languages;
 }
 
-export default connect(mapStateToProps)(LanguagesDelete);
+const ReduxForm = reduxForm({ form: 'languages-delete', validate })(LanguagesDelete);
+
+export default connect(mapStateToProps)(ReduxForm);

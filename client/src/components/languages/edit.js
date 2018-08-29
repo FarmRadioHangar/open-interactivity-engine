@@ -5,33 +5,23 @@ import { reduxForm } from 'redux-form';
 import { LanguagesForm, validate, warn } from './form';
 import * as actions from '../../actions/creators';
 
-const Form = ({ itemFetching, itemError, handleSubmit, initialized, ...props }) => (
-  <React.Fragment>
-    {initialized ? (
-      <React.Fragment>
-        {itemError ? (
-          <React.Fragment>
-            {itemError.message}
-          </React.Fragment>
-        ) : (
-          <form onSubmit={handleSubmit(actions.updateLanguageAction)}>
-            <LanguagesForm {...props} />
-          </form>
-        )}
-      </React.Fragment>
-    ) : (
-      <React.Fragment>
-        Please wait...
-      </React.Fragment>
-    )}
-  </React.Fragment>
-);
-
-const ReduxForm = reduxForm({ form: 'languages-update', validate, warn })(Form);
-
-const LanguagesEdit = (props) => {
+const LanguagesEdit = ({ item, itemFetching, itemError, initialized, ...props }) => {
   return (
-    <ReduxForm {...props} />
+    <React.Fragment>
+      {itemFetching ? (
+        <span>Please wait...</span>
+      ) : (
+        <React.Fragment>
+          {itemError ? (
+            <React.Fragment>
+              {itemError.message}
+            </React.Fragment>
+          ) : (
+            <LanguagesForm submitAction={actions.updateLanguageAction} {...props} />
+          )}
+        </React.Fragment>
+      )}
+    </React.Fragment>
   );
 };
 
@@ -45,4 +35,6 @@ function mapStateToProps(state, ownProps) {
   return state.languages;
 }
 
-export default connect(mapStateToProps)(LanguagesEdit);
+const ReduxForm = reduxForm({ form: 'languages-update', validate, warn })(LanguagesEdit);
+
+export default connect(mapStateToProps)(ReduxForm);

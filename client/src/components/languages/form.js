@@ -16,9 +16,9 @@ const LanguagesField = ({ input, label, type, meta }) => {
   );
 }
 
-export const LanguagesForm = ({ pristine, reset, submitting, error }) => {
+export const LanguagesForm = ({ submitAction, handleSubmit, pristine, reset, submitting, error }) => {
   return (
-    <React.Fragment>
+    <form onSubmit={handleSubmit(submitAction)}>
       <div>
         {error && (
           <div style={{border: '1px solid red'}}>
@@ -50,7 +50,7 @@ export const LanguagesForm = ({ pristine, reset, submitting, error }) => {
           <button type='submit' disabled={submitting}>Submit</button>
         </div>
       </div>
-    </React.Fragment>
+    </form>
   );
 };
 

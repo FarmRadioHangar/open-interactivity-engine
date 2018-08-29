@@ -9,7 +9,7 @@ export default {
     total: 0,
     offset: 0,
     pageSize: 10,
-    pagination: null
+    pagination: { pageCount: 0, currentPage: 0 }
   },
   content: {
     item: null,
@@ -21,7 +21,7 @@ export default {
     total: 0,
     offset: 0,
     pageSize: 10,
-    pagination: null
+    pagination: { pageCount: 0, currentPage: 0 }
   },
   audience: {
     item: null,
@@ -33,7 +33,7 @@ export default {
     total: 0,
     offset: 0,
     pageSize: 10,
-    pagination: null
+    pagination: { pageCount: 0, currentPage: 0 }
   },
   languages: {
     item: null,
@@ -45,6 +45,6 @@ export default {
     total: 0,
     offset: 0,
     pageSize: 10,
-    pagination: null
+    pagination: { pageCount: 0, currentPage: 0 }
   }
 };

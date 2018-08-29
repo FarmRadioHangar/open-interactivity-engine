@@ -8,7 +8,7 @@ import Api from '../api';
 
 const api = new Api();
 
-const FLICKER_TRESHOLD = 220;
+const FLICKER_TRESHOLD = 130;
 
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
@@ -181,6 +181,11 @@ const routes = {
     yield* fetchItem('languages', params.id, function* (response) {
       const data = Api.toCamelCase(response.language);
       yield put(actions.fetchItemSuccess('languages', data));
+      yield put({
+        type: '@@redux-form/INITIALIZE',
+        meta: { form: 'languages-delete' },
+        payload: { id: data._id['$oid'] }
+      });
     });
   },
   '/languages/:id/edit': function* (params) { 
