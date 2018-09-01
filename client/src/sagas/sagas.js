@@ -171,13 +171,13 @@ const routes = {
   '/languages/page/:page': function* (params) {
     yield* fetchPage('languages', params.page);
   },
-  '/languages/:id/view': function* (params) { 
+  '/languages/:id/view': function* (params) {
     yield* fetchItem('languages', params.id, function* (response) {
       const data = Api.toCamelCase(response.language);
       yield put(actions.fetchItemSuccess('languages', data));
     });
   },
-  '/languages/:id/delete': function* (params) { 
+  '/languages/:id/delete': function* (params) {
     yield* fetchItem('languages', params.id, function* (response) {
       const data = Api.toCamelCase(response.language);
       yield put(actions.fetchItemSuccess('languages', data));
@@ -188,7 +188,7 @@ const routes = {
       });
     });
   },
-  '/languages/:id/edit': function* (params) { 
+  '/languages/:id/edit': function* (params) {
     yield* fetchItem('languages', params.id, function* (response) {
       const data = Api.toCamelCase(response.language);
       yield put(actions.fetchItemSuccess('languages', data));

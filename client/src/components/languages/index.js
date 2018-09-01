@@ -43,9 +43,11 @@ const LanguagesIndex = ({ pagination, page, pageFetching, pageError }) => {
           ) : (
             <React.Fragment>
               <LanguagesList languages={page} />
-              <Pagination {...pagination} onChange={(page) => { 
-                history.push(`/languages/page/${page}`); 
-              }} />
+              {pagination && (
+                <Pagination {...pagination} onChange={(page) => { 
+                  history.push(`/languages/page/${page}`); 
+                }} />
+              )}
               <button onClick={() => {
                 history.push('/languages/create');
               }}>

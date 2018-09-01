@@ -4,14 +4,14 @@ export default function(state = initialState.languages, action) {
   switch(action.type) {
     case 'FETCH_LANGUAGES_ITEM_REQUEST': {
       const { item } = initialState.languages;
-      return { 
-        ...state, item, 
+      return {
+        ...state, item,
         itemFetching: true
       };
     }
     case 'FETCH_LANGUAGES_ITEM_SUCCESS': {
       const { item } = action;
-      return { 
+      return {
         ...state, item,
         itemFetching: false,
         itemError: null
@@ -20,17 +20,17 @@ export default function(state = initialState.languages, action) {
     case 'FETCH_LANGUAGES_ITEM_FAILURE': {
       const { item } = initialState.languages;
       const { error } = action;
-      return { 
+      return {
         ...state, item,
         itemFetching: false,
         itemError: error
       };
     }
     case 'FETCH_LANGUAGES_PAGE_REQUEST': {
-      const { page, total } = initialState.languages;
+      const { page, total, pagination } = initialState.languages;
       const { offset } = action;
-      return { 
-        ...state, page, total, offset, 
+      return {
+        ...state, page, total, offset, pagination,
         pageFetching: true
       };
     }
@@ -40,9 +40,9 @@ export default function(state = initialState.languages, action) {
         ...state, page, total,
         pageFetching: false,
         pageError: null,
-        pagination: { 
+        pagination: {
           pageCount: Math.ceil(total/state.pageSize),
-          currentPage: state.offset/state.pageSize + 1 
+          currentPage: state.offset/state.pageSize + 1
         }
       };
     }

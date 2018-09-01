@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 const NotFound = () => {
   return (
     <React.Fragment>
-      Not found
+      Page not found
     </React.Fragment>
   );
 };
