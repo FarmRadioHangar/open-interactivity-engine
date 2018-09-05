@@ -164,6 +164,7 @@ void delete_language(polls::http::request request, polls::http::response respons
 {
     auto document = language::get(request.get_uri_param(1));
     document.remove();
+
     response.set_status_code(status_codes::NoContent);
     response.send();
 }
