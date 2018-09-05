@@ -4,6 +4,8 @@
 #pragma once
 
 #include <bsoncxx/builder/basic/kvp.hpp>
+#include <bsoncxx/oid.hpp>
+#include <mongocxx/client.hpp>
 #include <vector>
 
 #define COLLECTION(name) static constexpr auto mongodb_collection = #name;
@@ -53,15 +55,62 @@ namespace survey
     public:
         model();
         model(const std::string& db, const std::string& collection = T::mongodb_collection);
-        //model(const model& other);
-        //model& operator=(const model& other);
-
+        model(const model& other);
+        model& operator=(const model& other);
         virtual ~model() = default;
+
+    private:
+        std::string      _db;
+        std::string      _collection;
+        bsoncxx::oid     _oid;
+        mongocxx::client _client;
     };
 
+    /*!
+     * \brief Default constructor
+     */
+    template <typename T> model<T>::model() 
+      : _client{mongocxx::uri{}}
+    {
+    }
+
+    /*!
+     * \brief Create a MongoDB document linked to a database and a collection.
+     *
+     * \param db         - MongoDB database name
+     * \param collection - MongoDB collection name
+     */
     template <typename T>
     model<T>::model(const std::string& db, const std::string& collection)
+      : _db{db},
+        _collection{collection},
+        _client{mongocxx::uri{}}
     {
+    }
+
+    /*!
+     * \brief Copy construct a MongoDB document.
+     */
+    template <typename T> model<T>::model(const model& other)
+      : _db{other._db},
+        _collection{other._collection},
+        _oid{other._oid},
+        _client{mongocxx::uri{}}
+    {
+    }
+
+    /*!
+     * \brief Copy assign to a MongoDB document.
+     */
+    template <typename T> model<T>& model<T>::operator=(const model& other)
+    {
+        if (&other != this)
+        {
+            _db         = other._db;
+            _collection = other._collection;
+            _oid        = other._oid;
+        }
+        return *this;
     }
 }
 
