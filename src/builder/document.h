@@ -188,6 +188,7 @@ namespace polls
                 if (!_oid.empty()) {
                     document.set_oid(_oid);
                 }
+
                 document.set_data(bsoncxx::to_json(builder.extract()));
                 return document;
             }
