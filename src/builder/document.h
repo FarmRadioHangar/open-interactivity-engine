@@ -33,7 +33,6 @@ namespace polls
                 explicit document(web::json::value&& json);
                 explicit document(const std::string& data);
                 document(const std::string& oid, web::json::value&& json);
-
                 ~document() = default;
                 document(const document&) = delete;
                 document& operator=(const document&) = delete;
