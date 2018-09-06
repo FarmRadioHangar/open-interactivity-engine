@@ -4,9 +4,11 @@
 #pragma once
 
 #include <bsoncxx/builder/basic/kvp.hpp>
+#include <bsoncxx/exception/exception.hpp>
 #include <bsoncxx/oid.hpp>
 #include <mongocxx/client.hpp>
 #include <vector>
+#include "model/exception.h"
 
 #define COLLECTION(name) static constexpr auto mongodb_collection = #name;
 
@@ -53,7 +55,7 @@ namespace survey
     template <typename T> class model
     {
     public:
-        model();
+        //model();
         model(const std::string& db, const std::string& collection = T::mongodb_collection);
         model(const model& other);
         model& operator=(const model& other);
@@ -62,6 +64,9 @@ namespace survey
         std::string db() const;
         std::string collection() const;
 
+        void set_oid(const std::string& oid);
+        std::string oid() const;
+
     private:
         std::string      _db;
         std::string      _collection;
@@ -69,13 +74,13 @@ namespace survey
         mongocxx::client _client;
     };
 
-    /*!
-     * \brief Default constructor
-     */
-    template <typename T> model<T>::model() 
-      : _client{mongocxx::uri{}}
-    {
-    }
+//    /*!
+//     * \brief Default constructor
+//     */
+//    template <typename T> model<T>::model() 
+//      : _client{mongocxx::uri{}}
+//    {
+//    }
 
     /*!
      * \brief Create a MongoDB document linked to a database and a collection.
@@ -116,14 +121,48 @@ namespace survey
         return *this;
     }
 
+    /*!
+     * \brief todo
+     *
+     * \return todo
+     */
     template <typename T> std::string model<T>::db() const
     {
         return _db;
     }
 
+    /*!
+     * \brief todo
+     *
+     * \return todo
+     */
     template <typename T> std::string model<T>::collection() const
     {
         return _collection;
+    }
+
+    /*!
+     * \brief Set the document's ObjectId.
+     *
+     * \param oid - a valid MongoDB ObjectId
+     */
+    template <typename T> void model<T>::set_oid(const std::string& oid)
+    {
+        try {
+            _oid = bsoncxx::oid{std::move(oid)};
+        } catch (bsoncxx::v_noabi::exception&) {
+            throw model_error{model_error::bad_oid, "invalid ObjectId"};
+        }
+    }
+
+    /*!
+     * \brief Get the document's ObjectId.
+     *
+     * \return the MongoDB ObjectId associated with the document
+     */
+    template <typename T> std::string model<T>::oid() const
+    {
+        return _oid.to_string();
     }
 }
 

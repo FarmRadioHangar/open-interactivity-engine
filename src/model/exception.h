@@ -5,7 +5,7 @@
 
 #include <stdexcept>
 
-namespace polls
+namespace survey
 {
     class model_error : public std::runtime_error
     {
@@ -15,7 +15,7 @@ namespace polls
             document_not_found,
             bad_oid,
             empty_document,
-            bad_bson
+            bad_bson_data
         };
 
         model_error(const model_error_type type, const std::string& message);

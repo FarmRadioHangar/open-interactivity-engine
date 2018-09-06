@@ -53,7 +53,7 @@ include_directories(${LIBBSONCXX_INCLUDE_DIRS} ${LIBMONGOCXX_INCLUDE_DIR})
 
 enable_testing()
 
-file(GLOB SRCS ../src/model.cpp)
+file(GLOB SRCS ../src/model.cpp ../src/model/exception.cpp)
 file(GLOB TEST_SRCS *.cpp)
 
 add_executable(main_test ${SRCS} ${TEST_SRCS})
