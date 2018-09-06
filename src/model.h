@@ -59,6 +59,9 @@ namespace survey
         model& operator=(const model& other);
         virtual ~model() = default;
 
+        std::string db() const;
+        std::string collection() const;
+
     private:
         std::string      _db;
         std::string      _collection;
@@ -111,6 +114,16 @@ namespace survey
             _oid        = other._oid;
         }
         return *this;
+    }
+
+    template <typename T> std::string model<T>::db() const
+    {
+        return _db;
+    }
+
+    template <typename T> std::string model<T>::collection() const
+    {
+        return _collection;
     }
 }
 

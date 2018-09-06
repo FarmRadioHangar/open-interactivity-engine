@@ -4,6 +4,7 @@
  * \mainpage Main
  */
 
+#include <mongocxx/instance.hpp>
 #include "model.h"
 
 class pants : public survey::model<pants>
@@ -18,7 +19,7 @@ public:
 
 int main()
 {
-//    mongocxx::instance instance{};
+    mongocxx::instance instance{};
 //    pants document = pants::get("5b63f486be9ca51a9a3c0e81");
 }
 

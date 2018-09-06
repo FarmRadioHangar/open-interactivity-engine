@@ -53,8 +53,10 @@ include_directories(${LIBBSONCXX_INCLUDE_DIRS} ${LIBMONGOCXX_INCLUDE_DIR})
 
 enable_testing()
 
-file(GLOB SRCS *.cpp)
-add_executable(main_test ${SRCS})
+file(GLOB SRCS ../src/model.cpp)
+file(GLOB TEST_SRCS *.cpp)
+
+add_executable(main_test ${SRCS} ${TEST_SRCS})
 
 target_link_libraries(main_test PUBLIC ${GTEST_BOTH_LIBRARIES})
 target_link_libraries(main_test PUBLIC ${Boost_LIBRARIES})
