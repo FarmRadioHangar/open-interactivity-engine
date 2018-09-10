@@ -88,10 +88,12 @@ namespace survey
         for (const auto& value : _collection) {
             values.emplace_back(web::json::value::parse(value.data()));
         }
+
         web::json::value obj{};
         obj[T::mongodb_collection] = web::json::value::array(values);
         obj["count"] = count();
         obj["total"] = total();
+
         return obj;
     }
 
@@ -127,12 +129,15 @@ namespace survey
     public:
         static constexpr std::int64_t default_page_limit = 60;
 
-        //model();
-        model(const std::string& db, const std::string& collection = T::mongodb_collection);
+        model(mongocxx::uri&& uri, const std::string& db,
+              const std::string& collection = T::mongodb_collection);
+        explicit model(const std::string& db,
+                       const std::string& collection = T::mongodb_collection);
         model(const model& other);
         model& operator=(const model& other);
         virtual ~model() = default;
 
+        std::string host() const;
         std::string db() const;
         std::string collection() const;
 
@@ -160,6 +165,7 @@ namespace survey
         mongocxx::collection get_mongodb_collection() const;
 
     private:
+        std::string      _host;
         std::string      _db;
         std::string      _collection;
         web::json::value _data;
@@ -167,13 +173,22 @@ namespace survey
         mongocxx::client _client;
     };
 
-//    /*!
-//     * \brief Default constructor
-//     */
-//    template <typename T> model<T>::model()
-//      : _client{mongocxx::uri{}}
-//    {
-//    }
+    /*!
+     * \brief Create a MongoDB document linked to a database and a collection.
+     *
+     * \param host       - MongoDB host uri
+     * \param db         - MongoDB database name
+     * \param collection - MongoDB collection name
+     */
+    template <typename T>
+    model<T>::model(mongocxx::uri&& uri, const std::string& db, const std::string& collection)
+      : _host{uri.to_string()},
+        _db{db},
+        _collection{collection},
+        _data{web::json::value::object()},
+        _client{uri}
+    {
+    }
 
     /*!
      * \brief Create a MongoDB document linked to a database and a collection.
@@ -183,10 +198,11 @@ namespace survey
      */
     template <typename T>
     model<T>::model(const std::string& db, const std::string& collection)
-      : _db{db},
+      : _host{"mongodb://localhost:27017"},
+        _db{db},
         _collection{collection},
         _data{web::json::value::object()},
-        _client{mongocxx::uri{}}
+        _client{mongocxx::uri{_host}}
     {
     }
 
@@ -194,11 +210,12 @@ namespace survey
      * \brief Copy construct a MongoDB document.
      */
     template <typename T> model<T>::model(const model& other)
-      : _db{other._db},
+      : _host{other._host},
+        _db{other._db},
         _collection{other._collection},
         _data{other._data},
         _oid{other._oid},
-        _client{mongocxx::uri{}}
+        _client{mongocxx::uri{_host}}
     {
     }
 
@@ -209,12 +226,21 @@ namespace survey
     {
         if (&other != this)
         {
+            _host       = other._host;
             _db         = other._db;
             _collection = other._collection;
             _data       = other._data;
             _oid        = other._oid;
         }
         return *this;
+    }
+
+    /*!
+     * \return the MongoDB host uri
+     */
+    template <typename T> std::string model<T>::host() const
+    {
+        return _host;
     }
 
     /*!
@@ -423,22 +449,6 @@ namespace survey
     }
 }
 
-//#include <bsoncxx/exception/exception.hpp>
-//#include <bsoncxx/json.hpp>
-//#include <cassert>
-//#include <cpprest/asyncrt_utils.h>
-//#include <cpprest/http_listener.h>
-//#include <iostream>
-//#include <memory>
-//#include <mongocxx/client.hpp>
-//#include <mongocxx/collection.hpp>
-//#include <mongocxx/cursor.hpp>
-//#include <mongocxx/instance.hpp>
-//#include <string>
-//#include "model/exception.h"
-//
-//#define COLLECTION(name) static constexpr auto mongodb_collection = #name;
-//
 //namespace polls
 //{
 //    using bsoncxx::builder::basic::kvp;

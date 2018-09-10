@@ -1,15 +1,28 @@
 #include "gtest/gtest.h"
 #include "../src/model.h"
 #include "../src/model/exception.h"
-#include <mongocxx/instance.hpp>
+#include <cassert>
 #include <cpprest/json.h>
+#include <mongocxx/instance.hpp>
 
 class pants : public survey::model<pants>
 {
 public:
     COLLECTION(pants)
 
-    pants() : survey::model<pants>{"test"} {}
+    pants() : survey::model<pants>{mongocxx::uri{"mongodb://localhost:27017"}, "test"} {}
+};
+
+class model_test_case : public ::testing::Test
+{
+protected:
+    virtual void SetUp() override
+    {
+    }
+
+    virtual void TearDown() override
+    {
+    }
 };
 
 TEST(model_test, document_initialization)
@@ -159,7 +172,21 @@ int main(int argc, char* argv[])
 {
     mongocxx::instance instance{};
 
-    ::testing::InitGoogleTest(&argc, argv);
+    mongocxx::uri uri{"mongodb://localhost:27017"};
 
-    return RUN_ALL_TESTS();
+    mongocxx::client client(uri);
+
+    auto db = client.database("test");
+    db.drop();
+
+    auto collection = db.collection("pants");
+
+    assert(0 == collection.count({}));
+
+    ::testing::InitGoogleTest(&argc, argv);
+    int result = RUN_ALL_TESTS();
+
+    db.drop();
+
+    return result;
 }
