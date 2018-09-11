@@ -37,7 +37,10 @@ namespace polls
                 document(const document&) = delete;
                 document& operator=(const document&) = delete;
 
-                void add_property(const std::string& name, const web::json::value::value_type type, const bool required = false);
+                void add_property(const std::string& name, 
+                                  const web::json::value::value_type type, 
+                                  const bool required = false);
+
                 void add_unique_constraint(const std::string& key);
 
                 T build() const;

@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "../src/model.h"
 #include "../src/model/exception.h"
+#include <bsoncxx/builder/basic/document.hpp>
 #include <cassert>
 #include <cpprest/json.h>
 #include <mongocxx/instance.hpp>
@@ -18,10 +19,30 @@ class model_test_case : public ::testing::Test
 protected:
     virtual void SetUp() override
     {
+        using bsoncxx::builder::basic::kvp;
+
+        mongocxx::uri uri{"mongodb://localhost:27017"};
+        mongocxx::client client(uri);
+
+        auto db = client.database("test");
+        db.drop();
+
+        auto collection = db.collection("pants");
+
+        bsoncxx::builder::basic::document builder{};
+
+        bsoncxx::document::value data = builder.extract();
+
+        collection.insert_one(data.view());
     }
 
     virtual void TearDown() override
     {
+        mongocxx::uri uri{"mongodb://localhost:27017"};
+        mongocxx::client client(uri);
+
+        auto db = client.database("test");
+        db.drop();
     }
 };
 

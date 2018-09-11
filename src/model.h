@@ -64,7 +64,7 @@ namespace survey
 
     /*!
      * \brief The total number of documents in the MongoDB collection from
-     *        where this subset originates.
+     *        where this subset was taken.
      *
      * \returns the \a total number of documents available in the MongoDB
      *          collection accommodating this subset, at the time it was

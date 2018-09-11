@@ -21,7 +21,8 @@ namespace polls
         class request
         {
         public:
-            explicit request(const web::http::http_request& request, const std::smatch& match = std::smatch{});
+            explicit request(const web::http::http_request& request, 
+                             const std::smatch& match = std::smatch{});
 
             template <typename T> T get_query_param(const std::string& name, const T& def) const;
             std::string get_uri_param(size_t n) const;
