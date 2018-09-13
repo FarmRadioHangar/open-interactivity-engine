@@ -12,10 +12,10 @@ class pants : public survey::model<pants>
 public:
     COLLECTION(pants)
 
-    pants() 
+    pants()
       : survey::model<pants>{
-            mongocxx::uri{dotenv::getenv("MONGODB_HOST", "mongodb://localhost:27017")}, 
-            dotenv::getenv("MONGODB_DATABASE", "test")} 
+            mongocxx::uri{dotenv::getenv("MONGODB_HOST", "mongodb://localhost:27017")},
+            dotenv::getenv("MONGODB_DATABASE", "test")}
     {
     }
 };
@@ -39,7 +39,7 @@ protected:
     {
         using bsoncxx::builder::basic::kvp;
 
-        mongocxx::client client(mongocxx::uri{dotenv::getenv("MONGODB_HOST", 
+        mongocxx::client client(mongocxx::uri{dotenv::getenv("MONGODB_HOST",
               "mongodb://localhost:27017")});
 
         auto db = client.database(dotenv::getenv("MONGODB_DATABASE", "test"));
@@ -48,7 +48,7 @@ protected:
         auto collection = db.collection(pants::mongodb_collection);
 
         uint16_t i;
-        for (i = 0; i < 330; i++) 
+        for (i = 0; i < 330; i++)
         {
             bsoncxx::builder::basic::document builder{};
             builder.append(kvp("item", i));
@@ -59,7 +59,7 @@ protected:
 
     virtual void TearDown() override
     {
-        mongocxx::client client(mongocxx::uri{dotenv::getenv("MONGODB_HOST", 
+        mongocxx::client client(mongocxx::uri{dotenv::getenv("MONGODB_HOST",
               "mongodb://localhost:27017")});
 
         auto db = client.database(dotenv::getenv("MONGODB_DATABASE", "test"));
@@ -116,7 +116,7 @@ TEST(model_test, copy_assign_props_matches_original)
     ASSERT_EQ(collection_name, other.collection());
 }
 
-/* Test that copy construction and copy assignment copies the document's JSON 
+/* Test that copy construction and copy assignment copies the document's JSON
  * payload. */
 TEST(model_test, copy_data_matches_original)
 {

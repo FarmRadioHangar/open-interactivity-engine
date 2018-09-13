@@ -86,7 +86,7 @@ namespace survey
     /*!
      * \brief Create and return a JSON object representation of the collection.
      *
-     * \returns a json object holding an array of documents
+     * \returns a json object holding the array of documents
      */
     template <typename T, typename Collection>
     web::json::value page<T, Collection>::to_json() const
