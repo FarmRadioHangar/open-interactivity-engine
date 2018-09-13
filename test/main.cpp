@@ -14,38 +14,56 @@ public:
     pants() : survey::model<pants>{mongocxx::uri{"mongodb://localhost:27017"}, "test"} {}
 };
 
-class model_test_case : public ::testing::Test
+class model_db_test_fixture : public ::testing::Test
 {
 protected:
     virtual void SetUp() override
     {
-        using bsoncxx::builder::basic::kvp;
-
-        mongocxx::uri uri{"mongodb://localhost:27017"};
-        mongocxx::client client(uri);
-
-        auto db = client.database("test");
-        db.drop();
-
-        auto collection = db.collection("pants");
-
-        bsoncxx::builder::basic::document builder{};
-
-        bsoncxx::document::value data = builder.extract();
-
-        collection.insert_one(data.view());
     }
 
     virtual void TearDown() override
     {
-        mongocxx::uri uri{"mongodb://localhost:27017"};
-        mongocxx::client client(uri);
+    }
+};
 
-        auto db = client.database("test");
+class model_page_test_fixture : public ::testing::Test
+{
+protected:
+    virtual void SetUp() override
+    {
+        pants document;
+
+        using bsoncxx::builder::basic::kvp;
+
+        mongocxx::client client(mongocxx::uri{document.host()});
+
+        auto db = client.database(document.db());
+        db.drop();
+
+        auto collection = db.collection(pants::mongodb_collection);
+
+        uint8_t i;
+        for (i = 0; i < 30; i++) 
+        {
+            bsoncxx::builder::basic::document builder{};
+            builder.append(kvp("item", i));
+            bsoncxx::document::value data = builder.extract();
+            collection.insert_one(data.view());
+        }
+    }
+
+    virtual void TearDown() override
+    {
+        pants document;
+
+        mongocxx::client client(mongocxx::uri{document.host()});
+
+        auto db = client.database(document.db());
         db.drop();
     }
 };
 
+/* Test that database and collection names are set when creating a document. */
 TEST(model_test, document_initialization)
 {
     pants document;
@@ -54,6 +72,7 @@ TEST(model_test, document_initialization)
     ASSERT_EQ("pants", document.collection());
 }
 
+/* Test that an ObjectID is generated when creating a document. */
 TEST(model_test, oid_is_not_empty)
 {
     pants document;
@@ -132,7 +151,7 @@ TEST(model_test, set_oid)
     ASSERT_EQ(valid_oid, document.oid());
 }
 
-TEST(model_test, save_and_get_document)
+TEST_F(model_db_test_fixture, save_and_get_document)
 {
     pants document{};
 
@@ -165,7 +184,7 @@ TEST(model_test, set_non_object_throws)
     ASSERT_THROW(document.set_data(std::move(json_array)), survey::model_error);
 }
 
-TEST(model_test, get_removed_document_throws)
+TEST_F(model_db_test_fixture, get_removed_document_throws)
 {
     pants document;
 
@@ -178,7 +197,7 @@ TEST(model_test, get_removed_document_throws)
     ASSERT_THROW(pants::get(oid), survey::model_error);
 }
 
-TEST(model_test, removed_document_is_empty)
+TEST_F(model_db_test_fixture, removed_document_is_empty)
 {
     pants document;
     document.set_data(web::json::value::parse("{\"some\":\"string\"}"));
@@ -189,25 +208,17 @@ TEST(model_test, removed_document_is_empty)
     ASSERT_EQ(document.data(), web::json::value{});
 }
 
+TEST_F(model_page_test_fixture, up_and_down)
+{
+    ASSERT_EQ(pants::count(), 30);
+}
+
 int main(int argc, char* argv[])
 {
     mongocxx::instance instance{};
 
-    mongocxx::uri uri{"mongodb://localhost:27017"};
-
-    mongocxx::client client(uri);
-
-    auto db = client.database("test");
-    db.drop();
-
-    auto collection = db.collection("pants");
-
-    assert(0 == collection.count({}));
-
     ::testing::InitGoogleTest(&argc, argv);
     int result = RUN_ALL_TESTS();
-
-    db.drop();
 
     return result;
 }

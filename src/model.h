@@ -67,8 +67,7 @@ namespace survey
      *        where this subset was taken.
      *
      * \returns the \a total number of documents available in the MongoDB
-     *          collection accommodating this subset, at the time it was
-     *          generated.
+     *          collection at the time this subset was generated.
      */
     template <typename T, typename Collection>
     std::size_t page<T, Collection>::total() const
@@ -338,7 +337,7 @@ namespace survey
 
     /*!
      * \brief Persist the document to the database. This method can be used
-     *        either to update an existing document; or to create a new one.
+     *        either to update an existing document or to create a new one.
      */
     template <typename T> void model<T>::save()
     {
@@ -440,7 +439,7 @@ namespace survey
      */
     template <typename T> std::int64_t model<T>::count()
     {
-        return T{}.collection().count({});
+        return T{}.get_mongodb_collection().count({});
     }
 
     template <typename T> mongocxx::collection model<T>::get_mongodb_collection() const

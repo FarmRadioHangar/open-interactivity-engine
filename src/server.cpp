@@ -8,7 +8,7 @@ using namespace web;
 using namespace web::http;
 using namespace http::experimental::listener;
 
-namespace polls
+namespace survey
 {
     namespace http
     {
@@ -170,7 +170,7 @@ namespace polls
                         http::request req{request};
                         req.send_error_response(e.to_json(), e.status_code());
                     }
-                    catch (const polls::model_error& e)
+                    catch (const survey::model_error& e)
                     {
                         std::cout << e.what() << std::endl;
 
@@ -178,7 +178,7 @@ namespace polls
 
                         switch (e.type())
                         {
-                        case polls::model_error::document_not_found:
+                        case survey::model_error::document_not_found:
                             req.send_error_response("Document not found.", 404);
                         default:
                             req.send_error_response(e.what());
