@@ -249,8 +249,29 @@ TEST_F(model_page_test_fixture, page_size_is_OK)
         ASSERT_EQ(page.count(), 30);
         ASSERT_EQ(page.total(), 330);
     }
+    {
+        auto page = pants::page(0, 500);
+
+        ASSERT_EQ(page.count(), 330);
+        ASSERT_EQ(page.total(), 330);
+    }
 }
 
+TEST_F(model_page_test_fixture, pagination)
+{
+    {
+        auto page = pants::page(0, 4);
+
+        ASSERT_EQ(page.at(0)["item"].as_integer(), 0);
+        ASSERT_EQ(page.at(3)["item"].as_integer(), 3);
+    }
+    {
+        auto page = pants::page(4, 8);
+
+        ASSERT_EQ(page.at(0)["item"].as_integer(), 4);
+        ASSERT_EQ(page.at(3)["item"].as_integer(), 7);
+    }
+}
 
 int main(int argc, char* argv[])
 {
