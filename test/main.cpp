@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "../src/model.h"
 #include "../src/model/exception.h"
+#include "../src/dotenv/dotenv.h"
 #include <bsoncxx/builder/basic/document.hpp>
 #include <cassert>
 #include <cpprest/json.h>
@@ -11,7 +12,12 @@ class pants : public survey::model<pants>
 public:
     COLLECTION(pants)
 
-    pants() : survey::model<pants>{mongocxx::uri{"mongodb://localhost:27017"}, "test"} {}
+    pants() 
+      : survey::model<pants>{
+            mongocxx::uri{dotenv::getenv("MONGODB_HOST", "mongodb://localhost:27017")}, 
+            dotenv::getenv("MONGODB_DATABASE", "test")} 
+    {
+    }
 };
 
 class model_db_test_fixture : public ::testing::Test
@@ -31,19 +37,18 @@ class model_page_test_fixture : public ::testing::Test
 protected:
     virtual void SetUp() override
     {
-        pants document;
-
         using bsoncxx::builder::basic::kvp;
 
-        mongocxx::client client(mongocxx::uri{document.host()});
+        mongocxx::client client(mongocxx::uri{dotenv::getenv("MONGODB_HOST", 
+              "mongodb://localhost:27017")});
 
-        auto db = client.database(document.db());
+        auto db = client.database(dotenv::getenv("MONGODB_DATABASE", "test"));
         db.drop();
 
         auto collection = db.collection(pants::mongodb_collection);
 
-        uint8_t i;
-        for (i = 0; i < 30; i++) 
+        uint16_t i;
+        for (i = 0; i < 330; i++) 
         {
             bsoncxx::builder::basic::document builder{};
             builder.append(kvp("item", i));
@@ -54,11 +59,10 @@ protected:
 
     virtual void TearDown() override
     {
-        pants document;
+        mongocxx::client client(mongocxx::uri{dotenv::getenv("MONGODB_HOST", 
+              "mongodb://localhost:27017")});
 
-        mongocxx::client client(mongocxx::uri{document.host()});
-
-        auto db = client.database(document.db());
+        auto db = client.database(dotenv::getenv("MONGODB_DATABASE", "test"));
         db.drop();
     }
 };
@@ -68,8 +72,10 @@ TEST(model_test, document_initialization)
 {
     pants document;
 
-    ASSERT_EQ("test", document.db());
-    ASSERT_EQ("pants", document.collection());
+    const auto collection_name = pants::mongodb_collection;
+
+    ASSERT_EQ(dotenv::getenv("MONGODB_DATABASE", "test"), document.db());
+    ASSERT_EQ(collection_name, document.collection());
 }
 
 /* Test that an ObjectID is generated when creating a document. */
@@ -80,30 +86,38 @@ TEST(model_test, oid_is_not_empty)
     ASSERT_FALSE(document.oid().empty());
 }
 
+/* Test that copy construction behaves as expected w.r.t. data members. */
 TEST(model_test, copy_props_matches_original)
 {
     pants document;
     pants other(document);
 
+    const auto collection_name = pants::mongodb_collection;
+
     ASSERT_EQ(document.oid(), other.oid());
 
-    ASSERT_EQ("test", other.db());
-    ASSERT_EQ("pants", other.collection());
+    ASSERT_EQ(dotenv::getenv("MONGODB_DATABASE", "test"), other.db());
+    ASSERT_EQ(collection_name, other.collection());
 }
 
+/* Test that copy assignment behaves as expected w.r.t. data members. */
 TEST(model_test, copy_assign_props_matches_original)
 {
     pants document;
     pants other;
 
+    const auto collection_name = pants::mongodb_collection;
+
     other = document;
 
     ASSERT_EQ(document.oid(), other.oid());
 
-    ASSERT_EQ("test", other.db());
-    ASSERT_EQ("pants", other.collection());
+    ASSERT_EQ(dotenv::getenv("MONGODB_DATABASE", "test"), other.db());
+    ASSERT_EQ(collection_name, other.collection());
 }
 
+/* Test that copy construction and copy assignment copies the document's JSON 
+ * payload. */
 TEST(model_test, copy_data_matches_original)
 {
     auto data = web::json::value::parse("{\"some\":\"string\"}");
@@ -208,13 +222,39 @@ TEST_F(model_db_test_fixture, removed_document_is_empty)
     ASSERT_EQ(document.data(), web::json::value{});
 }
 
-TEST_F(model_page_test_fixture, up_and_down)
+TEST_F(model_page_test_fixture, document_count_is_OK)
 {
-    ASSERT_EQ(pants::count(), 30);
+    ASSERT_EQ(pants::count(), 330);
 }
+
+TEST_F(model_page_test_fixture, default_page_size_is_OK)
+{
+    auto page = pants::page();
+    const auto default_limit = pants::default_page_limit;
+
+    ASSERT_EQ(page.count(), default_limit);
+}
+
+TEST_F(model_page_test_fixture, page_size_is_OK)
+{
+    {
+        auto page = pants::page(0, 10);
+
+        ASSERT_EQ(page.count(), 10);
+        ASSERT_EQ(page.total(), 330);
+    }
+    {
+        auto page = pants::page(0, 30);
+
+        ASSERT_EQ(page.count(), 30);
+        ASSERT_EQ(page.total(), 330);
+    }
+}
+
 
 int main(int argc, char* argv[])
 {
+    dotenv::init();
     mongocxx::instance instance{};
 
     ::testing::InitGoogleTest(&argc, argv);

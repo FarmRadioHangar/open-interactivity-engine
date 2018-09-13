@@ -414,7 +414,7 @@ namespace survey
         opts.skip(skip);
         opts.limit(limit);
 
-        auto collection = model.collection();
+        auto collection = model.get_mongodb_collection();
         auto cursor = collection.find({}, opts);
 
         Container<T, Allocator<T>> container{};
@@ -423,7 +423,7 @@ namespace survey
         {
             T document{};
             document._oid  = doc["_id"].get_oid().value;
-            document._data = bsoncxx::to_json(doc);
+            document._data = web::json::value::parse(bsoncxx::to_json(doc));
             container.push_back(document);
         }
 
