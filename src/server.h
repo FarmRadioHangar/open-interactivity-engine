@@ -3,35 +3,88 @@
  */
 #pragma once
 
+#include <cpprest/http_listener.h>
+#include <regex>
+#include <vector>
+
 /*!
- * \brief hello
+ * \brief This is the main namespace for this library.
  */
 namespace survey
 {
     /*!
-     * \brief hello
+     * \brief Namespace for HTTP server and utilities
      */
     namespace http
     {
         /*!
-         * \brief hello
+         * \brief A HTTP request
          */
         class request
         {
         };
 
         /*!
-         * \brief hello
+         * \brief A HTTP response
          */
         class response
         {
         };
 
+        using request_handler = std::function<void(survey::http::request,
+                                                   survey::http::response)>;
+
         /*!
-         * \brief hello
+         * \brief Route handler
+         */
+        struct request_route
+        {
+            web::http::method method;
+            std::regex        regex;
+            request_handler   handler;
+        };
+
+        /*!
+         * \brief REST server
          */
         class server
         {
+        public:
+            server(const uint16_t port       = 9080,
+                   const std::string& scheme = "http",
+                   const std::string& host   = "localhost",
+                   const std::string& path   = "");
+
+            ~server() = default;
+            server(const server&) = delete;
+            server& operator=(const server&) = delete;
+
+            void run();
+            void run(const uint16_t port);
+
+            /*!
+             * \brief Configure the server to listen on the given port for
+             *        incoming connections.
+             *
+             * \param port the port number
+             */
+            void set_port(const uint16_t port) { _port = port; };
+
+            void on(
+                const web::http::method& method,
+                const std::string& uri_pattern,
+                request_handler handler);
+
+        protected:
+            void handle_request(const web::http::http_request& request);
+
+        private:
+            web::http::experimental::listener::http_listener _listener;
+            uint16_t                   _port;
+            std::string                _scheme;
+            std::string                _host;
+            std::string                _path;
+            std::vector<request_route> _routes;
         };
     }
 }

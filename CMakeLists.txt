@@ -21,14 +21,14 @@ find_package(cpprestsdk REQUIRED)
 
 file(GLOB_RECURSE SRCS src/*.cpp)
 
-#add_executable(survey ${SRCS})
-add_executable(survey src/main.cpp src/model.cpp src/server.cpp)
+#add_executable(server ${SRCS})
+add_executable(server src/main.cpp src/model.cpp src/server.cpp)
 
 include_directories(${LIBMONGOCXX_INCLUDE_DIRS} ${LIBMONGOCXX_INCLUDE_DIR})
 include_directories(${LIBBSONCXX_INCLUDE_DIRS} ${LIBMONGOCXX_INCLUDE_DIR})
 
-target_link_libraries(survey PUBLIC ${Boost_LIBRARIES})
-target_link_libraries(survey PUBLIC ${LIBBSONCXX_LIBRARIES})
-target_link_libraries(survey PUBLIC ${LIBMONGOCXX_LIBRARIES})
-target_link_libraries(survey PUBLIC ${OPENSSL_LIBRARIES})
-target_link_libraries(survey PRIVATE cpprestsdk::cpprest)
+target_link_libraries(server PUBLIC ${Boost_LIBRARIES})
+target_link_libraries(server PUBLIC ${LIBBSONCXX_LIBRARIES})
+target_link_libraries(server PUBLIC ${LIBMONGOCXX_LIBRARIES})
+target_link_libraries(server PUBLIC ${OPENSSL_LIBRARIES})
+target_link_libraries(server PRIVATE cpprestsdk::cpprest)

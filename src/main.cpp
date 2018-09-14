@@ -1,7 +1,7 @@
 /*!
  * \file main.cpp
  *
- * \mainpage Main
+ * \mainpage Synopsis
  *
  * Welcome to the Open Survey Engine project
  */
@@ -11,11 +11,31 @@
 #include "model.h"
 #include "server.h"
 
+void campaigns_get_one(survey::http::request request, survey::http::response response)
+{
+    std::cout << "campaigns_get_one" << std::endl;
+
+    //auto document = campaign::get(request.get_uri_param(1));
+
+    //json::value json_data{};
+    //json_data["campaign"] = json::value::parse(document.data());
+
+    //response.set_body(json_data);
+    //response.send();
+}
+
 int main()
 {
     dotenv::init();
     mongocxx::instance instance{};
 
+    survey::http::server server{};
+
+    using web::http::methods;
+
+    server.on(methods::GET, "^/campaigns/([0-9a-f]+)$", campaigns_get_one);
+
+    server.run();
 }
 
 //#include <bsoncxx/builder/stream/document.hpp>

@@ -1,9 +1,113 @@
 #include "server.h"
+#include <cpprest/uri_builder.h>
 
 namespace survey
 {
     namespace http
     {
+        /*!
+         * \brief Create the server.
+         */
+        server::server(const uint16_t port,
+                       const std::string& scheme,
+                       const std::string& host,
+                       const std::string& path)
+          : _port{port},
+            _scheme{scheme},
+            _host{host},
+            _path{path}
+        {
+        }
+
+        /*!
+         * \brief Run the server.
+         */
+        void server::run()
+        {
+            using web::http::experimental::listener::http_listener;
+            using namespace web::http;
+
+            uri_builder builder{};
+
+            builder.set_scheme(_scheme);
+            builder.set_host(_host);
+            builder.set_path(_path);
+            builder.set_port(std::to_string(_port));
+
+            _listener = http_listener{builder.to_uri()};
+
+            _listener.support(
+                std::bind(&server::handle_request, this, std::placeholders::_1)
+            );
+
+            //_listener.support(methods::OPTIONS, [](http_request request) {
+            //    http_response response{status_codes::OK};
+            //    http_headers& headers = response.headers();
+            //    headers["Access-Control-Allow-Origin"] = "*";
+            //    headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, PUT, DELETE, OPTIONS";
+            //    headers["Access-Control-Allow-Headers"] = "Origin, Content-Type, X-Auth-Token";
+            //    request.reply(response);
+            //});
+
+            try
+            {
+                _listener.open()
+                         .then([this]() { std::cout << "Listening on port " << _port << "..." << std::endl; })
+                         .wait();
+
+                while (true);
+            }
+            catch (const std::exception& e)
+            {
+                std::cout << e.what() << std::endl;
+            }
+        }
+
+        /*!
+         * \brief Run the server on a specific port.
+         *
+         * \param port the port number
+         */
+        void server::run(const uint16_t port)
+        {
+            set_port(port);
+            run();
+        }
+
+        /*!
+         * \brief Register a request handler.
+         */
+        void server::on(const web::http::method& method,
+                        const std::string& uri_pattern,
+                        request_handler handler)
+        {
+            _routes.emplace_back(
+                request_route{method, std::regex{uri_pattern}, handler}
+            );
+        }
+
+        void server::handle_request(const web::http::http_request& request)
+        {
+            auto path = web::http::uri::decode(request.relative_uri().path());
+            std::smatch match{};
+
+            for (auto& route : _routes) {
+                if (request.method() == route.method
+                    && std::regex_match(path, match, route.regex)) {
+                    try {
+                        route.handler(http::request{}, http::response{});
+                        //route.handler(http::request{request, match},
+                        //              http::response{request});
+                        return;
+                    } catch (const std::exception& e) {
+                        //
+                    }
+                }
+            }
+
+            // send 404 response
+            std::cout << "404" << std::endl;
+        }
     }
 }
 
@@ -12,29 +116,10 @@ namespace survey
 //#include "builder/exception.h"
 //#include "model/exception.h"
 //
-//using namespace web;
-//using namespace web::http;
-//using namespace http::experimental::listener;
-//
-///*!
-// * \namespace survey
-// *
-// * \brief This is the main namespace for this library.
-// */
 //namespace survey
 //{
-//    /*!
-//     * \namespace survey::http
-//     *
-//     * \brief Namespace for HTTP server and utilities
-//     */
 //    namespace http
 //    {
-//        /*!
-//         * \class survey::http::request
-//         *
-//         * \brief HTTP request
-//         */
 //
 //        request::request(const web::http::http_request& request, const std::smatch& match)
 //          : _request{request},
@@ -66,12 +151,6 @@ namespace survey
 //            response.send();
 //        }
 //
-//        /*!
-//         * \class survey::http::response
-//         *
-//         * \brief HTTP response
-//         */
-//
 //        response::response(const web::http::http_request& request)
 //          : _request{request},
 //            _response{status_codes::OK}
@@ -94,86 +173,6 @@ namespace survey
 //        void response::send()
 //        {
 //            _request.reply(_response);
-//        }
-//
-//        /*!
-//         * \class server
-//         *
-//         * \brief REST server
-//         */
-//
-//        /*!
-//         * \brief Create the server
-//         */
-//        server::server()
-//          : _scheme{"http"},
-//            _host{"localhost"},
-//            _port{9080}
-//        {
-//        }
-//
-//        /*!
-//         * \brief Run the server
-//         */
-//        void server::run()
-//        {
-//            uri_builder builder;
-//
-//            builder.set_scheme(_scheme);
-//            builder.set_host(_host);
-//            builder.set_port(std::to_string(_port));
-//            builder.set_path(_path);
-//
-//            _listener = http_listener{builder.to_uri()};
-//
-//            _listener.support(
-//                std::bind(&server::handle_request, this, std::placeholders::_1)
-//            );
-//
-//            _listener.support(web::http::methods::OPTIONS, [](http_request request) {
-//                web::http::http_response response{web::http::status_codes::OK};
-//                web::http::http_headers& headers = response.headers();
-//                headers["Access-Control-Allow-Origin"] = "*";
-//                headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, PUT, DELETE, OPTIONS";
-//                headers["Access-Control-Allow-Headers"] = "Origin, Content-Type, X-Auth-Token";
-//                request.reply(response);
-//            });
-//
-//            try
-//            {
-//                _listener
-//                  .open()
-//                  .then([]() { std::cout << "Listening..." << std::endl; })
-//                  .wait();
-//
-//                while (true);
-//            }
-//            catch (const std::exception& e)
-//            {
-//                std::cout << e.what() << std::endl;
-//            }
-//        }
-//
-//        /*!
-//         * \brief Run the server on a specific port.
-//         *
-//         * \param port the port number
-//         */
-//        void server::run(const uint16_t port)
-//        {
-//            set_port(port);
-//            run();
-//        }
-//
-//        /*!
-//         * \brief Register a request handler.
-//         */
-//        void server::on(
-//            const web::http::method& method,
-//            const std::string& pattern,
-//            request_handler handler)
-//        {
-//            _routes.push_back(request_route{method, std::regex{pattern}, handler});
 //        }
 //
 //        void server::handle_request(http_request request)

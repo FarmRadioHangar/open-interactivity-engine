@@ -510,7 +510,7 @@ namespace survey
     }
 
     /*!
-     * \brief Directly access the element of the document with the given key.
+     * \brief Directly access the element of the document matching the given key.
      *
      * \param key the key to match
      */
