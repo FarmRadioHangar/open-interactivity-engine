@@ -88,7 +88,7 @@ namespace polls
             /*!
              * \brief todo
              *
-             * \param id - todo
+             * \param oid - todo
              * \param json - todo
              */
             template <typename T>

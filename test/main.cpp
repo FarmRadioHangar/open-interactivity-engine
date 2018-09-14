@@ -303,6 +303,21 @@ TEST_F(model_db_test_fixture, pagination_out_of_bounds)
     ASSERT_THROW(page.at(5)["item"], std::exception);
 }
 
+/* Test JSON serialization of page. */
+TEST_F(model_db_test_fixture, pagination_to_json)
+{
+    auto collection = pants::page(0, 10);
+    auto json = web::json::value::parse(collection.to_json().serialize());
+
+    ASSERT_TRUE(json["count"].is_integer());
+    ASSERT_TRUE(json["total"].is_integer());
+    ASSERT_TRUE(json["pants"].is_array());
+
+    ASSERT_EQ(json["count"].as_integer(), 10);
+    ASSERT_EQ(json["total"].as_integer(), 330);
+    ASSERT_EQ(json["pants"].as_array().size(), 10);
+}
+
 int main(int argc, char* argv[])
 {
     dotenv::init();

@@ -111,7 +111,7 @@ namespace survey
      *     std::cout << collection.to_json().serialize() << std::endl;
      * \endcode
      *
-     * Example output:
+     * *Example output:*
      *
      * \code{.json}
      *     {
@@ -338,7 +338,7 @@ namespace survey
         try {
             _data = bsoncxx::from_json(data);
         } catch (bsoncxx::v_noabi::exception&) {
-            throw model_error{model_error::bad_bson_data, "bad BSON data"};
+            throw model_error{model_error::bad_bson_data, "bad BSON"};
         }
     }
 
@@ -405,12 +405,13 @@ namespace survey
      * \code{.cpp}
      *     // Update a document
      *     auto document = pants::get("5b63f486be9ca51a9a3c0e81");
-     *     document.set_data(web::json::value::parse("{\"key\":\"val\"}"));
+     *     document.set_data("{\"key\":\"val\"}");
      *     document.save();
      *
      *     // Create a new document
-     *     pants new_document{};
-     *     new_document.save();
+     *     pants document{};
+     *     document.set_data("{\"key\":\"val\"}");
+     *     document.save();
      * \endcode
      */
     template <typename T> void model<T>::save()

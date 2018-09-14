@@ -1,3 +1,6 @@
+/*!
+ * \file dotenv.h
+ */
 #pragma once
 
 #include <cassert>
@@ -6,6 +9,11 @@
 #include <iostream>
 #include <regex>
 
+/*!
+ * \brief Utility class for loading environment variables from a .env file.
+ *
+ * \see https://github.com/laserpants/dotenv-cpp
+ */
 class dotenv
 {
 public:
