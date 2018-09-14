@@ -24,15 +24,17 @@ public:
 class model_db_test_fixture : public ::testing::Test
 {
 public:
-    std::string id(const std::size_t pos) { return _ids.at(pos); }
+    std::string id(const std::size_t pos) const { return _ids.at(pos); }
 
 protected:
     virtual void SetUp() override
     {
         using bsoncxx::builder::basic::kvp;
 
-        mongocxx::client client(mongocxx::uri{dotenv::getenv("MONGODB_HOST",
-              "mongodb://localhost:27017")});
+        mongocxx::client client(mongocxx::uri{dotenv::getenv(
+              "MONGODB_HOST",
+              "mongodb://localhost:27017"
+        )});
 
         auto db = client.database(dotenv::getenv("MONGODB_DATABASE", "test"));
         db.drop();
