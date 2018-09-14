@@ -6,21 +6,13 @@
 
 #include <mongocxx/instance.hpp>
 #include "model.h"
-
-class pants : public survey::model<pants>
-{
-public:
-    COLLECTION(pants)
-
-    pants() : survey::model<pants>{"test"}
-    {
-    }
-};
+#include "dotenv/dotenv.h"
 
 int main()
 {
+    dotenv::init();
     mongocxx::instance instance{};
-//    pants document = pants::get("5b63f486be9ca51a9a3c0e81");
+
 }
 
 //#include <bsoncxx/builder/stream/document.hpp>

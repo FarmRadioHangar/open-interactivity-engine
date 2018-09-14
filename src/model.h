@@ -21,7 +21,7 @@ namespace survey
     /*!
      * \class page
      *
-     * \brief A subset of documents extracted from a MongoDB collection.
+     * \brief A subset of documents drawn from a MongoDB collection.
      */
     template <typename T, typename Collection = std::vector<T>> class page
     {
@@ -42,6 +42,11 @@ namespace survey
 
     /*!
      * \brief Default constructor
+     *
+     * \param collection - an STL collection of documents
+     * \param total      - the total number of documents available in the
+     *                     underlying MongoDB data store at the time this
+     *                     subset was generated
      */
     template <typename T, typename Collection>
     page<T, Collection>::page(Collection&& collection, const std::size_t total)
@@ -77,6 +82,13 @@ namespace survey
         return _total;
     }
 
+    /*!
+     * \brief Obtain a document from the underlying container.
+     *
+     * \param pos - position of the element to return
+     *
+     * \returns the document at the given position in the collection
+     */
     template <typename T, typename Collection>
     T page<T, Collection>::at(std::size_t pos) const
     {
@@ -86,7 +98,7 @@ namespace survey
     /*!
      * \brief Create and return a JSON object representation of the collection.
      *
-     * \returns a json object holding the array of documents
+     * \returns a JSON object holding the array of documents
      */
     template <typename T, typename Collection>
     web::json::value page<T, Collection>::to_json() const
@@ -109,7 +121,7 @@ namespace survey
      *
      * \brief MongoDB data model base class
      *
-     * ```
+     * ~~~~~~~~~~~~~{.cpp}
      * class pants : public survey::model<pants>
      * {
      * public:
@@ -129,7 +141,7 @@ namespace survey
      *
      *     return 0;
      * }
-     * ```
+     * ~~~~~~~~~~~~~
      */
     template <typename T> class model
     {
@@ -201,7 +213,7 @@ namespace survey
 
     /*!
      * \brief Create a MongoDB document linked to a database and a collection
-     *        using the default host uri.
+     *        using the default host uri (mongodb://localhost:27017).
      *
      * \param db         - MongoDB database name
      * \param collection - MongoDB collection name
@@ -300,7 +312,7 @@ namespace survey
     /*!
      * \brief Get the document's data.
      *
-     * \return todo
+     * \return a JSON object
      */
     template <typename T> web::json::value model<T>::data() const
     {
@@ -349,6 +361,17 @@ namespace survey
     /*!
      * \brief Persist the document to the database. This method can be used
      *        either to update an existing document or to create a new one.
+     *
+     * ~~~~~~~~~~~~~{.cpp}
+     * // Update a document
+     * auto doucment = pants::get("5b63f486be9ca51a9a3c0e81");
+     * document.set_data(web::json::value::parse("{\"key\":\"val\"}"));
+     * document.save();
+     *
+     * // Create a new document
+     * pants new_document{};
+     * new_document.save();
+     * ~~~~~~~~~~~~~
      */
     template <typename T> void model<T>::save()
     {
@@ -406,7 +429,7 @@ namespace survey
     }
 
     /*!
-     * \brief Get a subset of documents from a MongoDB collection.
+     * \brief Obtain a subset of documents from a MongoDB collection.
      *
      * \param skip  - offset from where MongoDB begins returning results
      * \param limit - the maximum number of documents to return

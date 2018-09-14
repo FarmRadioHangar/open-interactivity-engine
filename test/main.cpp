@@ -6,6 +6,7 @@
 #include <cassert>
 #include <cpprest/json.h>
 #include <mongocxx/instance.hpp>
+#include <vector>
 
 class pants : public survey::model<pants>
 {
@@ -22,18 +23,9 @@ public:
 
 class model_db_test_fixture : public ::testing::Test
 {
-protected:
-    virtual void SetUp() override
-    {
-    }
+public:
+    std::string id(const std::size_t pos) { return _ids.at(pos); }
 
-    virtual void TearDown() override
-    {
-    }
-};
-
-class model_page_test_fixture : public ::testing::Test
-{
 protected:
     virtual void SetUp() override
     {
@@ -53,7 +45,9 @@ protected:
             bsoncxx::builder::basic::document builder{};
             builder.append(kvp("item", i));
             bsoncxx::document::value data = builder.extract();
-            collection.insert_one(data.view());
+            auto result = collection.insert_one(data.view());
+            auto view = result.value().inserted_id().get_oid().value;
+            _ids.push_back(view.to_string());
         }
     }
 
@@ -65,6 +59,9 @@ protected:
         auto db = client.database(dotenv::getenv("MONGODB_DATABASE", "test"));
         db.drop();
     }
+
+private:
+    std::vector<std::string> _ids;
 };
 
 /* Test that database and collection names are set when creating a document. */
@@ -86,7 +83,8 @@ TEST(model_test, oid_is_not_empty)
     ASSERT_FALSE(document.oid().empty());
 }
 
-/* Test that copy construction behaves as expected w.r.t. data members. */
+/* Test that copy construction behaves as expected w.r.t. data member
+ * initialization. */
 TEST(model_test, copy_props_matches_original)
 {
     pants document;
@@ -100,7 +98,8 @@ TEST(model_test, copy_props_matches_original)
     ASSERT_EQ(collection_name, other.collection());
 }
 
-/* Test that copy assignment behaves as expected w.r.t. data members. */
+/* Test that copy assignment behaves as expected w.r.t. data member
+ * initialization. */
 TEST(model_test, copy_assign_props_matches_original)
 {
     pants document;
@@ -116,8 +115,8 @@ TEST(model_test, copy_assign_props_matches_original)
     ASSERT_EQ(collection_name, other.collection());
 }
 
-/* Test that copy construction and copy assignment copies the document's JSON
- * payload. */
+/* Test that copy construction and copy assignment duplicates the document's
+ * JSON payload. */
 TEST(model_test, copy_data_matches_original)
 {
     auto data = web::json::value::parse("{\"some\":\"string\"}");
@@ -140,6 +139,7 @@ TEST(model_test, copy_data_matches_original)
     }
 }
 
+/* Assigning an invalid ObjectID throws an exception. */
 TEST(model_test, set_bad_oid_throws)
 {
     pants document;
@@ -153,6 +153,7 @@ TEST(model_test, set_bad_oid_throws)
     }
 }
 
+/* Test assignment of a valid ObjectID. */
 TEST(model_test, set_oid)
 {
     pants document{};
@@ -165,6 +166,7 @@ TEST(model_test, set_oid)
     ASSERT_EQ(valid_oid, document.oid());
 }
 
+/* Save and subsequently retrieve a document from the database. */
 TEST_F(model_db_test_fixture, save_and_get_document)
 {
     pants document{};
@@ -182,6 +184,34 @@ TEST_F(model_db_test_fixture, save_and_get_document)
     ASSERT_EQ("prop", other.data()["this"].as_string());
 }
 
+/* Retreive, update and subsequently save a document to the database. */
+TEST_F(model_db_test_fixture, update_document)
+{
+    {
+        auto document = pants::get(id(0));
+
+        document.set_data(web::json::value::parse("{\"some\":\"string\"}"));
+        document.save();
+    }
+    {
+        auto document = pants::get(id(0));
+
+        ASSERT_EQ("string", document["some"].as_string());
+    }
+}
+
+/* Create a new document. */
+TEST_F(model_db_test_fixture, new_document)
+{
+    pants document{};
+
+    document.save();
+
+    ASSERT_EQ(pants::count(), 331);
+}
+
+/* Anything else than an object as a document's JSON payload throws an
+ * exception. */
 TEST(model_test, set_non_object_throws)
 {
     pants document;
@@ -198,6 +228,7 @@ TEST(model_test, set_non_object_throws)
     ASSERT_THROW(document.set_data(std::move(json_array)), survey::model_error);
 }
 
+/* Test that deleting a document removes it from the database. */
 TEST_F(model_db_test_fixture, get_removed_document_throws)
 {
     pants document;
@@ -211,6 +242,7 @@ TEST_F(model_db_test_fixture, get_removed_document_throws)
     ASSERT_THROW(pants::get(oid), survey::model_error);
 }
 
+/* Test that deleting a document leaves the object in an empty state. */
 TEST_F(model_db_test_fixture, removed_document_is_empty)
 {
     pants document;
@@ -222,12 +254,12 @@ TEST_F(model_db_test_fixture, removed_document_is_empty)
     ASSERT_EQ(document.data(), web::json::value{});
 }
 
-TEST_F(model_page_test_fixture, document_count_is_OK)
+TEST_F(model_db_test_fixture, document_count_is_OK)
 {
     ASSERT_EQ(pants::count(), 330);
 }
 
-TEST_F(model_page_test_fixture, default_page_size_is_OK)
+TEST_F(model_db_test_fixture, default_page_size_is_OK)
 {
     auto page = pants::page();
     const auto default_limit = pants::default_page_limit;
@@ -235,7 +267,7 @@ TEST_F(model_page_test_fixture, default_page_size_is_OK)
     ASSERT_EQ(page.count(), default_limit);
 }
 
-TEST_F(model_page_test_fixture, page_size_is_OK)
+TEST_F(model_db_test_fixture, page_size_is_OK)
 {
     {
         auto page = pants::page(0, 10);
@@ -257,7 +289,7 @@ TEST_F(model_page_test_fixture, page_size_is_OK)
     }
 }
 
-TEST_F(model_page_test_fixture, pagination)
+TEST_F(model_db_test_fixture, pagination_document_at)
 {
     {
         auto page = pants::page(0, 4);
@@ -271,6 +303,13 @@ TEST_F(model_page_test_fixture, pagination)
         ASSERT_EQ(page.at(0)["item"].as_integer(), 4);
         ASSERT_EQ(page.at(3)["item"].as_integer(), 7);
     }
+}
+
+TEST_F(model_db_test_fixture, pagination_out_of_bounds)
+{
+    auto page = pants::page(0, 4);
+
+    ASSERT_THROW(page.at(5)["item"].as_integer(), std::exception);
 }
 
 int main(int argc, char* argv[])

@@ -9,7 +9,7 @@
 #include <regex>
 #include <string>
 
-namespace polls
+namespace survey
 {
     namespace http
     {
@@ -90,8 +90,8 @@ namespace polls
             _response.set_status_code(code);
         }
 
-        using request_handler = std::function<void(polls::http::request,
-                                                   polls::http::response)>;
+        using request_handler = std::function<void(survey::http::request,
+                                                   survey::http::response)>;
 
         struct request_route
         {
@@ -138,5 +138,3 @@ namespace polls
             std::string                _path;
             std::vector<request_route> _routes;
         };
-    }
-}
