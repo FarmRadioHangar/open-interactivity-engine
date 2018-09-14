@@ -82,6 +82,8 @@ namespace survey
      *
      * \returns the \a total number of documents available in the MongoDB
      *          collection at the time this subset was generated.
+     *
+     * \sa count
      */
     template <typename T, typename Container>
     std::size_t page<T, Container>::total() const
@@ -107,7 +109,7 @@ namespace survey
      * \brief Create and return a JSON object representation of the collection.
      *
      * \code{.cpp}
-     *     auto collection = pants::page(0, 10);
+     *     auto collection = pants::page(0, 3);
      *     std::cout << collection.to_json().serialize() << std::endl;
      * \endcode
      *
@@ -120,7 +122,7 @@ namespace survey
      *             { "type": "fancy" },
      *             { "type": "smart" }
      *         ],
-     *         "count": 10,
+     *         "count": 3,
      *         "total": 300
      *     }
      * \endcode
@@ -148,15 +150,15 @@ namespace survey
      *
      * \brief MongoDB data model base class
      *
+     * *Typical usage:*
+     *
      * \code{.cpp}
      *     class pants : public survey::model<pants>
      *     {
      *     public:
      *         COLLECTION(pants)
      *
-     *         pants() : survey::model<pants>{"test"}
-     *         {
-     *         }
+     *         pants() : survey::model<pants>{"test"} {}
      *     };
      *
      *     int main()

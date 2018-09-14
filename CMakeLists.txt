@@ -22,7 +22,7 @@ find_package(cpprestsdk REQUIRED)
 file(GLOB_RECURSE SRCS src/*.cpp)
 
 #add_executable(survey ${SRCS})
-add_executable(survey src/main.cpp src/model.cpp)
+add_executable(survey src/main.cpp src/model.cpp src/server.cpp)
 
 include_directories(${LIBMONGOCXX_INCLUDE_DIRS} ${LIBMONGOCXX_INCLUDE_DIR})
 include_directories(${LIBBSONCXX_INCLUDE_DIRS} ${LIBMONGOCXX_INCLUDE_DIR})

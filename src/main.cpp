@@ -2,11 +2,14 @@
  * \file main.cpp
  *
  * \mainpage Main
+ *
+ * Welcome to the Open Survey Engine project
  */
 
 #include <mongocxx/instance.hpp>
-#include "model.h"
 #include "dotenv/dotenv.h"
+#include "model.h"
+#include "server.h"
 
 int main()
 {
