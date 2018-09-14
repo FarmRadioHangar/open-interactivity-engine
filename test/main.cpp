@@ -86,7 +86,8 @@ TEST(model_test, oid_is_not_empty)
 }
 
 /* Test that copy construction behaves as expected w.r.t. data member
- * initialization. */
+ * initialization. 
+ */
 TEST(model_test, copy_props_matches_original)
 {
     pants document;
@@ -101,7 +102,8 @@ TEST(model_test, copy_props_matches_original)
 }
 
 /* Test that copy assignment behaves as expected w.r.t. data member
- * initialization. */
+ * initialization. 
+ */
 TEST(model_test, copy_assign_props_matches_original)
 {
     pants document;
@@ -118,10 +120,11 @@ TEST(model_test, copy_assign_props_matches_original)
 }
 
 /* Test that copy construction and copy assignment duplicates the document's
- * JSON payload. */
+ * JSON payload. 
+ */
 TEST(model_test, copy_data_matches_original)
 {
-    auto data = web::json::value::parse("{\"some\":\"string\"}");
+    const auto data = "{\"some\":\"string\"}";
 
     {
         pants document;
@@ -173,8 +176,7 @@ TEST_F(model_db_test_fixture, save_and_get_document)
 {
     pants document{};
 
-    auto data = web::json::value::parse("{\"this\":\"prop\"}");
-    document.set_data(data);
+    document.set_data("{\"this\":\"prop\"}");
     document.save();
 
     const std::string oid = document.oid();
@@ -182,8 +184,8 @@ TEST_F(model_db_test_fixture, save_and_get_document)
     pants other = pants::get(oid);
 
     ASSERT_EQ(oid, other.oid());
-    ASSERT_TRUE(other.data()["this"].is_string());
-    ASSERT_EQ("prop", other.data()["this"].as_string());
+    ASSERT_TRUE(other.to_json()["this"].is_string());
+    ASSERT_EQ("prop", other.to_json()["this"].as_string());
 }
 
 /* Retreive, update and subsequently save a document to the database. */
@@ -192,13 +194,13 @@ TEST_F(model_db_test_fixture, update_document)
     {
         auto document = pants::get(id(0));
 
-        document.set_data(web::json::value::parse("{\"some\":\"string\"}"));
+        document.set_data("{\"some\":\"string\"}");
         document.save();
     }
     {
         auto document = pants::get(id(0));
 
-        ASSERT_EQ("string", document["some"].as_string());
+        ASSERT_EQ("string", document["some"].get_utf8().value.to_string());
     }
 }
 
@@ -210,24 +212,6 @@ TEST_F(model_db_test_fixture, new_document)
     document.save();
 
     ASSERT_EQ(pants::count(), 331);
-}
-
-/* Anything else than an object as a document's JSON payload throws an
- * exception. */
-TEST(model_test, set_non_object_throws)
-{
-    pants document;
-    const auto json_array = web::json::value::parse("[1,2,3]");
-
-    ASSERT_THROW(document.set_data(json_array), survey::model_error);
-
-    try {
-        document.set_data(json_array);
-    } catch(const survey::model_error& e) {
-        ASSERT_EQ(survey::model_error::bad_bson_data, e.type());
-    }
-
-    ASSERT_THROW(document.set_data(std::move(json_array)), survey::model_error);
 }
 
 /* Test that deleting a document removes it from the database. */
@@ -248,19 +232,21 @@ TEST_F(model_db_test_fixture, get_removed_document_throws)
 TEST_F(model_db_test_fixture, removed_document_is_empty)
 {
     pants document;
-    document.set_data(web::json::value::parse("{\"some\":\"string\"}"));
+    document.set_data("{\"some\":\"string\"}");
 
     document.save();
     document.remove();
 
-    ASSERT_EQ(document.data(), web::json::value{});
+    ASSERT_EQ(document.to_json().serialize(), "{}");
 }
 
+/* Test collection size. */
 TEST_F(model_db_test_fixture, document_count_is_OK)
 {
     ASSERT_EQ(pants::count(), 330);
 }
 
+/* Test default page size. */
 TEST_F(model_db_test_fixture, default_page_size_is_OK)
 {
     auto page = pants::page();
@@ -269,6 +255,7 @@ TEST_F(model_db_test_fixture, default_page_size_is_OK)
     ASSERT_EQ(page.count(), default_limit);
 }
 
+/* Test pagination page size. */
 TEST_F(model_db_test_fixture, page_size_is_OK)
 {
     {
@@ -291,27 +278,29 @@ TEST_F(model_db_test_fixture, page_size_is_OK)
     }
 }
 
+/* Test page element access. */
 TEST_F(model_db_test_fixture, pagination_document_at)
 {
     {
         auto page = pants::page(0, 4);
 
-        ASSERT_EQ(page.at(0)["item"].as_integer(), 0);
-        ASSERT_EQ(page.at(3)["item"].as_integer(), 3);
+        ASSERT_EQ(page.at(0)["item"].get_int32().value, 0);
+        ASSERT_EQ(page.at(3)["item"].get_int32().value, 3);
     }
     {
         auto page = pants::page(4, 8);
 
-        ASSERT_EQ(page.at(0)["item"].as_integer(), 4);
-        ASSERT_EQ(page.at(3)["item"].as_integer(), 7);
+        ASSERT_EQ(page.at(0)["item"].get_int32().value, 4);
+        ASSERT_EQ(page.at(3)["item"].get_int32().value, 7);
     }
 }
 
+/* Test that page element out of bounds access throws an exception. */
 TEST_F(model_db_test_fixture, pagination_out_of_bounds)
 {
     auto page = pants::page(0, 4);
 
-    ASSERT_THROW(page.at(5)["item"].as_integer(), std::exception);
+    ASSERT_THROW(page.at(5)["item"], std::exception);
 }
 
 int main(int argc, char* argv[])

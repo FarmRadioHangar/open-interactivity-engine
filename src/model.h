@@ -14,6 +14,9 @@
 
 #define COLLECTION(name) static constexpr auto mongodb_collection = #name;
 
+/*!
+ * \brief This is the main namespace for this library.
+ */
 namespace survey
 {
     using bsoncxx::builder::basic::kvp;
@@ -21,12 +24,12 @@ namespace survey
     /*!
      * \class page
      *
-     * \brief A subset of documents drawn from a MongoDB collection.
+     * \brief A \a page is a subset of documents drawn from a MongoDB collection.
      */
-    template <typename T, typename Collection = std::vector<T>> class page
+    template <typename T, typename Container = std::vector<T>> class page
     {
     public:
-        page(Collection&& container, const std::size_t total);
+        page(Container&& collection, const std::size_t total);
 
         std::size_t count() const;
         std::size_t total() const;
@@ -36,20 +39,23 @@ namespace survey
         web::json::value to_json() const;
 
     private:
-        Collection  _collection;
+        Container  _collection;
         std::size_t _total;
     };
 
     /*!
      * \brief Default constructor
      *
-     * \param collection - an STL collection of documents
-     * \param total      - the total number of documents available in the
-     *                     underlying MongoDB data store at the time this
-     *                     subset was generated
+     * Typically, you would use survey::model::page to create a page, rather
+     * than invoking this constructor directly.
+     *
+     * \param collection an STL collection of survey::model documents
+     * \param total      the total number of documents available in the
+     *                   underlying MongoDB data store at the time this
+     *                   subset was generated
      */
-    template <typename T, typename Collection>
-    page<T, Collection>::page(Collection&& collection, const std::size_t total)
+    template <typename T, typename Container>
+    page<T, Container>::page(Container&& collection, const std::size_t total)
       : _collection{std::move(collection)},
         _total{total}
     {
@@ -57,40 +63,42 @@ namespace survey
     }
 
     /*!
-     * \brief Return the number of documents in this collection. This number
-     *        is often less than the number of documents available in the
-     *        underlying MongoDB data store.
+     * \brief The size of this page
+     *
+     * \returns the number of documents in this collection. This number is
+     *          often less than the number of documents available in the
+     *          underlying MongoDB data store.
      *
      * \sa total
      */
-    template <typename T, typename Collection>
-    std::size_t page<T, Collection>::count() const
+    template <typename T, typename Container>
+    std::size_t page<T, Container>::count() const
     {
         return _collection.size();
     }
 
     /*!
-     * \brief The total number of documents in the MongoDB collection from
-     *        where this subset was taken.
+     * \brief The MongoDB collection's total size
      *
      * \returns the \a total number of documents available in the MongoDB
      *          collection at the time this subset was generated.
      */
-    template <typename T, typename Collection>
-    std::size_t page<T, Collection>::total() const
+    template <typename T, typename Container>
+    std::size_t page<T, Container>::total() const
     {
         return _total;
     }
 
     /*!
-     * \brief Obtain a document from the underlying container.
+     * \brief Obtain a document from this page.
      *
-     * \param pos - position of the element to return
+     * \param pos position of the element to return
      *
-     * \returns the document at the given position in the collection
+     * \returns the survey::model document at the given position in the
+     *          collection
      */
-    template <typename T, typename Collection>
-    T page<T, Collection>::at(std::size_t pos) const
+    template <typename T, typename Container>
+    T page<T, Container>::at(std::size_t pos) const
     {
         return _collection.at(pos);
     }
@@ -98,14 +106,33 @@ namespace survey
     /*!
      * \brief Create and return a JSON object representation of the collection.
      *
+     * \code{.cpp}
+     *     auto collection = pants::page(0, 10);
+     *     std::cout << collection.to_json().serialize() << std::endl;
+     * \endcode
+     *
+     * Example output:
+     *
+     * \code{.json}
+     *     {
+     *         "pants": [
+     *             { "type": "party" },
+     *             { "type": "fancy" },
+     *             { "type": "smart" }
+     *         ],
+     *         "count": 10,
+     *         "total": 300
+     *     }
+     * \endcode
+     *
      * \returns a JSON object holding the array of documents
      */
-    template <typename T, typename Collection>
-    web::json::value page<T, Collection>::to_json() const
+    template <typename T, typename Container>
+    web::json::value page<T, Container>::to_json() const
     {
         std::vector<web::json::value> values;
         for (const auto& value : _collection) {
-            values.emplace_back(web::json::value::parse(value.data()));
+            values.emplace_back(value.to_json());
         }
 
         web::json::value obj{};
@@ -121,27 +148,27 @@ namespace survey
      *
      * \brief MongoDB data model base class
      *
-     * ~~~~~~~~~~~~~{.cpp}
-     * class pants : public survey::model<pants>
-     * {
-     * public:
-     *     COLLECTION(pants)
-     *
-     *     pants() : survey::model<pants>{"test"}
+     * \code{.cpp}
+     *     class pants : public survey::model<pants>
      *     {
+     *     public:
+     *         COLLECTION(pants)
+     *
+     *         pants() : survey::model<pants>{"test"}
+     *         {
+     *         }
+     *     };
+     *
+     *     int main()
+     *     {
+     *         mongocxx::instance instance{};
+     *         pants document = pants::get("5b63f486be9ca51a9a3c0e81");
+     *
+     *         // ...
+     *
+     *         return 0;
      *     }
-     * };
-     *
-     * int main()
-     * {
-     *     mongocxx::instance instance{};
-     *     pants document = pants::get("5b63f486be9ca51a9a3c0e81");
-     *
-     *     // ...
-     *
-     *     return 0;
-     * }
-     * ~~~~~~~~~~~~~
+     * \endcode
      */
     template <typename T> class model
     {
@@ -152,6 +179,7 @@ namespace survey
               const std::string& collection = T::mongodb_collection);
         explicit model(const std::string& db,
                        const std::string& collection = T::mongodb_collection);
+
         model(const model& other);
         model& operator=(const model& other);
         virtual ~model() = default;
@@ -160,9 +188,12 @@ namespace survey
         std::string db() const;
         std::string collection() const;
 
-        void set_data(web::json::value&& data);
-        void set_data(const web::json::value& data);
-        web::json::value data() const;
+        void set_data(bsoncxx::document::view view);
+        void set_data(const std::string& data);
+
+        bsoncxx::document::view data() const;
+
+        web::json::value to_json() const;
 
         void set_oid(const std::string& oid);
         std::string oid() const;
@@ -180,33 +211,33 @@ namespace survey
         static survey::page<T, Container<T, Allocator<T>>>
         page(std::int64_t skip = 0, std::int64_t limit = default_page_limit);
 
-        web::json::value operator[](const std::string& key);
+        bsoncxx::document::element operator[](const std::string& key);
 
     protected:
         mongocxx::collection get_mongodb_collection() const;
 
     private:
-        std::string      _host;
-        std::string      _db;
-        std::string      _collection;
-        web::json::value _data;
-        bsoncxx::oid     _oid;
-        mongocxx::client _client;
+        std::string              _host;
+        std::string              _db;
+        std::string              _collection;
+        bsoncxx::document::value _data;
+        bsoncxx::oid             _oid;
+        mongocxx::client         _client;
     };
 
     /*!
      * \brief Create a MongoDB document linked to a database and a collection.
      *
-     * \param host       - MongoDB host uri
-     * \param db         - MongoDB database name
-     * \param collection - MongoDB collection name
+     * \param uri        MongoDB host uri
+     * \param db         MongoDB database name
+     * \param collection MongoDB collection name
      */
     template <typename T>
     model<T>::model(mongocxx::uri&& uri, const std::string& db, const std::string& collection)
       : _host{uri.to_string()},
         _db{db},
         _collection{collection},
-        _data{web::json::value::object()},
+        _data{bsoncxx::builder::basic::make_document()},
         _client{uri}
     {
     }
@@ -215,15 +246,15 @@ namespace survey
      * \brief Create a MongoDB document linked to a database and a collection
      *        using the default host uri (mongodb://localhost:27017).
      *
-     * \param db         - MongoDB database name
-     * \param collection - MongoDB collection name
+     * \param db         MongoDB database name
+     * \param collection MongoDB collection name
      */
     template <typename T>
     model<T>::model(const std::string& db, const std::string& collection)
       : _host{"mongodb://localhost:27017"},
         _db{db},
         _collection{collection},
-        _data{web::json::value::object()},
+        _data{bsoncxx::builder::basic::make_document()},
         _client{mongocxx::uri{_host}}
     {
     }
@@ -258,6 +289,8 @@ namespace survey
     }
 
     /*!
+     * \brief MongoDB host uri
+     *
      * \return the MongoDB host uri
      */
     template <typename T> std::string model<T>::host() const
@@ -266,6 +299,8 @@ namespace survey
     }
 
     /*!
+     * \brief MongoDB database name
+     *
      * \return the name of the MongoDB database this document is linked to
      */
     template <typename T> std::string model<T>::db() const
@@ -274,6 +309,8 @@ namespace survey
     }
 
     /*!
+     * \brief MongoDB collection name
+     *
      * \return the name of the MongoDB collection this document is linked to
      */
     template <typename T> std::string model<T>::collection() const
@@ -282,47 +319,49 @@ namespace survey
     }
 
     /*!
-     * \brief Transfer ownership of the provided JSON value to the document.
+     * \brief Set the document's data.
      *
-     * \param data - a JSON object
+     * \param view a view of a document
      */
-    template <typename T> void model<T>::set_data(web::json::value&& data)
+    template <typename T> void model<T>::set_data(bsoncxx::document::view view)
     {
-        if (!data.is_object()) {
-            throw model_error{model_error::bad_bson_data, "JSON value must be an object"};
-        }
-
-        _data = std::move(data);
+        _data = bsoncxx::document::value{view};
     }
 
     /*!
      * \brief Set the document's data.
      *
-     * \param data - a JSON object
+     * \param data a serialized JSON object
      */
-    template <typename T> void model<T>::set_data(const web::json::value& data)
+    template <typename T> void model<T>::set_data(const std::string& data)
     {
-        if (!data.is_object()) {
-            throw model_error{model_error::bad_bson_data, "JSON value must be an object"};
+        try {
+            _data = bsoncxx::from_json(data);
+        } catch (bsoncxx::v_noabi::exception&) {
+            throw model_error{model_error::bad_bson_data, "bad BSON data"};
         }
-
-        _data = data;
     }
 
     /*!
-     * \brief Get the document's data.
-     *
-     * \return a JSON object
+     * \brief Return a view of the document's data.
      */
-    template <typename T> web::json::value model<T>::data() const
+    template <typename T> bsoncxx::document::view model<T>::data() const
     {
         return _data;
     }
 
     /*!
+     * \brief Return the document's data serialized to a string.
+     */
+    template <typename T> web::json::value model<T>::to_json() const
+    {
+        return web::json::value::parse(bsoncxx::to_json(_data));
+    }
+
+    /*!
      * \brief Set the document's ObjectId.
      *
-     * \param oid - a valid MongoDB ObjectId
+     * \param oid a valid MongoDB ObjectId
      */
     template <typename T> void model<T>::set_oid(const std::string& oid)
     {
@@ -355,44 +394,33 @@ namespace survey
             throw model_error{model_error::document_not_found, "not found"};
         }
 
-        _data = web::json::value::parse(bsoncxx::to_json(result.value()));
+        set_data(result.value());
     }
 
     /*!
-     * \brief Persist the document to the database. This method can be used
-     *        either to update an existing document or to create a new one.
+     * \brief Persist the document to the database. This method can be used to:
+     *          * update an existing document; or to
+     *          * create a new document.
      *
-     * ~~~~~~~~~~~~~{.cpp}
-     * // Update a document
-     * auto doucment = pants::get("5b63f486be9ca51a9a3c0e81");
-     * document.set_data(web::json::value::parse("{\"key\":\"val\"}"));
-     * document.save();
+     * \code{.cpp}
+     *     // Update a document
+     *     auto document = pants::get("5b63f486be9ca51a9a3c0e81");
+     *     document.set_data(web::json::value::parse("{\"key\":\"val\"}"));
+     *     document.save();
      *
-     * // Create a new document
-     * pants new_document{};
-     * new_document.save();
-     * ~~~~~~~~~~~~~
+     *     // Create a new document
+     *     pants new_document{};
+     *     new_document.save();
+     * \endcode
      */
     template <typename T> void model<T>::save()
     {
-        std::unique_ptr<bsoncxx::document::value> data;
-
-        if (_data.is_null()) {
-            throw model_error{model_error::empty_document, "empty document"};
-        }
-
-        try {
-            data = std::make_unique<bsoncxx::document::value>(bsoncxx::from_json(_data.serialize()));
-        } catch (bsoncxx::v_noabi::exception&) {
-            throw model_error{model_error::bad_bson_data, "bad BSON data"};
-        }
-
         auto filter = bsoncxx::builder::basic::make_document(kvp("_id", _oid));
 
         mongocxx::options::update options{};
         options.upsert(true);
 
-        get_mongodb_collection().replace_one(filter.view(), data->view(), options);
+        get_mongodb_collection().replace_one(filter.view(), _data.view(), options);
 
         fetch();
     }
@@ -408,13 +436,13 @@ namespace survey
         get_mongodb_collection().delete_one(filter.view());
 
         _oid  = bsoncxx::oid{};
-        _data = web::json::value{};
+        _data = bsoncxx::builder::basic::make_document();
     }
 
     /*!
      * \brief Get the MongoDB document corresponding to the provided ObjectId.
      *
-     * \param id - a valid MongoDB ObjectId string
+     * \param oid a valid MongoDB ObjectId string
      *
      * \return a document
      */
@@ -431,10 +459,12 @@ namespace survey
     /*!
      * \brief Obtain a subset of documents from a MongoDB collection.
      *
-     * \param skip  - offset from where MongoDB begins returning results
-     * \param limit - the maximum number of documents to return
+     * \param skip  offset from where MongoDB begins returning results
+     * \param limit the maximum number of documents to return
      *
      * \return a STL container with a collection of documents
+     *
+     * \sa survey::page
      */
     template <typename T>
     template <template <typename, typename> class Container,
@@ -457,8 +487,8 @@ namespace survey
         {
             T document{};
             document._oid  = doc["_id"].get_oid().value;
-            document._data = web::json::value::parse(bsoncxx::to_json(doc));
-            container.push_back(document);
+            document.set_data(doc);
+            container.emplace_back(document);
         }
 
         return survey::page<T, Container<T, Allocator<T>>>{
@@ -477,11 +507,13 @@ namespace survey
     }
 
     /*!
-     * \brief Directly access a field of the document's JSON object.
+     * \brief Directly access the element of the document with the given key.
+     *
+     * \param key the key to match
      */
-    template <typename T> web::json::value model<T>::operator[](const std::string& key)
+    template <typename T> bsoncxx::document::element model<T>::operator[](const std::string& key)
     {
-        return _data[key];
+        return _data.view()[key];
     }
 
     template <typename T> mongocxx::collection model<T>::get_mongodb_collection() const

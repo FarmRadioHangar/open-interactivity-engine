@@ -5,8 +5,14 @@
 
 #include <stdexcept>
 
+/*!
+ * \brief This is the main namespace for this library.
+ */
 namespace survey
 {
+    /*!
+     * \brief Runtime errors related to survey::model documents.
+     */
     class model_error : public std::runtime_error
     {
     public:
@@ -14,7 +20,6 @@ namespace survey
         {
             document_not_found,
             bad_oid,
-            empty_document,
             bad_bson_data
         };
 
