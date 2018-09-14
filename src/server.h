@@ -3,10 +3,36 @@
  */
 #pragma once
 
+/*!
+ * \brief hello
+ */
 namespace survey
 {
+    /*!
+     * \brief hello
+     */
     namespace http
     {
+        /*!
+         * \brief hello
+         */
+        class request
+        {
+        };
+
+        /*!
+         * \brief hello
+         */
+        class response
+        {
+        };
+
+        /*!
+         * \brief hello
+         */
+        class server
+        {
+        };
     }
 }
 
