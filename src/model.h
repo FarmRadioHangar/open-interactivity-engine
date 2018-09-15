@@ -164,7 +164,7 @@ namespace survey
      *     int main()
      *     {
      *         mongocxx::instance instance{};
-     *         pants document = pants::get("5b63f486be9ca51a9a3c0e81");
+     *         auto document = pants::get("5b63f486be9ca51a9a3c0e81");
      *
      *         // ...
      *

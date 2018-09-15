@@ -26,30 +26,75 @@ namespace survey
         class request
         {
         public:
-            request(web::http::http_request&& request, const boost::smatch& match);
+            request(const web::http::http_request& request, const boost::smatch& match);
 
             std::string get_uri_param(size_t n) const;
 
+            template <typename T> T get_query_param(
+                const std::string& name,
+                const T& def) const;
+
             void set_status_code(web::http::status_code code);
+
             void send_response();
+            void send_response(const web::json::value& json);
+            void send_response(const std::string& data);
 
         private:
+            template <typename T> T type_conv(const std::string& str) const
+            {
+                return T{};
+            }
+
             boost::smatch            _match;
+            query_params             _params;
             web::http::http_request  _request;
             web::http::http_response _response;
         };
 
         /*!
          * \brief Obtain the nth uri parameter from the list of matched variables.
+         *
+         * \param n todo
+         *
+         * \returns todo
          */
         inline std::string request::get_uri_param(size_t n) const
         {
             return _match.str(n);
         }
 
+        /*!
+         * \brief todo
+         *
+         * \param name todo
+         * \param def  todo
+         *
+         * \returns todo
+         */
+        template <typename T>
+        T request::get_query_param(const std::string& name, const T& def) const
+        {
+            try {
+                return type_conv<T>(_params.at(name));
+            } catch (std::exception&) {
+                return def;
+            }
+        }
+
         inline void request::set_status_code(web::http::status_code code)
         {
             _response.set_status_code(code);
+        }
+
+        template <> inline std::string request::type_conv(const std::string& str) const
+        {
+            return str;
+        }
+
+        template <> inline int64_t request::type_conv(const std::string& str) const
+        {
+            return std::stoi(str);
         }
 
         using request_handler = std::function<void(survey::http::request)>;
@@ -124,7 +169,7 @@ namespace survey
 //        class request
 //        {
 //        public:
-//            explicit request(const web::http::http_request& request, 
+//            explicit request(const web::http::http_request& request,
 //                             const std::smatch& match = std::smatch{});
 //
 //            template <typename T> T get_query_param(const std::string& name, const T& def) const;

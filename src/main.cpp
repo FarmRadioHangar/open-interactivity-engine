@@ -11,17 +11,22 @@
 #include "model.h"
 #include "server.h"
 
+class campaigns : public survey::model<campaigns>
+{
+public:
+    COLLECTION(campaigns)
+
+    campaigns() : survey::model<campaigns>{"test"} {}
+};
+
 void campaigns_get_one(survey::http::request request)
 {
-    std::cout << "campaigns_get_one" << std::endl;
+    auto document = campaigns::get(request.get_uri_param(1));
 
-    //auto document = campaign::get(request.get_uri_param(1));
+    web::json::value json_response{};
+    json_response["campaign"] = document.to_json();
 
-    //json::value json_data{};
-    //json_data["campaign"] = json::value::parse(document.data());
-
-    //response.set_body(json_data);
-    request.send_response();
+    request.send_response(json_response);
 }
 
 using web::http::methods;
@@ -34,6 +39,33 @@ int main()
     survey::http::server server{};
 
     server.on(methods::GET, "^/campaigns/([0-9a-f]+)$", campaigns_get_one);
+
+    //
+    {
+        using bsoncxx::builder::basic::kvp;
+
+        mongocxx::client client(mongocxx::uri{dotenv::getenv(
+              "MONGODB_HOST",
+              "mongodb://localhost:27017"
+        )});
+
+        auto db = client.database(dotenv::getenv("MONGODB_DATABASE", "test"));
+        db.drop();
+
+        auto collection = db.collection(campaigns::mongodb_collection);
+
+        uint16_t i;
+        for (i = 0; i < 330; i++)
+        {
+            bsoncxx::builder::basic::document builder{};
+            builder.append(kvp("item", i));
+            bsoncxx::document::value data = builder.extract();
+            auto result = collection.insert_one(data.view());
+            auto view = result.value().inserted_id().get_oid().value;
+            std::cout << view.to_string() << std::endl;
+        }
+    }
+    //
 
     server.run();
 }

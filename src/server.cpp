@@ -6,15 +6,31 @@ namespace survey
 {
     namespace http
     {
-        request::request(web::http::http_request&& request, const boost::smatch& match)
+        request::request(const web::http::http_request& request, const boost::smatch& match)
           : _match{match},
+            _params{web::uri::split_query(request.request_uri().query())},
             _request{request},
             _response{web::http::status_codes::OK}
         {
+            web::http::http_headers& headers = _response.headers();
+            headers["Access-Control-Allow-Origin"] = "*";
+            headers["Content-Type"] = "application/json";
         }
 
         void request::send_response()
         {
+            _request.reply(_response);
+        }
+
+        void request::send_response(const web::json::value& json)
+        {
+            _response.set_body(json);
+            _request.reply(_response);
+        }
+
+        void request::send_response(const std::string& data)
+        {
+            _response.set_body(data);
             _request.reply(_response);
         }
 
@@ -53,25 +69,21 @@ namespace survey
                 std::bind(&server::handle_request, this, std::placeholders::_1)
             );
 
-            //_listener.support(methods::OPTIONS, [](http_request request) {
-            //    http_response response{status_codes::OK};
-            //    http_headers& headers = response.headers();
-            //    headers["Access-Control-Allow-Origin"] = "*";
-            //    headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, PUT, DELETE, OPTIONS";
-            //    headers["Access-Control-Allow-Headers"] = "Origin, Content-Type, X-Auth-Token";
-            //    request.reply(response);
-            //});
+            _listener.support(methods::OPTIONS, [](http_request request) {
+                http_response response{status_codes::OK};
+                http_headers& headers = response.headers();
+                headers["Access-Control-Allow-Origin"] = "*";
+                headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, PUT, DELETE, OPTIONS";
+                headers["Access-Control-Allow-Headers"] = "Origin, Content-Type, X-Auth-Token";
+                request.reply(response);
+            });
 
-            try
-            {
+            try {
                 _listener.open()
                          .then([this]() { std::cout << "Listening on port " << _port << "..." << std::endl; })
                          .wait();
-
                 while (true);
-            }
-            catch (const std::exception& e)
-            {
+            } catch (const std::exception& e) {
                 std::cout << e.what() << std::endl;
             }
         }
@@ -104,17 +116,14 @@ namespace survey
             auto path = web::http::uri::decode(request.relative_uri().path());
             boost::smatch match{};
 
-            for (auto& route : _routes) {
+            for (const auto& route : _routes) {
                 if (request.method() == route.method
                     && boost::regex_search(path, match, route.regex)) {
                     try {
-                        //http::request r{std::move(request), match};
-
-                        //route.handler();
-                        std::cout << "match: " << match[1] << std::endl;
-                        return;
+                      route.handler(http::request{request, match});
+                      return;
                     } catch (const std::exception& e) {
-                        //
+                        std::cout << e.what() << std::endl;
                     }
                 }
             }
