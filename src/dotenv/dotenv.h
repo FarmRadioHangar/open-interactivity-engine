@@ -1,19 +1,9 @@
-/*!
- * \file dotenv.h
- */
 #pragma once
 
-#include <cassert>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include <regex>
 
-/*!
- * \brief Utility class for loading environment variables from a .env file.
- *
- * \see https://github.com/laserpants/dotenv-cpp
- */
 class dotenv
 {
 public:
@@ -24,7 +14,7 @@ public:
     static void init(const char* filename = ".env");
     static void init(int flags, const char* filename = ".env");
 
-    static std::string getenv(const char* name, const std::string def = "");
+    static std::string getenv(const char* name, const std::string& def = "");
 
 private:
     static void do_init(int flags, const char* filename);
@@ -41,7 +31,7 @@ void dotenv::init(int flags, const char* filename)
     dotenv::do_init(flags, filename);
 }
 
-std::string dotenv::getenv(const char* name, const std::string def)
+std::string dotenv::getenv(const char* name, const std::string& def)
 {
     const char* str = std::getenv(name);
     return str ? std::string(str) : def;
@@ -52,8 +42,6 @@ void dotenv::do_init(int flags, const char* filename)
     std::ifstream file;
     std::string line;
 
-    const std::regex pattern("[a-zA-Z_][a-zA-Z0-9_]*=.*");
-
     file.open(filename);
 
     if (file)
@@ -62,17 +50,16 @@ void dotenv::do_init(int flags, const char* filename)
 
         while (getline(file, line))
         {
-            if (!std::regex_match(line, pattern)) {
+            const auto pos = line.find("=");
+
+            if (pos == std::string::npos) {
                 std::cout << "dotenv: Ignoring ill-formed assignment on line "
-                          << i << ": '"
-                          << line << "'" << std::endl;
+                          << i << ": '" << line << "'" << std::endl;
             } else {
-                const auto pos = line.find("=");
                 const auto name = line.substr(0, pos);
                 const auto val = strip_quotes(line.substr(pos + 1));
                 setenv(name.c_str(), val.c_str(), ~flags & dotenv::DontOverwrite);
             }
-
             ++i;
         }
     }

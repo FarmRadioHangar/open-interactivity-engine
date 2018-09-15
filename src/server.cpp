@@ -1,10 +1,23 @@
 #include "server.h"
 #include <cpprest/uri_builder.h>
+#include <cpprest/http_headers.h>
 
 namespace survey
 {
     namespace http
     {
+        request::request(web::http::http_request&& request, const boost::smatch& match)
+          : _match{match},
+            _request{request},
+            _response{web::http::status_codes::OK}
+        {
+        }
+
+        void request::send_response()
+        {
+            _request.reply(_response);
+        }
+
         /*!
          * \brief Create the server.
          */
@@ -82,22 +95,23 @@ namespace survey
                         request_handler handler)
         {
             _routes.emplace_back(
-                request_route{method, std::regex{uri_pattern}, handler}
+                request_route{method, boost::regex{uri_pattern}, handler}
             );
         }
 
-        void server::handle_request(const web::http::http_request& request)
+        void server::handle_request(web::http::http_request request)
         {
             auto path = web::http::uri::decode(request.relative_uri().path());
-            std::smatch match{};
+            boost::smatch match{};
 
             for (auto& route : _routes) {
                 if (request.method() == route.method
-                    && std::regex_match(path, match, route.regex)) {
+                    && boost::regex_search(path, match, route.regex)) {
                     try {
-                        route.handler(http::request{}, http::response{});
-                        //route.handler(http::request{request, match},
-                        //              http::response{request});
+                        //http::request r{std::move(request), match};
+
+                        //route.handler();
+                        std::cout << "match: " << match[1] << std::endl;
                         return;
                     } catch (const std::exception& e) {
                         //

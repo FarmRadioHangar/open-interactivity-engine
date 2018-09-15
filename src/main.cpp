@@ -11,7 +11,7 @@
 #include "model.h"
 #include "server.h"
 
-void campaigns_get_one(survey::http::request request, survey::http::response response)
+void campaigns_get_one(survey::http::request request)
 {
     std::cout << "campaigns_get_one" << std::endl;
 
@@ -21,8 +21,10 @@ void campaigns_get_one(survey::http::request request, survey::http::response res
     //json_data["campaign"] = json::value::parse(document.data());
 
     //response.set_body(json_data);
-    //response.send();
+    request.send_response();
 }
+
+using web::http::methods;
 
 int main()
 {
@@ -30,8 +32,6 @@ int main()
     mongocxx::instance instance{};
 
     survey::http::server server{};
-
-    using web::http::methods;
 
     server.on(methods::GET, "^/campaigns/([0-9a-f]+)$", campaigns_get_one);
 

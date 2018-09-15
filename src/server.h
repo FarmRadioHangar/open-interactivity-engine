@@ -3,8 +3,9 @@
  */
 #pragma once
 
+#include <boost/regex.hpp>
 #include <cpprest/http_listener.h>
-#include <regex>
+#include <map>
 #include <vector>
 
 /*!
@@ -17,22 +18,41 @@ namespace survey
      */
     namespace http
     {
+        using query_params = std::map<utility::string_t, utility::string_t>;
+
         /*!
          * \brief A HTTP request
          */
         class request
         {
+        public:
+            request(web::http::http_request&& request, const boost::smatch& match);
+
+            std::string get_uri_param(size_t n) const;
+
+            void set_status_code(web::http::status_code code);
+            void send_response();
+
+        private:
+            boost::smatch            _match;
+            web::http::http_request  _request;
+            web::http::http_response _response;
         };
 
         /*!
-         * \brief A HTTP response
+         * \brief Obtain the nth uri parameter from the list of matched variables.
          */
-        class response
+        inline std::string request::get_uri_param(size_t n) const
         {
-        };
+            return _match.str(n);
+        }
 
-        using request_handler = std::function<void(survey::http::request,
-                                                   survey::http::response)>;
+        inline void request::set_status_code(web::http::status_code code)
+        {
+            _response.set_status_code(code);
+        }
+
+        using request_handler = std::function<void(survey::http::request)>;
 
         /*!
          * \brief Route handler
@@ -40,7 +60,7 @@ namespace survey
         struct request_route
         {
             web::http::method method;
-            std::regex        regex;
+            boost::regex      regex;
             request_handler   handler;
         };
 
@@ -76,7 +96,7 @@ namespace survey
                 request_handler handler);
 
         protected:
-            void handle_request(const web::http::http_request& request);
+            void handle_request(web::http::http_request request);
 
         private:
             web::http::experimental::listener::http_listener _listener;
