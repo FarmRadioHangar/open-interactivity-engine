@@ -36,6 +36,8 @@ namespace survey
 
             void set_status_code(web::http::status_code code);
 
+            void with_json(std::function<void(web::json::value)> handler);
+
             void send_response();
             void send_response(const web::json::value& json);
             void send_response(const std::string& data);

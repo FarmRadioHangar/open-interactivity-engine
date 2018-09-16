@@ -17,6 +17,11 @@ namespace survey
             headers["Content-Type"] = "application/json";
         }
 
+        void request::with_json(std::function<void(web::json::value)> handler)
+        {
+            _request.extract_json().then(handler).wait();
+        }
+
         void request::send_response()
         {
             _request.reply(_response);

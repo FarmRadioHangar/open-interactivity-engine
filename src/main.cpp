@@ -23,10 +23,28 @@ void campaigns_get_one(survey::http::request request)
 {
     auto document = campaigns::get(request.get_uri_param(1));
 
-    web::json::value json_response{};
-    json_response["campaign"] = document.to_json();
+    web::json::value response{};
+    response["campaign"] = document.to_json();
 
-    request.send_response(json_response);
+    request.send_response(response);
+}
+
+void campaigns_post(survey::http::request request)
+{
+    request.with_json([&request](web::json::value data)
+    {
+        campaigns document{};
+        document.set_data(data.serialize());
+
+        //builder.add_property("name", json::value::value_type::String, true);
+
+        document.save();
+
+        web::json::value response{};
+        response["campaign"] = document.to_json();
+
+        request.send_response(response);
+    });
 }
 
 using web::http::methods;
@@ -39,6 +57,7 @@ int main()
     survey::http::server server{};
 
     server.on(methods::GET, "^/campaigns/([0-9a-f]+)$", campaigns_get_one);
+    server.on(methods::POST, "^/campaigns$", campaigns_post);
 
     //
     {
