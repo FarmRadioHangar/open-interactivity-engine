@@ -39,7 +39,7 @@ namespace survey
         web::json::value to_json() const;
 
     private:
-        Container  _collection;
+        Container   _collection;
         std::size_t _total;
     };
 
@@ -127,7 +127,7 @@ namespace survey
      *     }
      * \endcode
      *
-     * \returns a JSON object holding the array of documents
+     * \returns a JSON object enclosing the array of documents
      */
     template <typename T, typename Container>
     web::json::value page<T, Container>::to_json() const
