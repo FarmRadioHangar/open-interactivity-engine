@@ -1,9 +1,17 @@
+/*!
+ * \file dotenv.h
+ */
 #pragma once
 
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 
+/*!
+ * \brief Utility class to load environment variables from a .env file.
+ *
+ * \see https://github.com/laserpants/dotenv-cpp
+ */
 class dotenv
 {
 public:

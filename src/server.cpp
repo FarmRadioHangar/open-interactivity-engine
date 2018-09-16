@@ -101,6 +101,10 @@ namespace survey
 
         /*!
          * \brief Register a request handler.
+         *
+         * \param method      todo
+         * \param uri_pattern todo
+         * \param handler     todo
          */
         void server::on(const web::http::method& method,
                         const std::string& uri_pattern,

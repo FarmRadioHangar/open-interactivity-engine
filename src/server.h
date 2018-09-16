@@ -53,7 +53,7 @@ namespace survey
         };
 
         /*!
-         * \brief Obtain the nth uri parameter from the list of matched variables.
+         * \brief Obtain the nth uri parameter from the list of matches.
          *
          * \param n todo
          *
