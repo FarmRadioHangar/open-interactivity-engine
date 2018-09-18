@@ -26,7 +26,7 @@ namespace survey
         class request
         {
         public:
-            request(const web::http::http_request& request, const boost::smatch& match);
+            request(web::http::http_request&& request, const boost::smatch& match);
 
             std::string get_uri_param(size_t n) const;
 
@@ -37,6 +37,7 @@ namespace survey
             void set_status_code(web::http::status_code code);
 
             void with_json(std::function<void(web::json::value)> handler);
+            void with_body(std::function<void(const std::string&)> handler);
 
             void send_response();
             void send_response(const web::json::value& json);

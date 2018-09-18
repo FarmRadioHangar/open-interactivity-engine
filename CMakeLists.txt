@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.5)
 project(polls)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_DEFAULT 14)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall")
 
 find_package(Boost COMPONENTS system thread regex REQUIRED)
@@ -22,7 +25,7 @@ find_package(cpprestsdk REQUIRED)
 file(GLOB_RECURSE SRCS src/*.cpp)
 
 #add_executable(server ${SRCS})
-add_executable(server src/main.cpp src/model.cpp src/server.cpp src/model/validator.cpp src/model/property_validator.cpp)
+add_executable(server src/main.cpp src/model.cpp src/server.cpp src/model/validator.cpp src/model/validators/property_validator.cpp src/model/validators/unique_constraint.cpp)
 
 include_directories(${LIBMONGOCXX_INCLUDE_DIRS} ${LIBMONGOCXX_INCLUDE_DIR})
 include_directories(${LIBBSONCXX_INCLUDE_DIRS} ${LIBMONGOCXX_INCLUDE_DIR})

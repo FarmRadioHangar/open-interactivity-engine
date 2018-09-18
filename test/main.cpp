@@ -1,6 +1,8 @@
 #include "gtest/gtest.h"
 #include "../src/model.h"
 #include "../src/model/exception.h"
+#include "../src/model/validators/property_validator.h"
+#include "../src/model/validators/unique_constraint.h"
 #include "../src/dotenv/dotenv.h"
 #include <bsoncxx/builder/basic/document.hpp>
 #include <cassert>
@@ -316,6 +318,154 @@ TEST_F(model_db_test_fixture, pagination_to_json)
     ASSERT_EQ(json["count"].as_integer(), 10);
     ASSERT_EQ(json["total"].as_integer(), 330);
     ASSERT_EQ(json["pants"].as_array().size(), 10);
+}
+
+/* Test that prop type validation passes. */
+TEST_F(model_db_test_fixture, prop_type_validation_no_throw)
+{
+    pants document{};
+
+    auto json = document.to_json();
+    json["name"] = web::json::value::string("test");
+    document.set_data(json.serialize());
+
+    survey::property_validator<pants> validator{}; 
+    validator.add_property("name", survey::prop_type::t_string, true);
+
+    ASSERT_NO_THROW(validator.validate(document));
+}
+
+TEST_F(model_db_test_fixture, prop_type_validation_no_throw_2)
+{
+    pants document{};
+
+    auto json = document.to_json();
+    json["name"] = web::json::value::string("test");
+    document.set_data(json.serialize());
+
+    survey::property_validator<pants> validator{}; 
+    validator.add_property(
+        "name", 
+        {survey::prop_type::t_string, survey::prop_type::t_numeric}, 
+        true);
+
+    ASSERT_NO_THROW(validator.validate(document));
+}
+
+TEST_F(model_db_test_fixture, prop_type_validation_no_throw_3)
+{
+    pants document{};
+
+    survey::property_validator<pants> validator{}; 
+    validator.add_property("name", survey::prop_type::t_string);
+
+    ASSERT_NO_THROW(validator.validate(document));
+}
+
+TEST_F(model_db_test_fixture, prop_type_validation_throw)
+{
+    pants document{};
+
+    survey::property_validator<pants> validator{}; 
+    validator.add_property("name", survey::prop_type::t_string, true);
+
+    ASSERT_THROW(validator.validate(document), std::exception);
+}
+
+TEST_F(model_db_test_fixture, prop_type_validation_throw_2)
+{
+    pants document{};
+
+    auto json = document.to_json();
+    json["name"] = web::json::value::string("test");
+    document.set_data(json.serialize());
+
+    survey::property_validator<pants> validator{}; 
+    validator.add_property(
+        "name", 
+        {survey::prop_type::t_boolean, survey::prop_type::t_numeric}, 
+        true);
+
+    ASSERT_THROW(validator.validate(document), std::exception);
+}
+
+TEST_F(model_db_test_fixture, prop_type_validation_throw_3)
+{
+    pants document{};
+
+    auto json = document.to_json();
+    json["name"] = web::json::value::string("test");
+    document.set_data(json.serialize());
+
+    survey::property_validator<pants> validator{}; 
+    validator.add_property("name", survey::prop_type::t_null);
+
+    ASSERT_THROW(validator.validate(document), std::exception);
+}
+
+TEST_F(model_db_test_fixture, unique_constraint_validation_no_throw)
+{
+    pants document{};
+
+    web::json::value json{};
+    json["name"] = web::json::value::string("test_1");
+    document.set_data(json.serialize());
+
+    survey::unique_constraint<pants> validator{}; 
+    validator.add_key("name");
+
+    ASSERT_NO_THROW(validator.validate(document));
+}
+
+TEST_F(model_db_test_fixture, unique_constraint_validation_throw)
+{
+    {
+        pants document{};
+
+        web::json::value json{};
+        json["name"] = web::json::value::string("test_1");
+        document.set_data(json.serialize());
+
+        ASSERT_NO_THROW(document.save());
+    }
+    {
+        pants document{};
+
+        web::json::value json{};
+        json["name"] = web::json::value::string("test_1");
+        document.set_data(json.serialize());
+
+        survey::unique_constraint<pants> validator{}; 
+        validator.add_key("name");
+
+        ASSERT_THROW(validator.validate(document), std::exception);
+    }
+}
+
+TEST_F(model_db_test_fixture, unique_constraint_validation_update_no_throw)
+{
+    pants document{};
+
+    {
+        web::json::value json{};
+        json["name"] = web::json::value::string("test_x");
+        document.set_data(json.serialize());
+    }
+
+    document.save();
+
+    pants other = pants::get(document.oid());
+
+    {
+        web::json::value json{};
+        json["name"] = web::json::value::string("test_x");
+        other.set_data(json.serialize());
+    }
+
+    survey::unique_constraint<pants> validator{}; 
+    validator.add_key("name");
+
+    ASSERT_NO_THROW(validator.validate(other));
 }
 
 int main(int argc, char* argv[])

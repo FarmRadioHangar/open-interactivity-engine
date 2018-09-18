@@ -192,7 +192,6 @@ namespace survey
 
         void set_data(bsoncxx::document::view view);
         void set_data(const std::string& data);
-
         bsoncxx::document::view data() const;
 
         web::json::value to_json() const;
@@ -207,13 +206,16 @@ namespace survey
         static T get(const std::string& oid);
 
         static std::int64_t count();
+        static std::int64_t count(
+            bsoncxx::document::view_or_value filter,
+            mongocxx::options::count options = mongocxx::options::count{});
 
         template <template <typename, typename> class Container = std::vector,
                   template <typename> class Allocator = std::allocator>
         static survey::page<T, Container<T, Allocator<T>>>
         page(std::int64_t skip = 0, std::int64_t limit = default_page_limit);
 
-        bsoncxx::document::element operator[](const std::string& key);
+        bsoncxx::document::element operator[](const std::string& key) const;
 
     protected:
         mongocxx::collection get_mongodb_collection() const;
@@ -510,11 +512,21 @@ namespace survey
     }
 
     /*!
+     * \brief todo
+     */
+    template <typename T> std::int64_t model<T>::count(
+        bsoncxx::document::view_or_value filter,
+        mongocxx::options::count options)
+    {
+        return T{}.get_mongodb_collection().count(filter, options);
+    }
+
+    /*!
      * \brief Directly access the element of the document matching the given key.
      *
      * \param key the key to match
      */
-    template <typename T> bsoncxx::document::element model<T>::operator[](const std::string& key)
+    template <typename T> bsoncxx::document::element model<T>::operator[](const std::string& key) const
     {
         return _data.view()[key];
     }

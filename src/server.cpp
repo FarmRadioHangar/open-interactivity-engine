@@ -6,7 +6,7 @@ namespace survey
 {
     namespace http
     {
-        request::request(const web::http::http_request& request, const boost::smatch& match)
+        request::request(web::http::http_request&& request, const boost::smatch& match)
           : _match{match},
             _params{web::uri::split_query(request.request_uri().query())},
             _request{request},
@@ -20,6 +20,11 @@ namespace survey
         void request::with_json(std::function<void(web::json::value)> handler)
         {
             _request.extract_json().then(handler).wait();
+        }
+
+        void request::with_body(std::function<void(const std::string&)> handler)
+        {
+            _request.extract_string().then(handler).wait();
         }
 
         void request::send_response()
@@ -127,102 +132,32 @@ namespace survey
 
             for (const auto& route : _routes) {
                 if (request.method() == route.method
-                    && boost::regex_search(path, match, route.regex)) {
+                    && boost::regex_search(path, match, route.regex)) 
+                {
+                    http::request req{std::move(request), match};
+
                     try {
-                      route.handler(http::request{request, match});
-                      return;
+                        route.handler(req);
+                        return;
                     } catch (const std::exception& e) {
                         std::cout << e.what() << std::endl;
+                        return;
                     }
                 }
             }
 
             // send 404 response
-            std::cout << "404" << std::endl;
+            http::request req{std::move(request), match};
+            web::json::value response{};
+            response["status"] = web::json::value::number(404);
+            response["error"]  = web::json::value::string("Not found");
+            response["code"] = web::json::value::string("NOT_FOUND");
+            req.set_status_code(404);
+            req.send_response(response);
         }
     }
 }
 
-//#include <iomanip>
-//#include <mongocxx/exception/query_exception.hpp>
-//#include "builder/exception.h"
-//#include "model/exception.h"
-//
-//namespace survey
-//{
-//    namespace http
-//    {
-//
-//        request::request(const web::http::http_request& request, const std::smatch& match)
-//          : _request{request},
-//            _match{match},
-//            _params{web::uri::split_query(request.request_uri().query())}
-//        {
-//        }
-//
-//        void request::with_json(std::function<void(web::json::value)> handler)
-//        {
-//            _request.extract_json().then(handler).wait();
-//        }
-//
-//        void request::send_error_response(const std::string& error_message, int status)
-//        {
-//            std::stringstream oss{};
-//            oss << "{\"error\":" << std::quoted(error_message) << ",\"status\":" << status << "}";
-//            http::response response{_request};
-//            response.set_status_code(status);
-//            response.set_body(oss.str());
-//            response.send();
-//        }
-//
-//        void request::send_error_response(const web::json::value& body, int status)
-//        {
-//            http::response response{_request};
-//            response.set_status_code(status);
-//            response.set_body(body);
-//            response.send();
-//        }
-//
-//        response::response(const web::http::http_request& request)
-//          : _request{request},
-//            _response{status_codes::OK}
-//        {
-//            web::http::http_headers& headers = _response.headers();
-//            headers["Access-Control-Allow-Origin"] = "*";
-//            headers["Content-Type"] = "application/json";
-//        }
-//
-//        void response::set_body(const json::value& body_data)
-//        {
-//            _response.set_body(body_data);
-//        }
-//
-//        void response::set_body(const std::string& body_data)
-//        {
-//            _response.set_body(body_data);
-//        }
-//
-//        void response::send()
-//        {
-//            _request.reply(_response);
-//        }
-//
-//        void server::handle_request(http_request request)
-//        {
-//            auto path = uri::decode(request.relative_uri().path());
-//            std::smatch match{};
-//
-//            for (auto& route : _routes) {
-//                if (request.method() == route.method &&
-//                    std::regex_match(path, match, route.regex))
-//                {
-//                    try
-//                    {
-//                        route.handler(
-//                            http::request{request, match},
-//                            http::response{request});
-//                        return;
-//                    }
 //                    catch (const web::json::json_exception& e)
 //                    {
 //                        http::request req{request};
@@ -278,15 +213,3 @@ namespace survey
 //                        req.send_error_response(e.what());
 //                        return;
 //                    }
-//                }
-//            }
-//
-//            http::request req{request};
-//            web::json::value json_response{};
-//            json_response["error"]  = web::json::value::string("Not found");
-//            json_response["status"] = web::json::value::number(404);
-//            json_response["code"] = web::json::value::string("NOT_FOUND");
-//            req.send_error_response(json_response, 404);
-//        }
-//    }
-//}

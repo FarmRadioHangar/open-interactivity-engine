@@ -3,22 +3,43 @@
  */
 #pragma once
 
+#include "../model.h"
+
 /*!
- * \brief todo
+ * \brief This is the main namespace for this library.
  */
-class validator
+namespace survey
 {
-public:
-    virtual ~validator();
+    /*!
+     * \brief todo
+     */
+    template <typename T> class validator
+    {
+    public:
+        virtual ~validator();
 
-    validator(const validator&) = delete;
-    validator& operator=(const validator&) = delete;
+        validator(const validator&) = delete;
+        validator& operator=(const validator&) = delete;
 
-    void validate();
+        void validate(const model<T>& document);
 
-protected:
-    validator();
+    protected:
+        validator();
 
-private:
-    virtual void do_validate() = 0;
-};
+    private:
+        virtual void do_validate(const model<T>& document) = 0;
+    };
+
+    template <typename T> void validator<T>::validate(const model<T>& document)
+    {
+        return do_validate(document);
+    }
+
+    template <typename T> validator<T>::~validator()
+    {
+    }
+
+    template <typename T> validator<T>::validator()
+    {
+    }
+}

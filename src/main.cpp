@@ -10,19 +10,24 @@
 #include "dotenv/dotenv.h"
 #include "model.h"
 #include "server.h"
+#include "model/validators/property_validator.h"
+#include "model/validators/unique_constraint.h"
+#include "model/validator.h"
 
 class campaigns : public survey::model<campaigns>
 {
 public:
     COLLECTION(campaigns)
 
-    campaigns() : survey::model<campaigns>{"test"} {}
+    campaigns()
+      : survey::model<campaigns>{"test"}
+    {
+    }
 };
 
 void campaigns_get_one(survey::http::request request)
 {
     auto document = campaigns::get(request.get_uri_param(1));
-
     web::json::value response{};
     response["campaign"] = document.to_json();
 
@@ -31,12 +36,21 @@ void campaigns_get_one(survey::http::request request)
 
 void campaigns_post(survey::http::request request)
 {
-    request.with_json([&request](web::json::value data)
+    request.with_body([&request](const std::string& body)
     {
         campaigns document{};
-        document.set_data(data.serialize());
+        document.set_data(body);
 
-        //builder.add_property("name", json::value::value_type::String, true);
+        {
+            survey::property_validator<campaigns> validator{};
+            validator.add_property("name", survey::prop_type::t_string, true);
+            validator.validate(document);
+        }
+        {
+            survey::unique_constraint<campaigns> validator{};
+            validator.add_key("name");
+            validator.validate(document);
+        }
 
         document.save();
 
@@ -51,6 +65,12 @@ using web::http::methods;
 
 int main()
 {
+    //{
+    //    auto val = web::json::value::parse("123.5");
+    //    std::cout << val.is_number() << std::endl;
+    //    return 0;
+    //}
+
     dotenv::init();
     mongocxx::instance instance{};
 
@@ -152,7 +172,7 @@ int main()
 //    public:
 //        explicit language_builder(web::json::value&& json);
 //        language_builder(const std::string& oid, web::json::value&& json);
-//      
+//
 //    private:
 //        void init();
 //    };
@@ -168,7 +188,7 @@ int main()
 //    {
 //        init();
 //    }
-//      
+//
 //    void language_builder::init()
 //    {
 //        add_property("name", json::value::value_type::String, true);
