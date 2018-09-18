@@ -526,7 +526,8 @@ namespace survey
      *
      * \param key the key to match
      */
-    template <typename T> bsoncxx::document::element model<T>::operator[](const std::string& key) const
+    template <typename T> 
+    bsoncxx::document::element model<T>::operator[](const std::string& key) const
     {
         return _data.view()[key];
     }
