@@ -455,12 +455,7 @@ TEST_F(model_db_test_fixture, unique_constraint_validation_update_no_throw)
     document.save();
 
     pants other = pants::get(document.oid());
-
-    {
-        web::json::value json{};
-        json["name"] = web::json::value::string("test_x");
-        other.set_data(json.serialize());
-    }
+    other.set_data(document.data());
 
     survey::unique_constraint<pants> validator{}; 
     validator.add_key("name");

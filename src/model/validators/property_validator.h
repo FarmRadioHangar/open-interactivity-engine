@@ -39,6 +39,7 @@ namespace survey
         using prop_list = std::list<prop_type>;
 
         property_validator();
+        property_validator(const std::map<std::string, prop>& map);
 
         void add_property(const std::string& name,
                           prop_type type,
@@ -59,6 +60,13 @@ namespace survey
     template <typename T>
     property_validator<T>::property_validator()
       : validator<T>{}
+    {
+    }
+
+    template <typename T>
+    property_validator<T>::property_validator(const std::map<std::string, prop>& map)
+      : validator<T>{},
+        _properties{map}
     {
     }
 

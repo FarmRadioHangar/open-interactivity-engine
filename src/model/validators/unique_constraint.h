@@ -21,6 +21,7 @@ namespace survey
     {
     public:
         unique_constraint();
+        unique_constraint(std::list<std::string> names);
 
         void add_key(const std::string& name);
 
@@ -34,6 +35,15 @@ namespace survey
     unique_constraint<T>::unique_constraint()
       : validator<T>{}
     {
+    }
+
+    template <typename T>
+    unique_constraint<T>::unique_constraint(std::list<std::string> names)
+      : validator<T>{}
+    {
+        for (auto const& key : names) {
+            add_key(key);
+        }
     }
 
     template <typename T>

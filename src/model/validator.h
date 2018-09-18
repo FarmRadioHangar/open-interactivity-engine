@@ -18,8 +18,8 @@ namespace survey
     public:
         virtual ~validator();
 
-        validator(const validator&) = delete;
-        validator& operator=(const validator&) = delete;
+//        validator(const validator&) = delete;
+//        validator& operator=(const validator&) = delete;
 
         void validate(const model<T>& document);
 

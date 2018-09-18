@@ -221,12 +221,12 @@ namespace survey
         mongocxx::collection get_mongodb_collection() const;
 
     private:
-        std::string              _host;
-        std::string              _db;
-        std::string              _collection;
-        bsoncxx::document::value _data;
-        bsoncxx::oid             _oid;
-        mongocxx::client         _client;
+        std::string               _host;
+        std::string               _db;
+        std::string               _collection;
+        bsoncxx::document::value  _data;
+        bsoncxx::oid              _oid;
+        mongocxx::client          _client;
     };
 
     /*!

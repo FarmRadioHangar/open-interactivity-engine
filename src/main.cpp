@@ -22,6 +22,11 @@ public:
     campaigns()
       : survey::model<campaigns>{"test"}
     {
+        survey::property_validator<campaigns> validator{};
+        validator.add_property("name", survey::prop_type::t_string, true);
+
+        survey::unique_constraint<campaigns> constraint{};
+        constraint.add_key("name");
     }
 };
 
@@ -39,19 +44,8 @@ void campaigns_post(survey::http::request request)
     request.with_body([&request](const std::string& body)
     {
         campaigns document{};
+        
         document.set_data(body);
-
-        {
-            survey::property_validator<campaigns> validator{};
-            validator.add_property("name", survey::prop_type::t_string, true);
-            validator.validate(document);
-        }
-        {
-            survey::unique_constraint<campaigns> validator{};
-            validator.add_key("name");
-            validator.validate(document);
-        }
-
         document.save();
 
         web::json::value response{};
