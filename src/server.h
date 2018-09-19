@@ -8,9 +8,6 @@
 #include <map>
 #include <vector>
 
-/*!
- * \brief This is the main namespace for this library.
- */
 namespace ops
 {
     /*!

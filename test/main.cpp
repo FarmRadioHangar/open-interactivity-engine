@@ -11,13 +11,13 @@
 #include <mongocxx/instance.hpp>
 #include <vector>
 
-class pants : public survey::model<pants>
+class pants : public ops::model<pants>
 {
 public:
     COLLECTION(pants)
 
     pants()
-      : survey::model<pants>{
+      : ops::model<pants>{
             mongocxx::uri{dotenv::getenv("MONGODB_HOST", "mongodb://localhost:27017")},
             dotenv::getenv("MONGODB_DATABASE", "test")}
     {
@@ -152,12 +152,12 @@ TEST(model_test, set_bad_oid_throws)
 {
     pants document;
 
-    ASSERT_THROW(document.set_oid("xxx"), survey::model_error);
+    ASSERT_THROW(document.set_oid("xxx"), ops::model_error);
 
     try {
         document.set_oid("xxx");
-    } catch(const survey::model_error& e) {
-        ASSERT_EQ(survey::model_error::bad_oid, e.type());
+    } catch(const ops::model_error& e) {
+        ASSERT_EQ(ops::model_error::bad_oid, e.type());
     }
 }
 
@@ -228,7 +228,7 @@ TEST_F(model_db_test_fixture, get_removed_document_throws)
 
     document.remove();
 
-    ASSERT_THROW(pants::get(oid), survey::model_error);
+    ASSERT_THROW(pants::get(oid), ops::model_error);
 }
 
 /* Test that deleting a document leaves the object in an empty state. */
@@ -330,8 +330,8 @@ TEST_F(model_db_test_fixture, prop_type_validation_no_throw)
     json["name"] = web::json::value::string("test");
     document.set_data(json.serialize());
 
-    survey::property_validator<pants> validator{}; 
-    validator.add_property("name", survey::prop_type::t_string, true);
+    ops::property_validator<pants> validator{}; 
+    validator.add_property("name", ops::prop::t_string, true);
 
     ASSERT_NO_THROW(validator.validate(document));
 }
@@ -345,10 +345,10 @@ TEST_F(model_db_test_fixture, prop_type_validation_no_throw_2)
     json["name"] = web::json::value::string("test");
     document.set_data(json.serialize());
 
-    survey::property_validator<pants> validator{}; 
+    ops::property_validator<pants> validator{}; 
     validator.add_property(
         "name", 
-        {survey::prop_type::t_string, survey::prop_type::t_numeric}, 
+        {ops::prop::t_string, ops::prop::t_numeric}, 
         true);
 
     ASSERT_NO_THROW(validator.validate(document));
@@ -359,8 +359,8 @@ TEST_F(model_db_test_fixture, prop_type_validation_no_throw_3)
 {
     pants document{};
 
-    survey::property_validator<pants> validator{}; 
-    validator.add_property("name", survey::prop_type::t_string);
+    ops::property_validator<pants> validator{}; 
+    validator.add_property("name", ops::prop::t_string);
 
     ASSERT_NO_THROW(validator.validate(document));
 }
@@ -370,8 +370,8 @@ TEST_F(model_db_test_fixture, prop_type_validation_throw)
 {
     pants document{};
 
-    survey::property_validator<pants> validator{}; 
-    validator.add_property("name", survey::prop_type::t_string, true);
+    ops::property_validator<pants> validator{}; 
+    validator.add_property("name", ops::prop::t_string, true);
 
     ASSERT_THROW(validator.validate(document), std::exception);
 }
@@ -385,10 +385,10 @@ TEST_F(model_db_test_fixture, prop_type_validation_throw_2)
     json["name"] = web::json::value::string("test");
     document.set_data(json.serialize());
 
-    survey::property_validator<pants> validator{}; 
+    ops::property_validator<pants> validator{}; 
     validator.add_property(
         "name", 
-        {survey::prop_type::t_boolean, survey::prop_type::t_numeric}, 
+        {ops::prop::t_boolean, ops::prop::t_numeric}, 
         true);
 
     ASSERT_THROW(validator.validate(document), std::exception);
@@ -403,8 +403,8 @@ TEST_F(model_db_test_fixture, prop_type_validation_throw_3)
     json["name"] = web::json::value::string("test");
     document.set_data(json.serialize());
 
-    survey::property_validator<pants> validator{}; 
-    validator.add_property("name", survey::prop_type::t_null);
+    ops::property_validator<pants> validator{}; 
+    validator.add_property("name", ops::prop::t_null);
 
     ASSERT_THROW(validator.validate(document), std::exception);
 }
@@ -418,7 +418,7 @@ TEST_F(model_db_test_fixture, unique_constraint_validation_no_throw)
     json["name"] = web::json::value::string("test_1");
     document.set_data(json.serialize());
 
-    survey::unique_constraint<pants> validator{}; 
+    ops::unique_constraint<pants> validator{}; 
     validator.add_key("name");
 
     ASSERT_NO_THROW(validator.validate(document));
@@ -443,7 +443,7 @@ TEST_F(model_db_test_fixture, unique_constraint_validation_throw)
         json["name"] = web::json::value::string("test_1");
         document.set_data(json.serialize());
 
-        survey::unique_constraint<pants> validator{}; 
+        ops::unique_constraint<pants> validator{}; 
         validator.add_key("name");
 
         ASSERT_THROW(validator.validate(document), std::exception);
@@ -466,7 +466,7 @@ TEST_F(model_db_test_fixture, unique_constraint_validation_update_no_throw)
     pants other = pants::get(document.oid());
     other.set_data(document.data());
 
-    survey::unique_constraint<pants> validator{}; 
+    ops::unique_constraint<pants> validator{}; 
     validator.add_key("name");
 
     ASSERT_NO_THROW(validator.validate(other));
