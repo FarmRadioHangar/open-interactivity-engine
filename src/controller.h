@@ -19,7 +19,7 @@ namespace ops
     template <typename T> class rest_controller
     {
     public:
-        rest_controller(http::server* const server);
+        explicit rest_controller(http::server* const server);
 
         virtual ~rest_controller() = default;
 
