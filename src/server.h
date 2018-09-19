@@ -43,6 +43,10 @@ namespace survey
             void send_response(const web::json::value& json);
             void send_response(const std::string& data);
 
+            void send_error_response(web::http::status_code code,
+                                     const std::string& atom,
+                                     const std::string& error);
+
         private:
             template <typename T> T type_conv(const std::string& str) const
             {

@@ -1,6 +1,8 @@
 #include "server.h"
+#include <mongocxx/exception/exception.hpp>
 #include <cpprest/uri_builder.h>
 #include <cpprest/http_headers.h>
+#include "model/exception.h"
 
 namespace survey
 {
@@ -42,6 +44,19 @@ namespace survey
         {
             _response.set_body(data);
             _request.reply(_response);
+        }
+
+        void request::send_error_response(
+            web::http::status_code code,
+            const std::string& atom,
+            const std::string& error)
+        {
+            web::json::value response{};
+            response["status"] = web::json::value::number(code);
+            response["error"]  = web::json::value::string(error);
+            response["code"] = web::json::value::string(atom);
+            set_status_code(code);
+            send_response(response);
         }
 
         /*!
@@ -132,15 +147,24 @@ namespace survey
 
             for (const auto& route : _routes) {
                 if (request.method() == route.method
-                    && boost::regex_search(path, match, route.regex)) 
+                    && boost::regex_search(path, match, route.regex))
                 {
                     http::request req{std::move(request), match};
 
                     try {
                         route.handler(req);
                         return;
-                    } catch (const std::exception& e) {
-                        std::cout << e.what() << std::endl;
+                    } catch (const web::json::json_exception& error) {
+                        http::request req{std::move(request), match};
+                        req.send_error_response(400, "BAD_JSON", error.what());
+                        return;
+//                    } catch (const mongocxx::exception& error) {
+//                        //
+//                    } catch (const survey::model_error& error) {
+//                        //
+                    } catch (const std::exception& error) {
+                        http::request req{std::move(request), match};
+                        req.send_error_response(500, "INTERNAL_SERVER_ERROR", error.what());
                         return;
                     }
                 }
@@ -148,12 +172,7 @@ namespace survey
 
             // send 404 response
             http::request req{std::move(request), match};
-            web::json::value response{};
-            response["status"] = web::json::value::number(404);
-            response["error"]  = web::json::value::string("Not found");
-            response["code"] = web::json::value::string("NOT_FOUND");
-            req.set_status_code(404);
-            req.send_response(response);
+            req.send_error_response(404, "NOT_FOUND", "Not found");
         }
     }
 }
