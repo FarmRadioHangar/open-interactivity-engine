@@ -59,12 +59,18 @@ namespace ops
         std::map<std::string, prop> _properties;
     };
 
+    /*!
+     * \brief todo
+     */
     template <typename T>
     property_validator<T>::property_validator()
       : validator<T>{}
     {
     }
 
+    /*!
+     * \brief todo
+     */
     template <typename T>
     property_validator<T>::property_validator(const std::map<std::string, prop>& map)
       : validator<T>{},
