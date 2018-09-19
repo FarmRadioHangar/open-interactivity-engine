@@ -161,11 +161,11 @@ namespace survey
                         switch (error.code().value())
                         {
                         case 13053:
-                            req.send_error_response(502, "BAD_GATEWAY", 
+                            req.send_error_response(502, "BAD_GATEWAY",
                                 "No suitable servers found. Is mongod running?");
                             break;
                         case 11000:
-                            req.send_error_response(409, "DUPLICATE_KEY", 
+                            req.send_error_response(409, "DUPLICATE_KEY",
                                 "Duplicate key error.");
                             break;
                         default:
@@ -173,8 +173,20 @@ namespace survey
                                 error.what());
                         }
                         return;
-//                    } catch (const survey::model_error& error) {
-//                        //
+                    } catch (const survey::model_error& error) {
+                        switch (error.type())
+                        {
+                        case model_error::document_not_found:
+                            req.send_error_response(404, "NOT_FOUND", "No such document");
+                            break;
+                        case model_error::bad_oid:
+                            req.send_error_response(400, "BAD_OID", "Bad ObjectId");
+                            break;
+                        case model_error::bad_bson_data:
+                        default:
+                            req.send_error_response(400, "BAD_BSON", "Not a valid document");
+                        }
+                        return;
                     } catch (const std::exception& error) {
                         req.send_error_response(500, "INTERNAL_SERVER_ERROR", error.what());
                         return;
