@@ -21,6 +21,13 @@ namespace ops
         static bsoncxx::types::value from_json(const web::json::value& json);
     };
 
+    /*!
+     * \brief todo
+     *
+     * \param json todo
+     *
+     * \returns todo
+     */
     bsoncxx::types::value 
     bson_utils::from_json(const web::json::value& json)
     {

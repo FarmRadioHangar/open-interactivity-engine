@@ -20,33 +20,51 @@ namespace ops
             headers["Content-Type"] = "application/json";
         }
 
+        /*!
+         * \brief todo
+         */
         void request::with_json(std::function<void(web::json::value)> handler)
         {
             _request.extract_json().then(handler).wait();
         }
 
+        /*!
+         * \brief todo
+         */
         void request::with_body(std::function<void(const std::string&)> handler)
         {
             _request.extract_string().then(handler).wait();
         }
 
+        /*!
+         * \brief todo
+         */
         void request::send_response()
         {
             _request.reply(_response);
         }
 
+        /*!
+         * \brief todo
+         */
         void request::send_response(const web::json::value& json)
         {
             _response.set_body(json);
             _request.reply(_response);
         }
 
+        /*!
+         * \brief todo
+         */
         void request::send_response(const std::string& data)
         {
             _response.set_body(data);
             _request.reply(_response);
         }
 
+        /*!
+         * \brief todo
+         */
         void request::send_error_response(
             web::http::status_code code,
             const std::string& atom,
