@@ -19,14 +19,13 @@ class campaigns : public survey::model<campaigns>
 public:
     COLLECTION(campaigns)
 
-    campaigns()
-      : survey::model<campaigns>{"test"}
+    campaigns() : survey::model<campaigns>{"test"}
     {
-        survey::property_validator<campaigns> validator{};
-        validator.add_property("name", survey::prop_type::t_string, true);
+        auto constraint = add_validator<survey::unique_constraint>();
+        constraint->add_key("name");
 
-        survey::unique_constraint<campaigns> constraint{};
-        constraint.add_key("name");
+        auto validator = add_validator<survey::property_validator>();
+        validator->add_property("name", survey::prop_type::t_string, true);
     }
 };
 
@@ -46,6 +45,7 @@ void campaigns_post(survey::http::request request)
         campaigns document{};
         
         document.set_data(body);
+        document.validate();
         document.save();
 
         web::json::value response{};

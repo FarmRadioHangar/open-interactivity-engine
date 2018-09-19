@@ -4,6 +4,7 @@
 #pragma once
 
 #include "../validator.h"
+#include <bsoncxx/types.hpp>
 #include <list>
 #include <map>
 #include <set>
@@ -50,7 +51,7 @@ namespace survey
                           const bool required = false);
 
     private:
-        void do_validate(const model<T>& document) override;
+        void do_validate(const T& document) override;
 
         bool validates_as(bsoncxx::type bson_type, prop_type json_type) const;
 
@@ -105,7 +106,7 @@ namespace survey
     }
 
     template <typename T>
-    void property_validator<T>::do_validate(const model<T>& document)
+    void property_validator<T>::do_validate(const T& document)
     {
         for (const auto& property : _properties)
         {

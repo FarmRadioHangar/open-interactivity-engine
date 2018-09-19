@@ -89,10 +89,10 @@ namespace survey
             });
 
             try {
-                _listener.open()
-                         .then([this]() { std::cout << "Listening on port " << _port << "..." << std::endl; })
-                         .wait();
-                while (true);
+              _listener.open()
+                       .then([this]() { std::cout << "Listening on port " << _port << "..." << std::endl; })
+                       .wait();
+              while (true);
             } catch (const std::exception& e) {
                 std::cout << e.what() << std::endl;
             }

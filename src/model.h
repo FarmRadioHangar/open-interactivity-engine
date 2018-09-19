@@ -10,9 +10,12 @@
 #include <cpprest/json.h>
 #include <mongocxx/client.hpp>
 #include <vector>
+#include <list>
 #include "model/exception.h"
+#include "model/validator.h"
 
 #define COLLECTION(name) static constexpr auto mongodb_collection = #name;
+
 
 /*!
  * \brief This is the main namespace for this library.
@@ -199,6 +202,11 @@ namespace survey
         void set_oid(const std::string& oid);
         std::string oid() const;
 
+        template <template <typename> class Validator> 
+        std::shared_ptr<Validator<model<T>>> add_validator();
+
+        void validate() const;
+
         void fetch();
         void save();
         void remove();
@@ -221,12 +229,15 @@ namespace survey
         mongocxx::collection get_mongodb_collection() const;
 
     private:
-        std::string               _host;
-        std::string               _db;
-        std::string               _collection;
-        bsoncxx::document::value  _data;
-        bsoncxx::oid              _oid;
-        mongocxx::client          _client;
+        using validator_ptr = std::shared_ptr<validator<model<T>>>;
+
+        std::string              _host;
+        std::string              _db;
+        std::string              _collection;
+        bsoncxx::document::value _data;
+        bsoncxx::oid             _oid;
+        mongocxx::client         _client;
+        std::list<validator_ptr> _validators;
     };
 
     /*!
@@ -384,6 +395,27 @@ namespace survey
     template <typename T> std::string model<T>::oid() const
     {
         return _oid.to_string();
+    }
+
+    /*!
+     * \brief todo
+     *
+     * \returns todo
+     */
+    template <typename T> 
+    template <template <typename> class Validator>
+    std::shared_ptr<Validator<model<T>>> model<T>::add_validator()
+    {
+        auto pointer = std::make_shared<Validator<model<T>>>();
+        _validators.push_back(pointer);
+        return pointer;
+    }
+
+    template <typename T> void model<T>::validate() const
+    {
+        for (const auto& validator : _validators) {
+            validator->validate(*this);
+        }
     }
 
     /*!

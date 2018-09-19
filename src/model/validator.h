@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "../model.h"
-
 /*!
  * \brief This is the main namespace for this library.
  */
@@ -18,19 +16,19 @@ namespace survey
     public:
         virtual ~validator();
 
-//        validator(const validator&) = delete;
-//        validator& operator=(const validator&) = delete;
+        validator(const validator&) = delete;
+        validator& operator=(const validator&) = delete;
 
-        void validate(const model<T>& document);
-
+        void validate(const T& document);
+        
     protected:
         validator();
 
     private:
-        virtual void do_validate(const model<T>& document) = 0;
+        virtual void do_validate(const T& document) = 0;
     };
 
-    template <typename T> void validator<T>::validate(const model<T>& document)
+    template <typename T> void validator<T>::validate(const T& document)
     {
         return do_validate(document);
     }

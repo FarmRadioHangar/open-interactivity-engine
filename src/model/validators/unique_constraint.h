@@ -26,7 +26,7 @@ namespace survey
         void add_key(const std::string& name);
 
     private:
-        void do_validate(const model<T>& document) override;
+        void do_validate(const T& document) override;
 
         std::list<std::string> _keys;
     };
@@ -39,15 +39,13 @@ namespace survey
 
     template <typename T>
     unique_constraint<T>::unique_constraint(std::list<std::string> names)
-      : validator<T>{}
+      : validator<T>{},
+        _keys{names}
     {
-        for (auto const& key : names) {
-            add_key(key);
-        }
     }
 
     template <typename T>
-    void unique_constraint<T>::do_validate(const model<T>& document)
+    void unique_constraint<T>::do_validate(const T& document)
     {
         using bsoncxx::builder::basic::kvp;
 

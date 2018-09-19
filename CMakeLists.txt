@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.5)
 
 project(polls)
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_DEFAULT 14)
-set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall")
 
 find_package(Boost COMPONENTS system thread regex REQUIRED)
@@ -29,6 +25,8 @@ add_executable(server src/main.cpp src/model.cpp src/server.cpp src/model/valida
 
 include_directories(${LIBMONGOCXX_INCLUDE_DIRS} ${LIBMONGOCXX_INCLUDE_DIR})
 include_directories(${LIBBSONCXX_INCLUDE_DIRS} ${LIBMONGOCXX_INCLUDE_DIR})
+
+target_compile_features(server PUBLIC cxx_std_17)
 
 target_link_libraries(server PUBLIC ${Boost_LIBRARIES})
 target_link_libraries(server PUBLIC ${LIBBSONCXX_LIBRARIES})
