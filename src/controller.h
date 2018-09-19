@@ -19,7 +19,7 @@ namespace ops
     template <typename T> class rest_controller
     {
     public:
-        rest_controller(http::server* const server);
+        explicit rest_controller(http::server* const server);
 
         virtual ~rest_controller() = default;
 
@@ -97,6 +97,8 @@ namespace ops
 
     /*!
      * \brief todo
+     *
+     * \param request todo
      */
     template <typename T>
     void rest_controller<T>::get_one(ops::http::request request)
@@ -110,6 +112,8 @@ namespace ops
 
     /*!
      * \brief todo
+     *
+     * \param request todo
      */
     template <typename T>
     void rest_controller<T>::get(ops::http::request request)
@@ -122,6 +126,8 @@ namespace ops
 
     /*!
      * \brief todo
+     *
+     * \param request todo
      */
     template <typename T>
     void rest_controller<T>::post(ops::http::request request)
@@ -143,6 +149,8 @@ namespace ops
 
     /*!
      * \brief todo
+     *
+     * \param request todo
      */
     template <typename T>
     void rest_controller<T>::put(ops::http::request request)
@@ -164,6 +172,8 @@ namespace ops
 
     /*!
      * \brief todo
+     *
+     * \param request todo
      */
     template <typename T>
     void rest_controller<T>::del(ops::http::request request)

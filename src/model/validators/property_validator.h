@@ -25,10 +25,10 @@ namespace ops
         t_object
     };
 
-    struct prop 
-    { 
-        std::list<prop_type> types; 
-        bool                 required; 
+    struct prop
+    {
+        std::list<prop_type> types;
+        bool                 required;
     };
 
     /*!
@@ -140,18 +140,18 @@ namespace ops
     }
 
     template <typename T>
-    bool property_validator<T>::validates_as(bsoncxx::type bson_type, 
+    bool property_validator<T>::validates_as(bsoncxx::type bson_type,
                                              prop_type json_type) const
     {
         using bsoncxx::type;
 
-        switch (json_type) 
+        switch (json_type)
         {
             case t_string:
                 return (type::k_utf8 == bson_type);
             case t_numeric:
-                return (type::k_double == bson_type 
-                     || type::k_int32 == bson_type 
+                return (type::k_double == bson_type
+                     || type::k_int32 == bson_type
                      || type::k_int64 == bson_type);
             case t_boolean:
                 return (type::k_bool == bson_type);

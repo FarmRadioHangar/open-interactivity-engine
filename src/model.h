@@ -8,9 +8,9 @@
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/oid.hpp>
 #include <cpprest/json.h>
+#include <list>
 #include <mongocxx/client.hpp>
 #include <vector>
-#include <list>
 #include "model/exception.h"
 #include "model/validator.h"
 
@@ -389,7 +389,7 @@ namespace ops
     /*!
      * \brief Get the document's ObjectId.
      *
-     * \return the MongoDB ObjectId associated with the document
+     * \returns the MongoDB ObjectId associated with the document
      */
     template <typename T> std::string model<T>::oid() const
     {
@@ -410,6 +410,9 @@ namespace ops
         return pointer;
     }
 
+    /*!
+     * \brief todo
+     */
     template <typename T> void model<T>::validate() const
     {
         for (const auto& validator : _validators) {

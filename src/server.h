@@ -89,6 +89,9 @@ namespace ops
             }
         }
 
+        /*!
+         * \brief todo
+         */
         inline void request::set_status_code(web::http::status_code code)
         {
             _response.set_status_code(code);

@@ -7,13 +7,13 @@
  */
 
 #include <mongocxx/instance.hpp>
-#include "dotenv/dotenv.h"
 #include "controller.h"
+#include "dotenv/dotenv.h"
 #include "model.h"
-#include "server.h"
+#include "model/validator.h"
 #include "model/validators/property_validator.h"
 #include "model/validators/unique_constraint.h"
-#include "model/validator.h"
+#include "server.h"
 
 class campaigns : public ops::model<campaigns>
 {
@@ -35,7 +35,7 @@ class languages : public ops::model<languages>
 public:
     COLLECTION(languages)
 
-    languages() : ops::model<languages>{"test"} 
+    languages() : ops::model<languages>{"test"}
     {
         auto constraint = add_validator<ops::unique_constraint>();
         constraint->add_key("name");
@@ -73,7 +73,17 @@ int main()
 
     ops::rest_controller<campaigns> campaigns_controller{&server};
     campaigns_controller.register_rest_routes();
-    
+
+    ops::rest_controller<languages> languages_controller{&server};
+    languages_controller.register_rest_routes();
+
+    ops::rest_controller<audience> audience_controller{&server};
+    audience_controller.register_rest_routes();
+
+    ops::rest_controller<content> content_controller{&server};
+    content_controller.register_rest_routes();
+
+    //
     {
         using bsoncxx::builder::basic::kvp;
 
