@@ -155,15 +155,27 @@ namespace survey
                         route.handler(req);
                         return;
                     } catch (const web::json::json_exception& error) {
-                        http::request req{std::move(request), match};
                         req.send_error_response(400, "BAD_JSON", error.what());
                         return;
-//                    } catch (const mongocxx::exception& error) {
-//                        //
+                    } catch (const mongocxx::exception& error) {
+                        switch (error.code().value())
+                        {
+                        case 13053:
+                            req.send_error_response(502, "BAD_GATEWAY", 
+                                "No suitable servers found. Is mongod running?");
+                            break;
+                        case 11000:
+                            req.send_error_response(409, "DUPLICATE_KEY", 
+                                "Duplicate key error.");
+                            break;
+                        default:
+                            req.send_error_response(500, "INTERNAL_SERVER_ERROR",
+                                error.what());
+                        }
+                        return;
 //                    } catch (const survey::model_error& error) {
 //                        //
                     } catch (const std::exception& error) {
-                        http::request req{std::move(request), match};
                         req.send_error_response(500, "INTERNAL_SERVER_ERROR", error.what());
                         return;
                     }
@@ -176,59 +188,3 @@ namespace survey
         }
     }
 }
-
-//                    catch (const web::json::json_exception& e)
-//                    {
-//                        http::request req{request};
-//                        web::json::value json_response{};
-//                        json_response["error"]  = web::json::value::string(e.what());
-//                        json_response["status"] = web::json::value::number(400);
-//                        json_response["code"] = web::json::value::string("BAD_JSON");
-//                        req.send_error_response(json_response, 400);
-//                    }
-//                    catch (const utils::builder::error& e)
-//                    {
-//                        http::request req{request};
-//                        req.send_error_response(e.to_json(), e.status_code());
-//                    }
-//                    catch (const survey::model_error& e)
-//                    {
-//                        std::cout << e.what() << std::endl;
-//
-//                        http::request req{request};
-//
-//                        switch (e.type())
-//                        {
-//                        case survey::model_error::document_not_found:
-//                            req.send_error_response("Document not found.", 404);
-//                        default:
-//                            req.send_error_response(e.what());
-//                        }
-//                    }
-//                    catch (const mongocxx::exception& e)
-//                    {
-//                        std::cout << e.what() << std::endl;
-//                        std::cout << e.code() << std::endl;
-//
-//                        http::request req{request};
-//
-//                        switch (e.code().value())
-//                        {
-//                        case 13053:
-//                            req.send_error_response("No suitable servers found. Is mongod running?");
-//                            break;
-//                        case 11000:
-//                            req.send_error_response("Duplicate key error.", 409);
-//                            break;
-//                        default:
-//                            req.send_error_response(e.what());
-//                        }
-//                        return;
-//                    }
-//                    catch (std::exception& e)
-//                    {
-//                        std::cout << e.what() << std::endl;
-//                        http::request req{request};
-//                        req.send_error_response(e.what());
-//                        return;
-//                    }
