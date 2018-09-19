@@ -7,7 +7,7 @@
 
 namespace ops
 {
-    enum route_type 
+    enum route_type
     {
         t_get,
         t_get_one,
@@ -27,6 +27,7 @@ namespace ops
         rest_controller& operator=(const rest_controller&) = delete;
 
         void register_route(const route_type type, const std::string& pattern);
+        void register_rest_routes(const std::string& id_pattern = "[0-9a-f]+");
 
         void get_one(ops::http::request request);
         void get(ops::http::request request);
@@ -41,7 +42,7 @@ namespace ops
     /*!
      * \brief todo
      */
-    template <typename T> 
+    template <typename T>
     rest_controller<T>::rest_controller(http::server* const server)
       : _server{server}
     {
@@ -50,29 +51,29 @@ namespace ops
     /*!
      * \brief todo
      */
-    template <typename T> 
+    template <typename T>
     void rest_controller<T>::register_route(const route_type type, const std::string& pattern)
     {
         switch (type)
         {
         case t_get:
-            _server->on(web::http::methods::GET, pattern, 
+            _server->on(web::http::methods::GET, pattern,
                 std::bind(&rest_controller<T>::get, this, std::placeholders::_1));
             break;
         case t_get_one:
-            _server->on(web::http::methods::GET, pattern, 
+            _server->on(web::http::methods::GET, pattern,
                 std::bind(&rest_controller<T>::get_one, this, std::placeholders::_1));
             break;
         case t_post:
-            _server->on(web::http::methods::POST, pattern, 
+            _server->on(web::http::methods::POST, pattern,
                 std::bind(&rest_controller<T>::post, this, std::placeholders::_1));
             break;
         case t_put:
-            _server->on(web::http::methods::PUT, pattern, 
+            _server->on(web::http::methods::PUT, pattern,
                 std::bind(&rest_controller<T>::put, this, std::placeholders::_1));
             break;
         case t_delete:
-            _server->on(web::http::methods::DEL, pattern, 
+            _server->on(web::http::methods::DEL, pattern,
                 std::bind(&rest_controller<T>::del, this, std::placeholders::_1));
             break;
         }
@@ -81,7 +82,23 @@ namespace ops
     /*!
      * \brief todo
      */
-    template <typename T> 
+    template <typename T>
+    void rest_controller<T>::register_rest_routes(const std::string& id_pattern)
+    {
+        const std::string base_ex{"^/" + std::string{T::mongodb_collection} + "$"};
+        const std::string item_ex{"^/" + std::string{T::mongodb_collection} + "/(" + id_pattern + ")$"};
+
+        register_route(route_type::t_get, base_ex);
+        register_route(route_type::t_post, base_ex);
+        register_route(route_type::t_get_one, item_ex);
+        register_route(route_type::t_put, item_ex);
+        register_route(route_type::t_delete, item_ex);
+    }
+
+    /*!
+     * \brief todo
+     */
+    template <typename T>
     void rest_controller<T>::get_one(ops::http::request request)
     {
         auto document = T::get(request.get_uri_param(1));
@@ -94,7 +111,7 @@ namespace ops
     /*!
      * \brief todo
      */
-    template <typename T> 
+    template <typename T>
     void rest_controller<T>::get(ops::http::request request)
     {
         auto skip = request.get_query_param<int64_t>("skip", 0);
@@ -106,13 +123,13 @@ namespace ops
     /*!
      * \brief todo
      */
-    template <typename T> 
+    template <typename T>
     void rest_controller<T>::post(ops::http::request request)
     {
         request.with_body([&request](const std::string& body)
         {
             T document{};
-            
+
             document.set_data(body);
             document.validate();
             document.save();
@@ -127,13 +144,13 @@ namespace ops
     /*!
      * \brief todo
      */
-    template <typename T> 
+    template <typename T>
     void rest_controller<T>::put(ops::http::request request)
     {
         request.with_body([&request](const std::string& body)
         {
             auto document = T::get(request.get_uri_param(1));
- 
+
             document.set_data(body);
             document.validate();
             document.save();
@@ -148,7 +165,7 @@ namespace ops
     /*!
      * \brief todo
      */
-    template <typename T> 
+    template <typename T>
     void rest_controller<T>::del(ops::http::request request)
     {
         auto document = T::get(request.get_uri_param(1));
