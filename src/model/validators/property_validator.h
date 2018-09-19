@@ -13,7 +13,7 @@
 /*!
  * \brief This is the main namespace for this library.
  */
-namespace survey
+namespace otp
 {
     enum prop_type
     {

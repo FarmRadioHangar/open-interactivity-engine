@@ -5,7 +5,7 @@
 
 #include "server.h"
 
-namespace survey
+namespace otp
 {
     enum route_type 
     {
@@ -28,11 +28,11 @@ namespace survey
 
         void register_route(const route_type type, const std::string& pattern);
 
-        void get_one(survey::http::request request);
-        void get(survey::http::request request);
-        void post(survey::http::request request);
-        void put(survey::http::request request);
-        void del(survey::http::request request);
+        void get_one(otp::http::request request);
+        void get(otp::http::request request);
+        void post(otp::http::request request);
+        void put(otp::http::request request);
+        void del(otp::http::request request);
 
     private:
         http::server* const _server;
@@ -73,7 +73,7 @@ namespace survey
     }
 
     template <typename T> 
-    void rest_controller<T>::get_one(survey::http::request request)
+    void rest_controller<T>::get_one(otp::http::request request)
     {
         auto document = T::get(request.get_uri_param(1));
         web::json::value response{};
@@ -83,7 +83,7 @@ namespace survey
     }
 
     template <typename T> 
-    void rest_controller<T>::get(survey::http::request request)
+    void rest_controller<T>::get(otp::http::request request)
     {
         auto skip = request.get_query_param<int64_t>("skip", 0);
         auto limit = request.get_query_param<int64_t>("limit", 10);
@@ -92,7 +92,7 @@ namespace survey
     }
 
     template <typename T> 
-    void rest_controller<T>::post(survey::http::request request)
+    void rest_controller<T>::post(otp::http::request request)
     {
         request.with_body([&request](const std::string& body)
         {
@@ -110,7 +110,7 @@ namespace survey
     }
 
     template <typename T> 
-    void rest_controller<T>::put(survey::http::request request)
+    void rest_controller<T>::put(otp::http::request request)
     {
         request.with_body([&request](const std::string& body)
         {
@@ -128,7 +128,7 @@ namespace survey
     }
 
     template <typename T> 
-    void rest_controller<T>::del(survey::http::request request)
+    void rest_controller<T>::del(otp::http::request request)
     {
         auto document = T::get(request.get_uri_param(1));
         document.remove();

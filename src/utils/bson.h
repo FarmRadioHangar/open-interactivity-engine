@@ -10,7 +10,7 @@
 #include <bsoncxx/types/value.hpp>
 #include <cpprest/json.h>
 
-namespace survey
+namespace otp
 {
     class bson_utils
     {

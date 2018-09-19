@@ -11,7 +11,7 @@
 /*!
  * \brief This is the main namespace for this library.
  */
-namespace survey
+namespace otp
 {
     /*!
      * \brief Namespace for HTTP server and utilities
@@ -104,7 +104,7 @@ namespace survey
             return std::stoi(str);
         }
 
-        using request_handler = std::function<void(survey::http::request)>;
+        using request_handler = std::function<void(otp::http::request)>;
 
         /*!
          * \brief Route handler

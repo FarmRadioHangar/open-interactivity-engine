@@ -15,51 +15,51 @@
 #include "model/validators/unique_constraint.h"
 #include "model/validator.h"
 
-class campaigns : public survey::model<campaigns>
+class campaigns : public otp::model<campaigns>
 {
 public:
     COLLECTION(campaigns)
 
-    campaigns() : survey::model<campaigns>{"test"}
+    campaigns() : otp::model<campaigns>{"test"}
     {
-        auto constraint = add_validator<survey::unique_constraint>();
+        auto constraint = add_validator<otp::unique_constraint>();
         constraint->add_key("name");
 
-        auto validator = add_validator<survey::property_validator>();
-        validator->add_property("name", survey::prop_type::t_string, true);
+        auto validator = add_validator<otp::property_validator>();
+        validator->add_property("name", otp::prop_type::t_string, true);
     }
 };
 
-class languages : public survey::model<languages>
+class languages : public otp::model<languages>
 {
 public:
     COLLECTION(languages)
 
-    languages() : survey::model<languages>{"test"} 
+    languages() : otp::model<languages>{"test"} 
     {
-        auto constraint = add_validator<survey::unique_constraint>();
+        auto constraint = add_validator<otp::unique_constraint>();
         constraint->add_key("name");
 
-        auto validator = add_validator<survey::property_validator>();
-        validator->add_property("name", survey::prop_type::t_string, true);
-        validator->add_property("tag", survey::prop_type::t_string, true);
+        auto validator = add_validator<otp::property_validator>();
+        validator->add_property("name", otp::prop_type::t_string, true);
+        validator->add_property("tag", otp::prop_type::t_string, true);
     }
 };
 
-class audience : public survey::model<audience>
+class audience : public otp::model<audience>
 {
 public:
     COLLECTION(audience)
 
-    audience() : survey::model<audience>{"test"} {}
+    audience() : otp::model<audience>{"test"} {}
 };
 
-class content : public survey::model<content>
+class content : public otp::model<content>
 {
 public:
     COLLECTION(content)
 
-    content() : survey::model<content>{"test"} {}
+    content() : otp::model<content>{"test"} {}
 };
 
 using web::http::methods;
@@ -69,23 +69,23 @@ int main()
     dotenv::init();
     mongocxx::instance instance{};
 
-    survey::http::server server{};
+    otp::http::server server{};
 
-    survey::rest_controller<campaigns> campaigns_controller{&server};
+    otp::rest_controller<campaigns> campaigns_controller{&server};
 
-    campaigns_controller.register_route(survey::route_type::t_get, 
+    campaigns_controller.register_route(otp::route_type::t_get, 
         "^/campaigns$");
 
-    campaigns_controller.register_route(survey::route_type::t_get_one, 
+    campaigns_controller.register_route(otp::route_type::t_get_one, 
         "^/campaigns/([0-9a-f]+)$");
 
-    campaigns_controller.register_route(survey::route_type::t_post, 
+    campaigns_controller.register_route(otp::route_type::t_post, 
         "^/campaigns$");
 
-    campaigns_controller.register_route(survey::route_type::t_put, 
+    campaigns_controller.register_route(otp::route_type::t_put, 
         "^/campaigns/([0-9a-f]+)$");
 
-    campaigns_controller.register_route(survey::route_type::t_delete, 
+    campaigns_controller.register_route(otp::route_type::t_delete, 
         "^/campaigns/([0-9a-f]+)$");
     
     {

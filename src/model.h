@@ -19,7 +19,7 @@
 /*!
  * \brief This is the main namespace for this library.
  */
-namespace survey
+namespace otp
 {
     using bsoncxx::builder::basic::kvp;
 
@@ -48,10 +48,10 @@ namespace survey
     /*!
      * \brief Default constructor
      *
-     * Typically, you would use survey::model::page to create a page, rather
+     * Typically, you would use otp::model::page to create a page, rather
      * than invoking this constructor directly.
      *
-     * \param collection an STL collection of survey::model documents
+     * \param collection an STL collection of otp::model documents
      * \param total      the total number of documents available in the
      *                   underlying MongoDB data store at the time this
      *                   subset was generated
@@ -98,7 +98,7 @@ namespace survey
      *
      * \param pos position of the element to return
      *
-     * \returns the survey::model document at the given position in the
+     * \returns the otp::model document at the given position in the
      *          collection
      */
     template <typename T, typename Container>
@@ -155,12 +155,12 @@ namespace survey
      * *Typical usage:*
      *
      * \code{.cpp}
-     *     class pants : public survey::model<pants>
+     *     class pants : public otp::model<pants>
      *     {
      *     public:
      *         COLLECTION(pants)
      *
-     *         pants() : survey::model<pants>{"test"} {}
+     *         pants() : otp::model<pants>{"test"} {}
      *     };
      *
      *     int main()
@@ -219,7 +219,7 @@ namespace survey
 
         template <template <typename, typename> class Container = std::vector,
                   template <typename> class Allocator = std::allocator>
-        static survey::page<T, Container<T, Allocator<T>>>
+        static otp::page<T, Container<T, Allocator<T>>>
         page(std::int64_t skip = 0, std::int64_t limit = default_page_limit);
 
         bsoncxx::document::element operator[](const std::string& key) const;
@@ -500,12 +500,12 @@ namespace survey
      *
      * \return a STL container with a collection of documents
      *
-     * \sa survey::page
+     * \sa otp::page
      */
     template <typename T>
     template <template <typename, typename> class Container,
               template <typename> class Allocator>
-    survey::page<T, Container<T, Allocator<T>>>
+    otp::page<T, Container<T, Allocator<T>>>
     model<T>::page(std::int64_t skip, std::int64_t limit)
     {
         T model{};
@@ -527,7 +527,7 @@ namespace survey
             container.emplace_back(document);
         }
 
-        return survey::page<T, Container<T, Allocator<T>>>{
+        return otp::page<T, Container<T, Allocator<T>>>{
             std::move(container),
             static_cast<std::size_t>(collection.count({}))
         };
