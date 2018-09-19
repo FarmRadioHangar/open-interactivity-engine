@@ -18,7 +18,7 @@ namespace ops
         using query_params = std::map<utility::string_t, utility::string_t>;
 
         /*!
-         * \brief A HTTP request
+         * \brief HTTP request container
          */
         class request
         {
@@ -57,7 +57,7 @@ namespace ops
         };
 
         /*!
-         * \brief Obtain the nth uri parameter from the list of matches.
+         * \brief Obtain the *n*-th uri parameter from the list of matches.
          *
          * \param n todo
          *
