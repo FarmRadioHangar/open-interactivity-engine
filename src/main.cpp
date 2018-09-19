@@ -35,7 +35,7 @@ class languages : public ops::model<languages>
 public:
     COLLECTION(languages)
 
-    languages() : ops::model<languages>{"test"} 
+    languages() : ops::model<languages>{"test"}
     {
         auto constraint = add_validator<ops::unique_constraint>();
         constraint->add_key("name");
@@ -73,7 +73,7 @@ int main()
 
     ops::rest_controller<campaigns> campaigns_controller{&server};
     campaigns_controller.register_rest_routes();
-    
+
     ops::rest_controller<languages> languages_controller{&server};
     languages_controller.register_rest_routes();
 

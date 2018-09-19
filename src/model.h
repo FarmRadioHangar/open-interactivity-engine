@@ -410,6 +410,9 @@ namespace ops
         return pointer;
     }
 
+    /*!
+     * \brief todo
+     */
     template <typename T> void model<T>::validate() const
     {
         for (const auto& validator : _validators) {
