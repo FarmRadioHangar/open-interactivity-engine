@@ -1,11 +1,12 @@
 #include "gtest/gtest.h"
+#include "../src/dotenv/dotenv.h"
 #include "../src/model.h"
 #include "../src/model/exception.h"
 #include "../src/model/validators/property_validator.h"
+#include "../src/model/validators/property_validator.h"
 #include "../src/model/validators/unique_constraint.h"
-#include "../src/dotenv/dotenv.h"
+#include "../src/model/validators/unique_constraint.h"
 #include <bsoncxx/builder/basic/document.hpp>
-#include <cassert>
 #include <cpprest/json.h>
 #include <mongocxx/instance.hpp>
 #include <vector>
