@@ -33,7 +33,7 @@ namespace ops
 
             void set_status_code(web::http::status_code code);
 
-            void with_json(std::function<void(web::json::value)> handler);
+            void with_json(std::function<void(const web::json::value&)> handler);
             void with_body(std::function<void(const std::string&)> handler);
 
             void send_response();

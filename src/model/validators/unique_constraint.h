@@ -14,12 +14,11 @@ namespace ops
     /*!
      * \brief todo
      */
-    template <typename T>
-    class unique_constraint : public validator<T>
+    template <typename T> class unique_constraint : public validator<T>
     {
     public:
         unique_constraint();
-        unique_constraint(std::list<std::string> names);
+        explicit unique_constraint(const std::list<std::string>& names);
 
         void add_key(const std::string& name);
 
@@ -36,7 +35,7 @@ namespace ops
     }
 
     template <typename T>
-    unique_constraint<T>::unique_constraint(std::list<std::string> names)
+    unique_constraint<T>::unique_constraint(const std::list<std::string>& names)
       : validator<T>{},
         _keys{names}
     {

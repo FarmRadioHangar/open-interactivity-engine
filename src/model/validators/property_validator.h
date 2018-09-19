@@ -12,8 +12,14 @@
 
 namespace ops
 {
+    /*!
+     * \brief todo
+     */
     struct prop
     {
+        /*!
+         * \brief todo
+         */
         enum prop_type
         {
             t_string,

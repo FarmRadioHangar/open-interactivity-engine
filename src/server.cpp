@@ -23,7 +23,7 @@ namespace ops
         /*!
          * \brief todo
          */
-        void request::with_json(std::function<void(web::json::value)> handler)
+        void request::with_json(std::function<void(const web::json::value&)> handler)
         {
             _request.extract_json().then(handler).wait();
         }
