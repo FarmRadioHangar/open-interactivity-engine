@@ -62,66 +62,6 @@ public:
     content() : survey::model<content>{"test"} {}
 };
 
-void campaigns_get(survey::http::request request)
-{
-    auto skip = request.get_query_param<int64_t>("skip", 0);
-    auto limit = request.get_query_param<int64_t>("limit", 10);
-
-    request.send_response(campaigns::page(skip, limit).to_json());
-}
-
-void campaigns_get_one(survey::http::request request)
-{
-    auto document = campaigns::get(request.get_uri_param(1));
-    web::json::value response{};
-    response["campaign"] = document.to_json();
-
-    request.send_response(response);
-}
-
-void campaigns_post(survey::http::request request)
-{
-    request.with_body([&request](const std::string& body)
-    {
-        campaigns document{};
-        
-        document.set_data(body);
-        document.validate();
-        document.save();
-
-        web::json::value response{};
-        response["campaign"] = document.to_json();
-
-        request.send_response(response);
-    });
-}
-
-void campaigns_update(survey::http::request request)
-{
-    request.with_body([&request](const std::string& body)
-    {
-        auto document = campaigns::get(request.get_uri_param(1));
- 
-        document.set_data(body);
-        document.validate();
-        document.save();
-
-        web::json::value response{};
-        response["campaign"] = document.to_json();
-
-        request.send_response(response);
-    });
-}
-
-void campaigns_delete(survey::http::request request)
-{
-    auto document = campaigns::get(request.get_uri_param(1));
-    document.remove();
-
-    request.set_status_code(web::http::status_codes::NoContent);
-    request.send_response();
-}
-
 using web::http::methods;
 
 int main()
