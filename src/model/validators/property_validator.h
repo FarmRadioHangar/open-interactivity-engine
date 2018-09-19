@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <set>
+#include "exception.h"
 
 /*!
  * \brief This is the main namespace for this library.
@@ -115,7 +116,7 @@ namespace survey
             const auto& field = document[key];
 
             if (val.required && !field) {
-                throw std::runtime_error{"Missing property '" + key + "'"};
+                throw validation_error{"Missing property '" + key + "'"};
             }
             if (field) {
                 bool validates = false;
@@ -126,7 +127,7 @@ namespace survey
                     }
                 }
                 if (!validates) {
-                    throw std::runtime_error{"Type mismatch for key '" + key + "'"};
+                    throw validation_error{"Type mismatch for key '" + key + "'"};
                 }
             }
         }

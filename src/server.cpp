@@ -3,6 +3,7 @@
 #include <cpprest/uri_builder.h>
 #include <cpprest/http_headers.h>
 #include "model/exception.h"
+#include "model/validators/exception.h"
 
 namespace survey
 {
@@ -156,6 +157,9 @@ namespace survey
                         return;
                     } catch (const web::json::json_exception& error) {
                         req.send_error_response(400, "BAD_JSON", error.what());
+                        return;
+                    } catch (const survey::validation_error& error) {
+                        req.send_error_response(400, "BAD_REQUEST", error.what());
                         return;
                     } catch (const mongocxx::exception& error) {
                         switch (error.code().value())

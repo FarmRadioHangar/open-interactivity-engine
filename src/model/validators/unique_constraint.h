@@ -7,6 +7,7 @@
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/builder/basic/kvp.hpp>
 #include <list>
+#include "exception.h"
 
 /*!
  * \brief This is the main namespace for this library.
@@ -62,7 +63,7 @@ namespace survey
                         "$ne", bsoncxx::oid{document.oid()}))));
 
                 if (T::count(filter.view()) > 0) {
-                    throw std::runtime_error{"Unique constraint violation for key '" + key + "'"};
+                    throw validation_error{"Unique constraint violation for key '" + key + "'"};
                 }
             }
         }
