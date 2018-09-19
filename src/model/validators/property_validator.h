@@ -13,7 +13,7 @@
 /*!
  * \brief This is the main namespace for this library.
  */
-namespace otp
+namespace ops
 {
     enum prop_type
     {

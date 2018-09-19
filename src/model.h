@@ -19,7 +19,7 @@
 /*!
  * \brief This is the main namespace for this library.
  */
-namespace otp
+namespace ops
 {
     using bsoncxx::builder::basic::kvp;
 
@@ -48,10 +48,10 @@ namespace otp
     /*!
      * \brief Default constructor
      *
-     * Typically, you would use otp::model::page to create a page, rather
+     * Typically, you would use ops::model::page to create a page, rather
      * than invoking this constructor directly.
      *
-     * \param collection an STL collection of otp::model documents
+     * \param collection an STL collection of ops::model documents
      * \param total      the total number of documents available in the
      *                   underlying MongoDB data store at the time this
      *                   subset was generated
@@ -98,7 +98,7 @@ namespace otp
      *
      * \param pos position of the element to return
      *
-     * \returns the otp::model document at the given position in the
+     * \returns the ops::model document at the given position in the
      *          collection
      */
     template <typename T, typename Container>
@@ -155,12 +155,12 @@ namespace otp
      * *Typical usage:*
      *
      * \code{.cpp}
-     *     class pants : public otp::model<pants>
+     *     class pants : public ops::model<pants>
      *     {
      *     public:
      *         COLLECTION(pants)
      *
-     *         pants() : otp::model<pants>{"test"} {}
+     *         pants() : ops::model<pants>{"test"} {}
      *     };
      *
      *     int main()
@@ -219,7 +219,7 @@ namespace otp
 
         template <template <typename, typename> class Container = std::vector,
                   template <typename> class Allocator = std::allocator>
-        static otp::page<T, Container<T, Allocator<T>>>
+        static ops::page<T, Container<T, Allocator<T>>>
         page(std::int64_t skip = 0, std::int64_t limit = default_page_limit);
 
         bsoncxx::document::element operator[](const std::string& key) const;
@@ -500,12 +500,12 @@ namespace otp
      *
      * \return a STL container with a collection of documents
      *
-     * \sa otp::page
+     * \sa ops::page
      */
     template <typename T>
     template <template <typename, typename> class Container,
               template <typename> class Allocator>
-    otp::page<T, Container<T, Allocator<T>>>
+    ops::page<T, Container<T, Allocator<T>>>
     model<T>::page(std::int64_t skip, std::int64_t limit)
     {
         T model{};
@@ -527,7 +527,7 @@ namespace otp
             container.emplace_back(document);
         }
 
-        return otp::page<T, Container<T, Allocator<T>>>{
+        return ops::page<T, Container<T, Allocator<T>>>{
             std::move(container),
             static_cast<std::size_t>(collection.count({}))
         };

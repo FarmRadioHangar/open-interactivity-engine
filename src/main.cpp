@@ -15,51 +15,51 @@
 #include "model/validators/unique_constraint.h"
 #include "model/validator.h"
 
-class campaigns : public otp::model<campaigns>
+class campaigns : public ops::model<campaigns>
 {
 public:
     COLLECTION(campaigns)
 
-    campaigns() : otp::model<campaigns>{"test"}
+    campaigns() : ops::model<campaigns>{"test"}
     {
-        auto constraint = add_validator<otp::unique_constraint>();
+        auto constraint = add_validator<ops::unique_constraint>();
         constraint->add_key("name");
 
-        auto validator = add_validator<otp::property_validator>();
-        validator->add_property("name", otp::prop_type::t_string, true);
+        auto validator = add_validator<ops::property_validator>();
+        validator->add_property("name", ops::prop_type::t_string, true);
     }
 };
 
-class languages : public otp::model<languages>
+class languages : public ops::model<languages>
 {
 public:
     COLLECTION(languages)
 
-    languages() : otp::model<languages>{"test"} 
+    languages() : ops::model<languages>{"test"} 
     {
-        auto constraint = add_validator<otp::unique_constraint>();
+        auto constraint = add_validator<ops::unique_constraint>();
         constraint->add_key("name");
 
-        auto validator = add_validator<otp::property_validator>();
-        validator->add_property("name", otp::prop_type::t_string, true);
-        validator->add_property("tag", otp::prop_type::t_string, true);
+        auto validator = add_validator<ops::property_validator>();
+        validator->add_property("name", ops::prop_type::t_string, true);
+        validator->add_property("tag", ops::prop_type::t_string, true);
     }
 };
 
-class audience : public otp::model<audience>
+class audience : public ops::model<audience>
 {
 public:
     COLLECTION(audience)
 
-    audience() : otp::model<audience>{"test"} {}
+    audience() : ops::model<audience>{"test"} {}
 };
 
-class content : public otp::model<content>
+class content : public ops::model<content>
 {
 public:
     COLLECTION(content)
 
-    content() : otp::model<content>{"test"} {}
+    content() : ops::model<content>{"test"} {}
 };
 
 using web::http::methods;
@@ -69,23 +69,23 @@ int main()
     dotenv::init();
     mongocxx::instance instance{};
 
-    otp::http::server server{};
+    ops::http::server server{};
 
-    otp::rest_controller<campaigns> campaigns_controller{&server};
+    ops::rest_controller<campaigns> campaigns_controller{&server};
 
-    campaigns_controller.register_route(otp::route_type::t_get, 
+    campaigns_controller.register_route(ops::route_type::t_get, 
         "^/campaigns$");
 
-    campaigns_controller.register_route(otp::route_type::t_get_one, 
+    campaigns_controller.register_route(ops::route_type::t_get_one, 
         "^/campaigns/([0-9a-f]+)$");
 
-    campaigns_controller.register_route(otp::route_type::t_post, 
+    campaigns_controller.register_route(ops::route_type::t_post, 
         "^/campaigns$");
 
-    campaigns_controller.register_route(otp::route_type::t_put, 
+    campaigns_controller.register_route(ops::route_type::t_put, 
         "^/campaigns/([0-9a-f]+)$");
 
-    campaigns_controller.register_route(otp::route_type::t_delete, 
+    campaigns_controller.register_route(ops::route_type::t_delete, 
         "^/campaigns/([0-9a-f]+)$");
     
     {

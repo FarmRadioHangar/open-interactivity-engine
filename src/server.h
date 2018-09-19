@@ -11,7 +11,7 @@
 /*!
  * \brief This is the main namespace for this library.
  */
-namespace otp
+namespace ops
 {
     /*!
      * \brief Namespace for HTTP server and utilities
@@ -104,7 +104,7 @@ namespace otp
             return std::stoi(str);
         }
 
-        using request_handler = std::function<void(otp::http::request)>;
+        using request_handler = std::function<void(ops::http::request)>;
 
         /*!
          * \brief Route handler

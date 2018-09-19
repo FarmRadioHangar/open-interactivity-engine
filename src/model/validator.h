@@ -6,7 +6,7 @@
 /*!
  * \brief This is the main namespace for this library.
  */
-namespace otp
+namespace ops
 {
     /*!
      * \brief todo
