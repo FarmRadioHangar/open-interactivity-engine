@@ -8,10 +8,10 @@
 /*!
  * \brief This is the main namespace for this library.
  */
-namespace otp
+namespace ops
 {
     /*!
-     * \brief Runtime errors related to otp::model documents.
+     * \brief Runtime errors related to ops::model documents.
      */
     class model_error : public std::runtime_error
     {

@@ -5,7 +5,7 @@
 #include "model/exception.h"
 #include "model/validators/exception.h"
 
-namespace otp
+namespace ops
 {
     namespace http
     {
@@ -158,7 +158,7 @@ namespace otp
                     } catch (const web::json::json_exception& error) {
                         req.send_error_response(400, "BAD_JSON", error.what());
                         return;
-                    } catch (const otp::validation_error& error) {
+                    } catch (const ops::validation_error& error) {
                         req.send_error_response(400, "BAD_REQUEST", error.what());
                         return;
                     } catch (const mongocxx::exception& error) {
@@ -177,7 +177,7 @@ namespace otp
                                 error.what());
                         }
                         return;
-                    } catch (const otp::model_error& error) {
+                    } catch (const ops::model_error& error) {
                         switch (error.type())
                         {
                         case model_error::document_not_found:
