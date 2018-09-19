@@ -28,8 +28,8 @@ namespace survey
 
         void register_route(const route_type type, const std::string& pattern);
 
-        void get(survey::http::request request);
         void get_one(survey::http::request request);
+        void get(survey::http::request request);
         void post(survey::http::request request);
         void put(survey::http::request request);
         void del(survey::http::request request);
@@ -73,15 +73,6 @@ namespace survey
     }
 
     template <typename T> 
-    void rest_controller<T>::get(survey::http::request request)
-    {
-        auto skip = request.get_query_param<int64_t>("skip", 0);
-        auto limit = request.get_query_param<int64_t>("limit", 10);
-
-        request.send_response(T::page(skip, limit).to_json());
-    }
-
-    template <typename T> 
     void rest_controller<T>::get_one(survey::http::request request)
     {
         auto document = T::get(request.get_uri_param(1));
@@ -89,6 +80,15 @@ namespace survey
         response[T::mongodb_collection] = document.to_json();
 
         request.send_response(response);
+    }
+
+    template <typename T> 
+    void rest_controller<T>::get(survey::http::request request)
+    {
+        auto skip = request.get_query_param<int64_t>("skip", 0);
+        auto limit = request.get_query_param<int64_t>("limit", 10);
+
+        request.send_response(T::page(skip, limit).to_json());
     }
 
     template <typename T> 
