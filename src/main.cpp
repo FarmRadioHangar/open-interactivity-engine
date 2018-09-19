@@ -29,6 +29,30 @@ public:
     }
 };
 
+class languages : public survey::model<languages>
+{
+public:
+    COLLECTION(languages)
+
+    languages() : survey::model<languages>{"test"} {}
+};
+
+class audience : public survey::model<audience>
+{
+public:
+    COLLECTION(audience)
+
+    audience() : survey::model<audience>{"test"} {}
+};
+
+class content : public survey::model<content>
+{
+public:
+    COLLECTION(content)
+
+    content() : survey::model<content>{"test"} {}
+};
+
 void campaigns_get_one(survey::http::request request)
 {
     auto document = campaigns::get(request.get_uri_param(1));

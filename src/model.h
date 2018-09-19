@@ -16,7 +16,6 @@
 
 #define COLLECTION(name) static constexpr auto mongodb_collection = #name;
 
-
 /*!
  * \brief This is the main namespace for this library.
  */
