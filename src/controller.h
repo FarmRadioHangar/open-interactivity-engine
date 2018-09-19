@@ -19,7 +19,7 @@ namespace survey
     template <typename T> class rest_controller
     {
     public:
-        rest_controller(http::server* server);
+        rest_controller(http::server* const server);
 
         virtual ~rest_controller() = default;
 
@@ -39,7 +39,7 @@ namespace survey
     };
 
     template <typename T> 
-    rest_controller<T>::rest_controller(http::server* server)
+    rest_controller<T>::rest_controller(http::server* const server)
       : _server{server}
     {
     }
