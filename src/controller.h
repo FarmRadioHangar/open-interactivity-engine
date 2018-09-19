@@ -38,12 +38,18 @@ namespace ops
         http::server* const _server;
     };
 
+    /*!
+     * \brief todo
+     */
     template <typename T> 
     rest_controller<T>::rest_controller(http::server* const server)
       : _server{server}
     {
     }
 
+    /*!
+     * \brief todo
+     */
     template <typename T> 
     void rest_controller<T>::register_route(const route_type type, const std::string& pattern)
     {
@@ -72,6 +78,9 @@ namespace ops
         }
     }
 
+    /*!
+     * \brief todo
+     */
     template <typename T> 
     void rest_controller<T>::get_one(ops::http::request request)
     {
@@ -82,6 +91,9 @@ namespace ops
         request.send_response(response);
     }
 
+    /*!
+     * \brief todo
+     */
     template <typename T> 
     void rest_controller<T>::get(ops::http::request request)
     {
@@ -91,6 +103,9 @@ namespace ops
         request.send_response(T::page(skip, limit).to_json());
     }
 
+    /*!
+     * \brief todo
+     */
     template <typename T> 
     void rest_controller<T>::post(ops::http::request request)
     {
@@ -109,6 +124,9 @@ namespace ops
         });
     }
 
+    /*!
+     * \brief todo
+     */
     template <typename T> 
     void rest_controller<T>::put(ops::http::request request)
     {
@@ -127,6 +145,9 @@ namespace ops
         });
     }
 
+    /*!
+     * \brief todo
+     */
     template <typename T> 
     void rest_controller<T>::del(ops::http::request request)
     {
