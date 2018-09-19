@@ -21,6 +21,11 @@ namespace survey
     public:
         rest_controller(http::server* server);
 
+        virtual ~rest_controller() = default;
+
+        rest_controller(const rest_controller&) = delete;
+        rest_controller& operator=(const rest_controller&) = delete;
+
         void register_route(const route_type type, const std::string& pattern);
 
         void get(survey::http::request request);

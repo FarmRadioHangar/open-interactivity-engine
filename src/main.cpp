@@ -133,11 +133,20 @@ int main()
 
     survey::rest_controller<campaigns> campaigns_controller{&server};
 
-    campaigns_controller.register_route(survey::route_type::t_get, "^/campaigns$");
-    campaigns_controller.register_route(survey::route_type::t_get_one, "^/campaigns/([0-9a-f]+)$");
-    campaigns_controller.register_route(survey::route_type::t_post, "^/campaigns$");
-    campaigns_controller.register_route(survey::route_type::t_put, "^/campaigns/([0-9a-f]+)$");
-    campaigns_controller.register_route(survey::route_type::t_delete, "^/campaigns/([0-9a-f]+)$");
+    campaigns_controller.register_route(survey::route_type::t_get, 
+        "^/campaigns$");
+
+    campaigns_controller.register_route(survey::route_type::t_get_one, 
+        "^/campaigns/([0-9a-f]+)$");
+
+    campaigns_controller.register_route(survey::route_type::t_post, 
+        "^/campaigns$");
+
+    campaigns_controller.register_route(survey::route_type::t_put, 
+        "^/campaigns/([0-9a-f]+)$");
+
+    campaigns_controller.register_route(survey::route_type::t_delete, 
+        "^/campaigns/([0-9a-f]+)$");
     
     {
         using bsoncxx::builder::basic::kvp;
