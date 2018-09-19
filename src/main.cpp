@@ -8,6 +8,7 @@
 
 #include <mongocxx/instance.hpp>
 #include "dotenv/dotenv.h"
+#include "controller.h"
 #include "model.h"
 #include "server.h"
 #include "model/validators/property_validator.h"
@@ -130,13 +131,14 @@ int main()
 
     survey::http::server server{};
 
-    server.on(methods::GET, "^/campaigns/([0-9a-f]+)$", campaigns_get_one);
-    server.on(methods::GET, "^/campaigns$", campaigns_get);
-    server.on(methods::POST, "^/campaigns$", campaigns_post);
-    server.on(methods::PUT, "^/campaigns/([0-9a-f]+)$", campaigns_update);
-    server.on(methods::DEL, "^/campaigns/([0-9a-f]+)$", campaigns_delete);
+    survey::rest_controller<campaigns> campaigns_controller{&server};
 
-    //
+    campaigns_controller.register_route(survey::route_type::t_get, "^/campaigns$");
+    campaigns_controller.register_route(survey::route_type::t_get_one, "^/campaigns/([0-9a-f]+)$");
+    campaigns_controller.register_route(survey::route_type::t_post, "^/campaigns$");
+    campaigns_controller.register_route(survey::route_type::t_put, "^/campaigns/([0-9a-f]+)$");
+    campaigns_controller.register_route(survey::route_type::t_delete, "^/campaigns/([0-9a-f]+)$");
+    
     {
         using bsoncxx::builder::basic::kvp;
 
