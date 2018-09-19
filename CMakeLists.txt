@@ -20,8 +20,7 @@ find_package(cpprestsdk REQUIRED)
 
 file(GLOB_RECURSE SRCS src/*.cpp)
 
-#add_executable(server ${SRCS})
-add_executable(server src/main.cpp src/model.cpp src/server.cpp src/model/validator.cpp src/model/validators/property_validator.cpp src/model/validators/unique_constraint.cpp)
+add_executable(server ${SRCS})
 
 include_directories(${LIBMONGOCXX_INCLUDE_DIRS} ${LIBMONGOCXX_INCLUDE_DIR})
 include_directories(${LIBBSONCXX_INCLUDE_DIRS} ${LIBMONGOCXX_INCLUDE_DIR})
