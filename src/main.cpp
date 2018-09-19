@@ -74,6 +74,7 @@ int main()
     ops::rest_controller<campaigns> campaigns_controller{&server};
     campaigns_controller.register_rest_routes();
     
+    //
     {
         using bsoncxx::builder::basic::kvp;
 
