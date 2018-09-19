@@ -336,6 +336,7 @@ TEST_F(model_db_test_fixture, prop_type_validation_no_throw)
     ASSERT_NO_THROW(validator.validate(document));
 }
 
+/* Test that prop type validation passes. */
 TEST_F(model_db_test_fixture, prop_type_validation_no_throw_2)
 {
     pants document{};
@@ -353,6 +354,7 @@ TEST_F(model_db_test_fixture, prop_type_validation_no_throw_2)
     ASSERT_NO_THROW(validator.validate(document));
 }
 
+/* Test that prop type validation passes. */
 TEST_F(model_db_test_fixture, prop_type_validation_no_throw_3)
 {
     pants document{};
@@ -363,6 +365,7 @@ TEST_F(model_db_test_fixture, prop_type_validation_no_throw_3)
     ASSERT_NO_THROW(validator.validate(document));
 }
 
+/* Test prop type validation failure. */
 TEST_F(model_db_test_fixture, prop_type_validation_throw)
 {
     pants document{};
@@ -373,6 +376,7 @@ TEST_F(model_db_test_fixture, prop_type_validation_throw)
     ASSERT_THROW(validator.validate(document), std::exception);
 }
 
+/* Test prop type validation failure. */
 TEST_F(model_db_test_fixture, prop_type_validation_throw_2)
 {
     pants document{};
@@ -390,6 +394,7 @@ TEST_F(model_db_test_fixture, prop_type_validation_throw_2)
     ASSERT_THROW(validator.validate(document), std::exception);
 }
 
+/* Test prop type validation failure. */
 TEST_F(model_db_test_fixture, prop_type_validation_throw_3)
 {
     pants document{};
@@ -404,6 +409,7 @@ TEST_F(model_db_test_fixture, prop_type_validation_throw_3)
     ASSERT_THROW(validator.validate(document), std::exception);
 }
 
+/* Test uniqueness constraint validation success. */
 TEST_F(model_db_test_fixture, unique_constraint_validation_no_throw)
 {
     pants document{};
@@ -418,6 +424,7 @@ TEST_F(model_db_test_fixture, unique_constraint_validation_no_throw)
     ASSERT_NO_THROW(validator.validate(document));
 }
 
+/* Test uniqueness constraint validation failure. */
 TEST_F(model_db_test_fixture, unique_constraint_validation_throw)
 {
     {
@@ -443,6 +450,7 @@ TEST_F(model_db_test_fixture, unique_constraint_validation_throw)
     }
 }
 
+/* Test uniqueness constraint validation success when updating an existing document. */
 TEST_F(model_db_test_fixture, unique_constraint_validation_update_no_throw)
 {
     pants document{};
