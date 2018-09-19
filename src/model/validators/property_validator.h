@@ -25,7 +25,7 @@ namespace ops
         };
 
         std::list<prop_type> types;
-        bool                 required;
+        bool required;
     };
 
     /*!
@@ -38,7 +38,7 @@ namespace ops
         using prop_list = std::list<prop::prop_type>;
 
         property_validator();
-        property_validator(const std::map<std::string, prop>& map);
+        explicit property_validator(const std::map<std::string, prop>& map);
 
         void add_property(const std::string& name,
                           prop::prop_type type,
