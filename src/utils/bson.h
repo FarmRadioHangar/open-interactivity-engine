@@ -15,9 +15,15 @@ namespace ops
     /*!
      * \brief todo
      */
-    class bson_utils
+    namespace utils
     {
-    public:
-        static bsoncxx::types::value from_json(const web::json::value& json);
-    };
+        /*!
+         * \brief todo
+         */
+        class bson
+        {
+        public:
+            static bsoncxx::types::value from_json(const web::json::value& json);
+        };
+    }
 }

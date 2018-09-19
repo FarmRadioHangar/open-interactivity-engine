@@ -26,7 +26,7 @@ public:
         constraint->add_key("name");
 
         auto validator = add_validator<ops::property_validator>();
-        validator->add_property("name", ops::prop_type::t_string, true);
+        validator->add_property("name", ops::prop::t_string, true);
     }
 };
 
@@ -41,8 +41,8 @@ public:
         constraint->add_key("name");
 
         auto validator = add_validator<ops::property_validator>();
-        validator->add_property("name", ops::prop_type::t_string, true);
-        validator->add_property("tag", ops::prop_type::t_string, true);
+        validator->add_property("name", ops::prop::t_string, true);
+        validator->add_property("tag", ops::prop::t_string, true);
     }
 };
 
@@ -71,17 +71,17 @@ int main()
 
     ops::http::server server{};
 
-    ops::rest_controller<campaigns> campaigns_controller{&server};
-    campaigns_controller.register_rest_routes();
+    ops::rest::controller<campaigns> campaigns_controller{&server};
+    campaigns_controller.register_default_routes();
 
-    ops::rest_controller<languages> languages_controller{&server};
-    languages_controller.register_rest_routes();
+    ops::rest::controller<languages> languages_controller{&server};
+    languages_controller.register_default_routes();
 
-    ops::rest_controller<audience> audience_controller{&server};
-    audience_controller.register_rest_routes();
+    ops::rest::controller<audience> audience_controller{&server};
+    audience_controller.register_default_routes();
 
-    ops::rest_controller<content> content_controller{&server};
-    content_controller.register_rest_routes();
+    ops::rest::controller<content> content_controller{&server};
+    content_controller.register_default_routes();
 
     //
     {

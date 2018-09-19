@@ -9,9 +9,6 @@
 #include <list>
 #include "exception.h"
 
-/*!
- * \brief This is the main namespace for this library.
- */
 namespace ops
 {
     /*!
