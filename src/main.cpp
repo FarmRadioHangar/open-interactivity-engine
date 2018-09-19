@@ -74,6 +74,15 @@ int main()
     ops::rest_controller<campaigns> campaigns_controller{&server};
     campaigns_controller.register_rest_routes();
     
+    ops::rest_controller<languages> languages_controller{&server};
+    languages_controller.register_rest_routes();
+
+    ops::rest_controller<audience> audience_controller{&server};
+    audience_controller.register_rest_routes();
+
+    ops::rest_controller<content> content_controller{&server};
+    content_controller.register_rest_routes();
+
     //
     {
         using bsoncxx::builder::basic::kvp;
