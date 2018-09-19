@@ -12,6 +12,9 @@
 
 namespace ops
 {
+    /*!
+     * \brief todo
+     */
     class bson_utils
     {
     public:

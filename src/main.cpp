@@ -7,13 +7,13 @@
  */
 
 #include <mongocxx/instance.hpp>
-#include "dotenv/dotenv.h"
 #include "controller.h"
+#include "dotenv/dotenv.h"
 #include "model.h"
-#include "server.h"
+#include "model/validator.h"
 #include "model/validators/property_validator.h"
 #include "model/validators/unique_constraint.h"
-#include "model/validator.h"
+#include "server.h"
 
 class campaigns : public ops::model<campaigns>
 {
