@@ -412,8 +412,23 @@ namespace ops
      */
     template <typename T> void model<T>::validate() const
     {
+        std::list<validation_error> errors{};
+
         for (const auto& validator : _validators) {
             validator->validate(*this);
+            const auto& slice = validator->errors();
+            errors.insert(errors.end(), slice.begin(), slice.end());
+        }
+
+        if (!errors.empty()) {
+            std::vector<web::json::value> values;
+            for (const auto& error : errors) {
+                values.emplace_back(error.to_json());
+            }
+            throw model_error{model_error::validation_error, 
+                "Validation failed.", 
+                web::json::value::array(values)
+            };
         }
     }
 

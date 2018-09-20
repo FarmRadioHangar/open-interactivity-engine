@@ -3,6 +3,9 @@
  */
 #pragma once
 
+#include <list>
+#include "validators/error.h"
+
 namespace ops
 {
     /*!
@@ -17,9 +20,13 @@ namespace ops
         validator& operator=(const validator&) = delete;
 
         void validate(const T& document);
+
+        std::list<validation_error> errors() const;
         
     protected:
         validator();
+
+        std::list<validation_error> _errors;
 
     private:
         virtual void do_validate(const T& document) = 0;
@@ -28,6 +35,11 @@ namespace ops
     template <typename T> void validator<T>::validate(const T& document)
     {
         return do_validate(document);
+    }
+
+    template <typename T> std::list<validation_error> validator<T>::errors() const
+    {
+        return _errors;
     }
 
     template <typename T> validator<T>::~validator()

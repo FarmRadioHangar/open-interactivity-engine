@@ -42,6 +42,10 @@ namespace ops
 
             void send_error_response(web::http::status_code code,
                                      const std::string& atom,
+                                     const web::json::value& errors);
+
+            void send_error_response(web::http::status_code code,
+                                     const std::string& atom,
                                      const std::string& error);
 
         private:

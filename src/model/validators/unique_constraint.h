@@ -7,7 +7,7 @@
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/builder/basic/kvp.hpp>
 #include <list>
-#include "exception.h"
+#include "error.h"
 
 namespace ops
 {
@@ -59,7 +59,8 @@ namespace ops
                         "$ne", bsoncxx::oid{document.oid()}))));
 
                 if (T::count(filter.view()) > 0) {
-                    throw validation_error{"Unique constraint violation for key '" + key + "'"};
+                    validator<T>::_errors.push_back(validation_error{key, 
+                        "Unique constraint violation for key '" + key + "'"});
                 }
             }
         }

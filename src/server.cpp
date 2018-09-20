@@ -3,7 +3,6 @@
 #include <cpprest/uri_builder.h>
 #include <cpprest/http_headers.h>
 #include "model/exception.h"
-#include "model/validators/exception.h"
 
 namespace ops
 {
@@ -60,6 +59,22 @@ namespace ops
         {
             _response.set_body(data);
             _request.reply(_response);
+        }
+
+        /*!
+         * \brief todo
+         */
+        void request::send_error_response(
+            web::http::status_code code,
+            const std::string& atom,
+            const web::json::value& errors)
+        {
+            web::json::value response{};
+            response["status"] = web::json::value::number(code);
+            response["errors"]  = errors;
+            response["code"] = web::json::value::string(atom);
+            set_status_code(code);
+            send_response(response);
         }
 
         /*!
@@ -176,9 +191,6 @@ namespace ops
                     } catch (const web::json::json_exception& error) {
                         req.send_error_response(400, "BAD_JSON", error.what());
                         return;
-                    } catch (const ops::validation_error& error) {
-                        req.send_error_response(400, "BAD_REQUEST", error.what());
-                        return;
                     } catch (const mongocxx::exception& error) {
                         switch (error.code().value())
                         {
@@ -198,6 +210,9 @@ namespace ops
                     } catch (const ops::model_error& error) {
                         switch (error.type())
                         {
+                        case model_error::validation_error:
+                            req.send_error_response(400, "VALIDATION_FAILED", error.json_data());
+                            break;
                         case model_error::document_not_found:
                             req.send_error_response(404, "NOT_FOUND", "No such document");
                             break;

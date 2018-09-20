@@ -8,7 +8,7 @@
 #include <list>
 #include <map>
 #include <set>
-#include "exception.h"
+#include "error.h"
 
 namespace ops
 {
@@ -125,7 +125,9 @@ namespace ops
             const auto& field = document[key];
 
             if (val.required && !field) {
-                throw validation_error{"Missing property '" + key + "'"};
+                validator<T>::_errors.push_back(validation_error{key,
+                    "Missing property '" + key + "'"});
+                continue;
             }
             if (field) {
                 bool validates = false;
@@ -136,7 +138,8 @@ namespace ops
                     }
                 }
                 if (!validates) {
-                    throw validation_error{"Type mismatch for key '" + key + "'"};
+                    validator<T>::_errors.push_back(validation_error{key,
+                        "Type mismatch for key '" + key + "'"});
                 }
             }
         }
