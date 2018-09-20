@@ -62,6 +62,14 @@ public:
     content() : ops::model<content>{"test"} {}
 };
 
+class countries : public ops::model<countries>
+{
+public:
+    COLLECTION(countries)
+
+    countries() : ops::model<countries>{"test"} {}
+};
+
 using web::http::methods;
 
 int main()
@@ -82,6 +90,9 @@ int main()
 
     ops::rest::controller<content> content_controller{&server};
     content_controller.register_default_routes();
+
+    ops::rest::controller<countries> countries_controller{&server};
+    countries_controller.register_default_routes();
 
     //
     {
