@@ -67,7 +67,18 @@ class countries : public ops::model<countries>
 public:
     COLLECTION(countries)
 
-    countries() : ops::model<countries>{"test"} {}
+    countries() : ops::model<countries>{"test"}
+    {
+        auto constraint = add_validator<ops::unique_constraint>();
+        constraint->add_key("name");
+        constraint->add_key("dialingCode");
+        constraint->add_key("alpha2Code");
+
+        auto validator = add_validator<ops::property_validator>();
+        validator->add_property("name", ops::prop::t_string, true);
+        validator->add_property("dialingCode", ops::prop::t_numeric, true);
+        validator->add_property("alpha2Code", ops::prop::t_string, true);
+    }
 };
 
 using web::http::methods;
