@@ -14,7 +14,7 @@ namespace ops
     template <typename T> class validator
     {
     public:
-        virtual ~validator();
+        virtual ~validator() = default;
 
         validator(const validator&) = delete;
         validator& operator=(const validator&) = delete;
@@ -24,7 +24,7 @@ namespace ops
         std::list<validation_error> errors() const;
         
     protected:
-        validator();
+        validator() = default;
 
         std::list<validation_error> _errors;
 
@@ -40,13 +40,5 @@ namespace ops
     template <typename T> std::list<validation_error> validator<T>::errors() const
     {
         return _errors;
-    }
-
-    template <typename T> validator<T>::~validator()
-    {
-    }
-
-    template <typename T> validator<T>::validator()
-    {
     }
 }
