@@ -198,7 +198,7 @@ namespace ops
         void set_oid(const std::string& oid);
         std::string oid() const;
 
-        template <template <typename> class Validator> 
+        template <template <typename> class Validator>
         std::shared_ptr<Validator<model<T>>> add_validator();
 
         void validate() const;
@@ -398,7 +398,7 @@ namespace ops
      *
      * \returns todo
      */
-    template <typename T> 
+    template <typename T>
     template <template <typename> class Validator>
     std::shared_ptr<Validator<model<T>>> model<T>::add_validator()
     {
@@ -425,8 +425,8 @@ namespace ops
             for (const auto& error : errors) {
                 values.emplace_back(error.to_json());
             }
-            throw model_error{model_error::validation_error, 
-                "Validation failed.", 
+            throw model_error{model_error::validation_error,
+                "Validation failed.",
                 web::json::value::array(values)
             };
         }
@@ -572,7 +572,7 @@ namespace ops
      *
      * \param key the key to match
      */
-    template <typename T> 
+    template <typename T>
     bsoncxx::document::element model<T>::operator[](const std::string& key) const
     {
         return _data.view()[key];
