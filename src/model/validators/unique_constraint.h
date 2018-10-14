@@ -3,10 +3,10 @@
  */
 #pragma once
 
-#include "../validator.h"
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/builder/basic/kvp.hpp>
 #include <list>
+#include "../validator.h"
 #include "error.h"
 
 namespace ops

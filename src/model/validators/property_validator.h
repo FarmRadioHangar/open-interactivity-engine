@@ -3,11 +3,11 @@
  */
 #pragma once
 
-#include "../validator.h"
 #include <bsoncxx/types.hpp>
 #include <list>
 #include <map>
 #include <set>
+#include "../validator.h"
 #include "error.h"
 
 namespace ops

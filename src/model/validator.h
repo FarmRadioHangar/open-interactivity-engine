@@ -24,7 +24,7 @@ namespace ops
         std::list<validation_error> errors() const;
         
     protected:
-        validator() = default;
+        validator();
 
         std::list<validation_error> _errors;
 
@@ -40,5 +40,9 @@ namespace ops
     template <typename T> std::list<validation_error> validator<T>::errors() const
     {
         return _errors;
+    }
+
+    template <typename T> validator<T>::validator()
+    {
     }
 }

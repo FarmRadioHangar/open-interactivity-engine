@@ -30,8 +30,8 @@ namespace ops
 
         virtual ~model_error() = default;
 
-        model_error(const model_error&) = delete;
-        model_error& operator=(const model_error&) = delete;
+//        model_error(const model_error&) = delete;
+//        model_error& operator=(const model_error&) = delete;
 
         /*!
          * \returns the type of error raised
