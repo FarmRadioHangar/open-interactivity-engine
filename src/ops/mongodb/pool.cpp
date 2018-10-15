@@ -16,7 +16,7 @@ namespace mongodb
 ///
 
 ///
-/// \returns the database pool singleton
+/// \returns the database pool singleton instance
 ///
 pool& pool::instance()
 {
@@ -40,7 +40,7 @@ mongocxx::database pool::database() const
 
 ///
 /// \brief Initialize the database connection pool.
-/// 
+///
 /// \param db  the name of the database used in this application
 /// \param uri a valid MongoDB connection string
 ///

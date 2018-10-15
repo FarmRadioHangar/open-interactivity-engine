@@ -20,7 +20,7 @@ namespace ops
             mongocxx::database database() const;
 
             static void init(
-                const std::string& db, 
+                const std::string& db,
                 const std::string& uri = "mongodb://localhost:27017");
 
         private:
