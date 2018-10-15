@@ -4,7 +4,7 @@
 
 int main()
 {
-//    ops::mongodb::pool::init("ops");
+    ops::mongodb::pool::init("ops");
 
     ops::http::server server;
 
