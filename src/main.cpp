@@ -10,7 +10,7 @@ int main()
 
 //    server.add_controller(ops::campaign_controller);
 
-//    server.run();
+    server.run();
 
     return 0;
 }
