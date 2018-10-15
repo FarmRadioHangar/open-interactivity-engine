@@ -17,8 +17,9 @@ namespace ops
             public:
                 server();
 
-                void add_controller(const std::string& resource, 
-                                    controller* ctrl);
+                void add_controller(
+                    const std::string& resource,
+                    controller* ctrl);
             };
         }
     }
