@@ -1,6 +1,6 @@
 #include <iostream>
-#include "src/ops/http/server.h"
-#include "src/ops/mongodb/pool.h"
+#include "ops/http/server.h"
+#include "ops/mongodb/pool.h"
 
 int main()
 {
