@@ -14,7 +14,7 @@ namespace ops
         class pool
         {
         public:
-            static pool& instance();
+            static mongodb::pool& instance();
 
             mongocxx::pool::entry acquire_entry() const;
             mongocxx::database database() const;

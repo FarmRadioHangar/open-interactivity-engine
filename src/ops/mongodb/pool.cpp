@@ -2,12 +2,15 @@
 #include <iostream>
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
+#include <mongocxx/pool.hpp>
 #include <stdexcept>
 
 namespace ops
 {
 namespace mongodb
 {
+
+static mongocxx::instance instance{};
 
 ///
 /// \class pool
@@ -18,15 +21,14 @@ namespace mongodb
 ///
 /// \returns the database pool singleton instance
 ///
-pool& pool::instance()
+mongodb::pool& pool::instance()
 {
     if (!_initialized) {
         throw std::runtime_error{"pool::init has not been called"};
     }
 
-    static pool instance{};
+    static mongodb::pool instance{};
     return instance;
-
 }
 
 ///
