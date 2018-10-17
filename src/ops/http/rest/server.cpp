@@ -16,16 +16,20 @@ void server::add_controller(const std::string& resource, controller* ctrl)
     const std::string collection{"^/" + resource + "$"};
     const std::string item{"^/" + resource + "/([0-9a-f]+)$"};
 
-    const auto bind_handler = [ctrl](auto handler) {
-        return std::bind(handler, ctrl, std::placeholders::_1);
-    };
+    on(web::http::methods::GET, collection, ctrl->bind_handler(&controller::get));
+    on(web::http::methods::POST, collection, ctrl->bind_handler(&controller::post));
 
-    on(web::http::methods::GET, collection, bind_handler(&controller::get));
-    on(web::http::methods::POST, collection, bind_handler(&controller::post));
-    on(web::http::methods::GET, item, bind_handler(&controller::get_item));
-    on(web::http::methods::PUT, item, bind_handler(&controller::put));
-    on(web::http::methods::PATCH, item, bind_handler(&controller::patch));
-    on(web::http::methods::DEL, item, bind_handler(&controller::del));
+    on(web::http::methods::GET, item, ctrl->bind_handler(&controller::get_item));
+    on(web::http::methods::PUT, item, ctrl->bind_handler(&controller::put));
+    on(web::http::methods::PATCH, item, ctrl->bind_handler(&controller::patch));
+    on(web::http::methods::DEL, item, ctrl->bind_handler(&controller::del));
+}
+
+void server::add_route(const web::http::method method,
+                       const std::string& pattern,
+                       request::handler handler)
+{
+    on(method, pattern, handler);
 }
 
 } // namespace rest

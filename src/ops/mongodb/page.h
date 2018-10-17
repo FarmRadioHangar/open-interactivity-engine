@@ -98,7 +98,9 @@ namespace ops
                 container.emplace_back(document<T>{bson});
 
             return page<T>{
-                std::move(container), skip, limit,
+                std::move(container), 
+                static_cast<std::size_t>(skip), 
+                static_cast<std::size_t>(limit),
                 static_cast<std::size_t>(collection.count({}))};
         }
 

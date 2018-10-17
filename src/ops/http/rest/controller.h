@@ -27,7 +27,14 @@ namespace ops
                 virtual void put(http::request request);
                 virtual void patch(http::request request);
                 virtual void del(http::request request);
+
+                request::handler bind_handler(void (http::rest::controller::* handler)(http::request));
             };
+
+            inline request::handler controller::bind_handler(void (http::rest::controller::* handler)(http::request))
+            {
+                return std::bind(handler, this, std::placeholders::_1);
+            }
         }
     }
 }

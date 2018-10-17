@@ -1,5 +1,5 @@
 ///
-/// \file campaigns.h
+/// \file languages.h
 ///
 #pragma once
 
@@ -7,16 +7,13 @@
 
 namespace ops
 {
-    class campaigns_controller : public http::rest::controller
+    class languages_controller : public http::rest::controller
     {
     public:
-        campaigns_controller();
+        languages_controller();
 
         void get_item(http::request request) override;
         void get(http::request request) override;
         void post(http::request request) override;
-
-        void post_feature(http::request request);
-        void post_language(http::request request);
     };
 }

@@ -1,11 +1,18 @@
 #include "campaigns.h"
 #include <nlohmann/json.hpp>
+#include "../mongodb/counter.h"
 #include "../mongodb/document.h"
 #include "../mongodb/page.h"
+#include "../builders/campaign.h"
 
 struct campaigns
 {
     static auto constexpr name = "campaigns";
+};
+
+struct languages
+{
+    static auto constexpr name = "languages";
 };
 
 namespace ops
@@ -52,43 +59,95 @@ void campaigns_controller::get_item(http::request request)
 
 void campaigns_controller::get(http::request request)
 {
-    std::cout << "campaigns_controller::get" << std::endl;
-
     const auto skip = request.get_query_param<int64_t>("skip", 0);
     const auto limit = request.get_query_param<int64_t>("limit", 10);
 
-    //mongodb::page<campaigns> page{};
+    auto page = ops::mongodb::page<campaigns>::get(skip, limit);
+
+    auto items = nlohmann::json::array();
+    for (const auto& doc : page)
+        items.emplace_back(util::json::builder(doc));
 
     nlohmann::json res;
+    res["campaigns"] = items;
 
     request.send_response(res.dump());
 }
 
 void campaigns_controller::post(http::request request)
 {
-    std::cout << "campaigns_controller::post" << std::endl;
-    
-    nlohmann::json res;
+    request.with_body([&request](const std::string& body)
+    {
+        auto j = nlohmann::json::parse(body);
+        j["id"] = ops::mongodb::counter::generate_id();
 
-    request.send_response(res.dump());
+        campaign_builder builder(j);
+
+        mongodb::document<campaigns> doc{};
+        doc.inject(builder.extract());
+        doc.save();
+
+        nlohmann::json res;
+        res["campaign"] = j;
+
+        request.send_response(res.dump());
+    });
 }
 
 void campaigns_controller::post_feature(http::request request)
 {
-    std::cout << "campaigns_controller::post_feature" << std::endl;
+    request.with_body([&request](const std::string& body)
+    {
+        const auto id = request.get_uri_param(1);
+        auto doc = mongodb::document<campaigns>::find(make_document(kvp("id", id)));
 
-    nlohmann::json res;
+        auto j = util::json::builder(doc);
 
-    request.send_response(res.dump());
+        auto j_feature = nlohmann::json::parse(body);
+        const std::string feature_id = ops::mongodb::counter::generate_id();
+
+        j["features"][feature_id] = j_feature;
+
+        campaign_builder builder(j);
+
+        doc.inject(builder.extract());
+        doc.save();
+
+        nlohmann::json res;
+        res["campaign"] = j;
+
+        request.send_response(res.dump());
+    });
 }
 
 void campaigns_controller::post_language(http::request request)
 {
-    std::cout << "campaigns_controller::post_language" << std::endl;
+    request.with_body([&request](const std::string& body)
+    {
+        const auto id = request.get_uri_param(1);
+        auto doc = mongodb::document<campaigns>::find(make_document(kvp("id", id)));
 
-    nlohmann::json res;
+        auto j = util::json::builder(doc);
 
-    request.send_response(res.dump());
+        auto j_request = nlohmann::json::parse(body);
+
+        const std::string& tag = j_request["tag"];
+        auto language = mongodb::document<languages>::find(make_document(kvp("tag", tag)));
+
+        auto j_language = util::json::builder(language);
+
+        j["languages"][tag] = j_language;
+
+        campaign_builder builder(j);
+
+        doc.inject(builder.extract());
+        doc.save();
+
+        nlohmann::json res;
+        res["campaign"] = j;
+
+        request.send_response(res.dump());
+    });
 }
 
 } // namespace ops
