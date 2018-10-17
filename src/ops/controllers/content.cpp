@@ -3,7 +3,7 @@
 #include "../mongodb/counter.h"
 #include "../mongodb/document.h"
 #include "../mongodb/page.h"
-#include "../builders/campaign.h"
+#include "../builders/content.h"
 
 struct content
 {
@@ -76,7 +76,7 @@ void content_controller::post(http::request request)
         auto j = nlohmann::json::parse(body);
         j["id"] = ops::mongodb::counter::generate_id();
 
-        campaign_builder builder(j);
+        content_builder builder(j);
 
         mongodb::document<content> doc{};
         doc.inject(builder.extract());

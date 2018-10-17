@@ -28,13 +28,16 @@ namespace ops
                 virtual void patch(http::request request);
                 virtual void del(http::request request);
 
-                request::handler bind_handler(void (http::rest::controller::* handler)(http::request));
+                template <typename T = controller>
+                request::handler bind_handler(void (T::* handler)(http::request));
             };
 
-            inline request::handler controller::bind_handler(void (http::rest::controller::* handler)(http::request))
+            template <typename T>
+            inline request::handler controller::bind_handler(void (T::* handler)(http::request))
             {
-                return std::bind(handler, this, std::placeholders::_1);
+                return std::bind(handler, static_cast<T*>(this), std::placeholders::_1);
             }
+
         }
     }
 }

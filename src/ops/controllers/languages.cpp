@@ -3,7 +3,7 @@
 #include "../mongodb/counter.h"
 #include "../mongodb/document.h"
 #include "../mongodb/page.h"
-#include "../builders/campaign.h"
+#include "../builders/language.h"
 
 struct languages
 {
@@ -76,7 +76,7 @@ void languages_controller::post(http::request request)
         auto j = nlohmann::json::parse(body);
         j["id"] = ops::mongodb::counter::generate_id();
 
-        campaign_builder builder(j);
+        language_builder builder(j);
 
         mongodb::document<languages> doc{};
         doc.inject(builder.extract());

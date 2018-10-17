@@ -132,6 +132,7 @@ void campaigns_controller::post_language(http::request request)
         auto j_request = nlohmann::json::parse(body);
 
         const std::string& tag = j_request["tag"];
+        std::cout << tag << std::endl;
         auto language = mongodb::document<languages>::find(make_document(kvp("tag", tag)));
 
         auto j_language = util::json::builder(language);
