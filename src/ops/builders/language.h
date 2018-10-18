@@ -8,6 +8,11 @@
 
 namespace ops
 {
+    struct languages
+    {
+        static auto constexpr name = "languages";
+    };
+
     class language_builder : public mongodb::bson::builder
     {
     public:

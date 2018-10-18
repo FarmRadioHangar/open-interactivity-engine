@@ -8,6 +8,11 @@
 
 namespace ops
 {
+    struct campaigns
+    {
+        static auto constexpr name = "campaigns";
+    };
+
     class campaign_builder : public mongodb::bson::builder
     {
     public:

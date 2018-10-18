@@ -15,5 +15,7 @@ namespace ops
         void get_item(http::request request) override;
         void get(http::request request) override;
         void post(http::request request) override;
+
+        void post_rep(http::request request);
     };
 }

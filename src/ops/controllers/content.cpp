@@ -4,31 +4,8 @@
 #include "../mongodb/document.h"
 #include "../mongodb/page.h"
 #include "../builders/content.h"
-
-struct content
-{
-    static auto constexpr name = "content";
-};
-
-namespace ops
-{
-    namespace util
-    {
-        namespace json
-        {
-            template <typename T>
-            nlohmann::json builder(const mongodb::document<T>& doc)
-            {
-                nlohmann::json j;
-                doc.stream() >> j;
-
-                j.erase("_id");
-
-                return j;
-            }
-        }
-    }
-}
+#include "../builders/language.h"
+#include "../util/json.h"
 
 namespace ops
 {
@@ -79,6 +56,37 @@ void content_controller::post(http::request request)
         content_builder builder(j);
 
         mongodb::document<content> doc{};
+        doc.inject(builder.extract());
+        doc.save();
+
+        nlohmann::json res;
+        res["content"] = j;
+
+        request.send_response(res.dump());
+    });
+}
+
+void content_controller::post_rep(http::request request)
+{
+    request.with_body([&request](const std::string& body)
+    {
+        const auto id = request.get_uri_param(1);
+        auto doc = mongodb::document<content>::find(make_document(kvp("id", id)));
+
+        auto j = util::json::builder(doc);
+
+        auto j_feature = nlohmann::json::parse(body);
+
+        const std::string& tag = j_feature["language"];
+        const std::string& format = j_feature["format"];
+
+        // Check that language exists
+        auto language = mongodb::document<languages>::find(make_document(kvp("tag", tag)));
+
+        j["reps"][format][tag] = j_feature;
+
+        content_builder builder(j);
+
         doc.inject(builder.extract());
         doc.save();
 

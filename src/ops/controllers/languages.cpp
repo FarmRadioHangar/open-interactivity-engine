@@ -4,31 +4,7 @@
 #include "../mongodb/document.h"
 #include "../mongodb/page.h"
 #include "../builders/language.h"
-
-struct languages
-{
-    static auto constexpr name = "languages";
-};
-
-namespace ops
-{
-    namespace util
-    {
-        namespace json
-        {
-            template <typename T>
-            nlohmann::json builder(const mongodb::document<T>& doc)
-            {
-                nlohmann::json j;
-                doc.stream() >> j;
-
-                j.erase("_id");
-
-                return j;
-            }
-        }
-    }
-}
+#include "../util/json.h"
 
 namespace ops
 {

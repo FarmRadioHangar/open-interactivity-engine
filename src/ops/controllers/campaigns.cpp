@@ -4,36 +4,8 @@
 #include "../mongodb/document.h"
 #include "../mongodb/page.h"
 #include "../builders/campaign.h"
-
-struct campaigns
-{
-    static auto constexpr name = "campaigns";
-};
-
-struct languages
-{
-    static auto constexpr name = "languages";
-};
-
-namespace ops
-{
-    namespace util
-    {
-        namespace json
-        {
-            template <typename T>
-            nlohmann::json builder(const mongodb::document<T>& doc)
-            {
-                nlohmann::json j;
-                doc.stream() >> j;
-
-                j.erase("_id");
-
-                return j;
-            }
-        }
-    }
-}
+#include "../builders/language.h"
+#include "../util/json.h"
 
 namespace ops
 {
@@ -132,7 +104,6 @@ void campaigns_controller::post_language(http::request request)
         auto j_request = nlohmann::json::parse(body);
 
         const std::string& tag = j_request["tag"];
-        std::cout << tag << std::endl;
         auto language = mongodb::document<languages>::find(make_document(kvp("tag", tag)));
 
         auto j_language = util::json::builder(language);

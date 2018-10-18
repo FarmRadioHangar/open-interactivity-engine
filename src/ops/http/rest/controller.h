@@ -37,7 +37,6 @@ namespace ops
             {
                 return std::bind(handler, static_cast<T*>(this), std::placeholders::_1);
             }
-
         }
     }
 }

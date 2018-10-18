@@ -10,6 +10,8 @@ namespace ops
 rep_builder::rep_builder(const nlohmann::json& j)
   : mongodb::bson::builder{j}
 {
+    append(kvp("format", std::string{j.at("format")}));
+    append(kvp("language", std::string{j.at("language")}));
 }
 
 } // namespace ops

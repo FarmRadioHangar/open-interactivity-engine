@@ -33,4 +33,17 @@ namespace ops
         {
         }
     }
+
+    ///
+    /// Utilities
+    ///
+    namespace util
+    {
+        ///
+        /// JSON helpers
+        ///
+        namespace json
+        {
+        }
+    }
 }
