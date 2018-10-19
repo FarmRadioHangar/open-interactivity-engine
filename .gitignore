@@ -1,4 +1,5 @@
 build
 html
 latex
+*.mp3
 *.sh
