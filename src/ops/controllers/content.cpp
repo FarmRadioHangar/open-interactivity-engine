@@ -1,10 +1,12 @@
 #include "content.h"
+#include <fstream>
 #include <nlohmann/json.hpp>
 #include "../mongodb/counter.h"
 #include "../mongodb/document.h"
 #include "../mongodb/page.h"
 #include "../builders/content.h"
 #include "../builders/language.h"
+#include "../builders/media.h"
 #include "../util/json.h"
 
 namespace ops
@@ -93,6 +95,29 @@ void content_controller::post_rep(http::request request)
         nlohmann::json res;
         res["content"] = j;
         res["rep"] = j_rep;
+
+        request.send_response(res.dump());
+    });
+}
+
+void content_controller::post_media(http::request request)
+{
+    request.with_body([&request](const std::vector<unsigned char>& bytes)
+    {
+        std::ofstream outfile("tmp.mp3", std::ios::out | std::ios::binary); 
+        outfile.write(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+
+        nlohmann::json j;
+        j["id"] = ops::mongodb::counter::generate_id();
+
+        media_builder builder(j);
+
+        mongodb::document<content> doc{};
+        doc.inject(builder.extract());
+        doc.save();
+
+        nlohmann::json res;
+        res["media"] = j;
 
         request.send_response(res.dump());
     });

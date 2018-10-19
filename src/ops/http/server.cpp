@@ -40,6 +40,17 @@ void request::with_body(std::function<void(const std::string&)> handler)
 }
 
 ///
+/// \brief Extract the request body and pass it to the provided callback as a 
+///        byte vector.
+///
+/// \param handler callback which will receive the request body
+///
+void request::with_body(std::function<void(const std::vector<unsigned char>&)> handler)
+{
+    _request.extract_vector().then(handler).wait();
+}
+
+///
 /// \brief todo
 ///
 /// \param body todo

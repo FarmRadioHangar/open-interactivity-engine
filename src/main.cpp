@@ -37,6 +37,9 @@ int main()
     server.add_route(web::http::methods::POST, "^/content/([0-9a-f]+)/reps$",
         content.bind_handler<ops::content_controller>(&ops::content_controller::post_rep));
 
+    server.add_route(web::http::methods::POST, "^/media$",
+        content.bind_handler<ops::content_controller>(&ops::content_controller::post_media));
+
     server.run();
 
     return 0;
