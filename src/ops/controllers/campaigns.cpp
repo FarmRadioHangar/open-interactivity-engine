@@ -106,7 +106,7 @@ void campaigns_controller::patch_feature(http::request request)
         auto j_request = nlohmann::json::parse(body);
         auto& j_feature = j["features"][feature_id];
 
-        j_feature.merge_patch(j_feature);
+        j_feature.merge_patch(j_request);
 
         campaign_builder builder(j);
 
