@@ -1,0 +1,24 @@
+{
+  "data": {
+    "graph": {
+      "nodes": {
+        "1": { "type": "transmit", "content": "26b4187f515e" },
+        "2": { "type": "select", "keys": ["1", "2", "3"] },
+        "3": { "type": "transmit", "content": "438fe7326a89" },
+        "4": { "type": "transmit", "content": "853da748b835" },
+        "5": { "type": "transmit", "content": "58375fa385ee" },
+        "6": { "type": "receive" }
+      },
+      "root": "1",
+      "edges": [
+        { "source": "1", "dest": "2" },
+        { "source": "2", "dest": "3" },
+        { "source": "2", "dest": "4" },
+        { "source": "2", "dest": "5" },
+        { "source": "3", "dest": "5" },
+        { "source": "4", "dest": "6" },
+        { "source": "6", "dest": "5" }
+      ]
+    }
+  }
+}

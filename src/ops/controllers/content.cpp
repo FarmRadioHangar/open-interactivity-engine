@@ -75,15 +75,15 @@ void content_controller::post_rep(http::request request)
 
         auto j = util::json::builder(doc);
 
-        auto j_feature = nlohmann::json::parse(body);
+        auto j_rep = nlohmann::json::parse(body);
 
-        const std::string& tag = j_feature["language"];
-        const std::string& format = j_feature["format"];
+        const std::string& tag = j_rep["language"];
+        const std::string& format = j_rep["format"];
 
         // Check that language exists
         auto language = mongodb::document<languages>::find(make_document(kvp("tag", tag)));
 
-        j["reps"][format][tag] = j_feature;
+        j["reps"][format][tag] = j_rep;
 
         content_builder builder(j);
 
@@ -92,6 +92,7 @@ void content_controller::post_rep(http::request request)
 
         nlohmann::json res;
         res["content"] = j;
+        res["rep"] = j_rep;
 
         request.send_response(res.dump());
     });

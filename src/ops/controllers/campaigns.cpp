@@ -87,6 +87,36 @@ void campaigns_controller::post_feature(http::request request)
 
         nlohmann::json res;
         res["campaign"] = j;
+        res["feature"] = j_feature;
+        res["feature"]["id"] = feature_id;
+
+        request.send_response(res.dump());
+    });
+}
+
+void campaigns_controller::patch_feature(http::request request)
+{
+    request.with_body([&request](const std::string& body)
+    {
+        const auto campaign_id = request.get_uri_param(1);
+        const auto feature_id = request.get_uri_param(2);
+        auto doc = mongodb::document<campaigns>::find(make_document(kvp("id", campaign_id)));
+
+        auto j = util::json::builder(doc);
+        auto j_request = nlohmann::json::parse(body);
+        auto& j_feature = j["features"][feature_id];
+
+        j_feature.merge_patch(j_feature);
+
+        campaign_builder builder(j);
+
+        doc.inject(builder.extract());
+        doc.save();
+
+        nlohmann::json res;
+        res["campaign"] = j;
+        res["feature"] = j_feature;
+        res["feature"]["id"] = feature_id;
 
         request.send_response(res.dump());
     });
@@ -117,6 +147,33 @@ void campaigns_controller::post_language(http::request request)
 
         nlohmann::json res;
         res["campaign"] = j;
+        res["language"] = j_language;
+
+        request.send_response(res.dump());
+    });
+}
+
+void campaigns_controller::post_adapter(http::request request)
+{
+    request.with_body([&request](const std::string& body)
+    {
+        const auto campaign_id = request.get_uri_param(1);
+        const auto feature_id = request.get_uri_param(2);
+        auto doc = mongodb::document<campaigns>::find(make_document(kvp("id", campaign_id)));
+
+        auto j = util::json::builder(doc);
+        auto j_adapter = nlohmann::json::parse(body);
+
+        j["features"][feature_id]["adapters"].push_back(j_adapter);
+
+        campaign_builder builder(j);
+
+        doc.inject(builder.extract());
+        doc.save();
+
+        nlohmann::json res;
+        res["campaign"] = j;
+        res["adapter"] = j_adapter;
 
         request.send_response(res.dump());
     });

@@ -19,16 +19,22 @@ int main()
 
     server.add_controller("campaigns", &campaigns);
 
-    server.add_route(web::http::methods::POST, "^/campaigns/([0-9a-f]+)/features",
+    server.add_route(web::http::methods::POST, "^/campaigns/([0-9a-f]+)/features$",
         campaigns.bind_handler<ops::campaigns_controller>(&ops::campaigns_controller::post_feature));
 
-    server.add_route(web::http::methods::POST, "^/campaigns/([0-9a-f]+)/languages",
+    server.add_route(web::http::methods::PATCH, "^/campaigns/([0-9a-f]+)/features/([0-9a-f]+)$",
+        campaigns.bind_handler<ops::campaigns_controller>(&ops::campaigns_controller::patch_feature));
+
+    server.add_route(web::http::methods::POST, "^/campaigns/([0-9a-f]+)/features/([0-9a-f]+)/adapters$",
+        campaigns.bind_handler<ops::campaigns_controller>(&ops::campaigns_controller::post_adapter));
+
+    server.add_route(web::http::methods::POST, "^/campaigns/([0-9a-f]+)/languages$",
         campaigns.bind_handler<ops::campaigns_controller>(&ops::campaigns_controller::post_language));
 
     server.add_controller("languages", &languages);
     server.add_controller("content", &content);
 
-    server.add_route(web::http::methods::POST, "^/content/([0-9a-f]+)/reps",
+    server.add_route(web::http::methods::POST, "^/content/([0-9a-f]+)/reps$",
         content.bind_handler<ops::content_controller>(&ops::content_controller::post_rep));
 
     server.run();

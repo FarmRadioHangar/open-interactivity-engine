@@ -17,6 +17,8 @@ namespace ops
         void post(http::request request) override;
 
         void post_feature(http::request request);
+        void patch_feature(http::request request);
         void post_language(http::request request);
+        void post_adapter(http::request request);
     };
 }

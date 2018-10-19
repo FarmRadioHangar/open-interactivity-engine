@@ -1,7 +1,6 @@
 #include "content.h"
 #include <bsoncxx/builder/basic/kvp.hpp>
 #include "rep.h"
-#include <iostream>
 
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
