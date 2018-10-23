@@ -16,9 +16,9 @@ namespace ops
     class adapter
     {
     public:
-        virtual ~adapter() = default;
-
         adapter();
+
+        virtual ~adapter() = default;
 
         adapter(const adapter&) = delete;
         adapter& operator=(const adapter&) = delete;

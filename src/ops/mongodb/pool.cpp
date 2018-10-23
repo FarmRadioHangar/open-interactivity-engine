@@ -16,6 +16,8 @@ static mongocxx::instance instance{};
 /// \class pool
 ///
 /// \brief MongoDB database connection pool
+/// 
+/// This is a singleton class.
 ///
 
 ///

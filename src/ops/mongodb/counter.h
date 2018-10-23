@@ -13,6 +13,8 @@ namespace ops
         class counter
         {
         public:
+            counter() = delete;
+
             static constexpr auto Increment = 500;
 
             static std::uint64_t next();
