@@ -5,7 +5,7 @@
 
 #include "../server.h"
 #include <cpprest/http_listener.h>
-#include "controller.h"
+#include "../../adapter.h"
 
 namespace ops
 {
@@ -13,6 +13,8 @@ namespace ops
     {
         namespace rest
         {
+            class controller;
+
             class server : public http::server
             {
             public:
@@ -26,6 +28,8 @@ namespace ops
                     const web::http::method method,
                     const std::string& pattern,
                     request::handler handler);
+
+                void register_adapter(adapter* adpt);
             };
         }
     }

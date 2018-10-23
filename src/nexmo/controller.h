@@ -9,5 +9,7 @@ namespace nexmo
 {
     class controller : public ops::http::rest::controller
     {
+    public:
+        controller();
     };
 }

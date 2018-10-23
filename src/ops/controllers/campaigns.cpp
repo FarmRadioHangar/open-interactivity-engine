@@ -6,12 +6,14 @@
 #include "../builders/campaign.h"
 #include "../builders/language.h"
 #include "../util/json.h"
+#include <iostream>
 
 namespace ops
 {
 
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
+using web::http::methods;
 
 campaigns_controller::campaigns_controller()
   : http::rest::controller{}
@@ -177,6 +179,21 @@ void campaigns_controller::post_adapter(http::request request)
 
         request.send_response(res.dump());
     });
+}
+
+void campaigns_controller::do_install(http::rest::server* server)
+{
+    server->add_route(methods::POST, "^/campaigns/([0-9a-f]+)/features$",
+        bind_handler<ops::campaigns_controller>(&ops::campaigns_controller::post_feature));
+
+    server->add_route(methods::PATCH, "^/campaigns/([0-9a-f]+)/features/([0-9a-f]+)$",
+        bind_handler<ops::campaigns_controller>(&ops::campaigns_controller::patch_feature));
+
+    server->add_route(methods::POST, "^/campaigns/([0-9a-f]+)/features/([0-9a-f]+)/adapters$",
+        bind_handler<ops::campaigns_controller>(&ops::campaigns_controller::post_adapter));
+
+    server->add_route(methods::POST, "^/campaigns/([0-9a-f]+)/languages$",
+        bind_handler<ops::campaigns_controller>(&ops::campaigns_controller::post_language));
 }
 
 } // namespace ops

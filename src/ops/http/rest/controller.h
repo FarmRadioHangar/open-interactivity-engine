@@ -3,7 +3,7 @@
 ///
 #pragma once
 
-#include "../server.h"
+#include "server.h"
 
 namespace ops
 {
@@ -30,12 +30,26 @@ namespace ops
 
                 template <typename T = controller>
                 request::handler bind_handler(void (T::* handler)(http::request));
+
+                void install(rest::server* server);
+
+            private:
+                virtual void do_install(rest::server* server);
             };
 
             template <typename T>
             inline request::handler controller::bind_handler(void (T::* handler)(http::request))
             {
                 return std::bind(handler, static_cast<T*>(this), std::placeholders::_1);
+            }
+
+            inline void controller::install(rest::server* server)
+            {
+                do_install(server);
+            }
+
+            inline void controller::do_install(rest::server* server)
+            {
             }
         }
     }

@@ -14,6 +14,7 @@ namespace ops
 
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
+using web::http::methods;
 
 content_controller::content_controller()
   : http::rest::controller{}
@@ -121,6 +122,15 @@ void content_controller::post_media(http::request request)
 
         request.send_response(res.dump());
     });
+}
+
+void content_controller::do_install(http::rest::server* server)
+{
+    server->add_route(methods::POST, "^/content/([0-9a-f]+)/reps$",
+        bind_handler<ops::content_controller>(&ops::content_controller::post_rep));
+
+    server->add_route(methods::POST, "^/media$",
+        bind_handler<ops::content_controller>(&ops::content_controller::post_media));
 }
 
 } // namespace ops

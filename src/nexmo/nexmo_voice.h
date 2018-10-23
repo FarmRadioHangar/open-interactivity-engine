@@ -3,13 +3,16 @@
 ///
 #pragma once
 
-class adapter
-{
-};
+#include "../ops/adapter.h"
 
 namespace nexmo
 {
-    class voice : public adapter
+    class voice : public ops::adapter
     {
+    public:
+        voice();
+
+    private:
+        void do_install(ops::http::rest::server* server) override;
     };
 }

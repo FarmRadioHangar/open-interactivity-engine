@@ -1,4 +1,6 @@
 #include "server.h"
+#include <cassert>
+#include "controller.h"
 
 namespace ops
 {
@@ -23,6 +25,8 @@ void server::add_controller(const std::string& resource, controller* ctrl)
     on(web::http::methods::PUT, item, ctrl->bind_handler(&controller::put));
     on(web::http::methods::PATCH, item, ctrl->bind_handler(&controller::patch));
     on(web::http::methods::DEL, item, ctrl->bind_handler(&controller::del));
+
+    ctrl->install(this);
 }
 
 void server::add_route(const web::http::method method,
@@ -30,6 +34,13 @@ void server::add_route(const web::http::method method,
                        request::handler handler)
 {
     on(method, pattern, handler);
+}
+
+void server::register_adapter(adapter* adpt)
+{
+    assert(adpt);
+
+    adpt->install(this);
 }
 
 } // namespace rest
