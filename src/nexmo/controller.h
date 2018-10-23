@@ -11,5 +11,10 @@ namespace nexmo
     {
     public:
         controller();
+
+        void test(ops::http::request request);
+
+    private:
+        void do_install(ops::http::rest::server* server) override;
     };
 }

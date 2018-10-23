@@ -4,6 +4,7 @@
 #pragma once
 
 #include "../ops/adapter.h"
+#include "controller.h"
 
 namespace nexmo
 {
@@ -14,5 +15,7 @@ namespace nexmo
 
     private:
         void do_install(ops::http::rest::server* server) override;
+
+        std::unique_ptr<controller> _ctrl;
     };
 }

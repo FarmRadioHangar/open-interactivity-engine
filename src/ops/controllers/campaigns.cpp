@@ -6,7 +6,6 @@
 #include "../builders/campaign.h"
 #include "../builders/language.h"
 #include "../util/json.h"
-#include <iostream>
 
 namespace ops
 {
