@@ -64,6 +64,10 @@ void request::send_response(const std::string& body)
 ///
 /// \brief Send a reponse to indicate that an error occurred.
 ///
+/// \param code  todo
+/// \param tag   todo
+/// \param error todo
+///
 void request::send_error_response(web::http::status_code code,
                                   const std::string& tag,
                                   const std::string& error)

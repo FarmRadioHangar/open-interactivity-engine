@@ -65,7 +65,7 @@ namespace ops
         {
             try {
                 return type_conv<T>(_params.at(name));
-            } catch (std::exception&) {
+            } catch (const std::exception&) {
                 return def;
             }
         }
