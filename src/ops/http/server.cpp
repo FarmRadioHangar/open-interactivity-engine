@@ -51,7 +51,7 @@ void request::with_body(std::function<void(const std::vector<unsigned char>&)> h
 }
 
 ///
-/// \brief todo
+/// \brief Send a response with a 200 OK status code.
 ///
 /// \param body todo
 ///
