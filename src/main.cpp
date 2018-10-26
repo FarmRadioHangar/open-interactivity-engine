@@ -5,7 +5,7 @@
 #include "ops/controllers/content.h"
 #include "ops/controllers/languages.h"
 #include "ops/controllers/media.h"
-#include "dotenv.h"
+#include "dotenv/dotenv.h"
 #include "nexmo/nexmo_voice.h"
 
 int main()
