@@ -22,10 +22,7 @@ void languages_controller::get_item(http::request request)
     const auto id = request.get_uri_param(1);
     const auto doc = mongodb::document<languages>::find("id", id);
 
-    nlohmann::json res;
-    res["language"] = util::json::extract(doc);
-
-    request.send_response(res.dump());
+    request.send_response({ {"language", util::json::extract(doc)} });
 }
 
 void languages_controller::get(http::request request)
@@ -39,10 +36,7 @@ void languages_controller::get(http::request request)
     for (const auto& doc : page)
         items.emplace_back(util::json::extract(doc));
 
-    nlohmann::json res;
-    res["languages"] = items;
-
-    request.send_response(res.dump());
+    request.send_response({ {"languages", items} });
 }
 
 void languages_controller::post(http::request request)
@@ -54,14 +48,9 @@ void languages_controller::post(http::request request)
 
         language_builder builder(j);
 
-        mongodb::document<languages> doc{};
-        doc.inject(builder.extract());
-        doc.save();
+        mongodb::document<languages>::create(builder.extract());
 
-        nlohmann::json res;
-        res["language"] = j;
-
-        request.send_response(res.dump());
+        request.send_response({ {"language", j} });
     });
 }
 

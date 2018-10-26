@@ -7,6 +7,7 @@
 #include <cpprest/http_listener.h>
 #include <cstdint>
 #include <map>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
 
@@ -42,6 +43,7 @@ namespace ops
             void with_body(std::function<void(const std::vector<unsigned char>&)> handler);
 
             void send_response(const std::string& body = "");
+            void send_response(const nlohmann::json& j);
             void send_error_response(web::http::status_code code,
                                      const std::string& tag,
                                      const std::string& error);

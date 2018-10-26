@@ -25,10 +25,7 @@ void content_controller::get_item(http::request request)
     const auto id = request.get_uri_param(1);
     const auto doc = mongodb::document<content>::find("id", id);
 
-    nlohmann::json res;
-    res["content"] = util::json::extract(doc);
-
-    request.send_response(res.dump());
+    request.send_response({ {"content", util::json::extract(doc)} });
 }
 
 void content_controller::get(http::request request)
@@ -42,10 +39,7 @@ void content_controller::get(http::request request)
     for (const auto& doc : page)
         items.emplace_back(util::json::extract(doc));
 
-    nlohmann::json res;
-    res["content"] = items;
-
-    request.send_response(res.dump());
+    request.send_response({ {"content", items} });
 }
 
 void content_controller::post(http::request request)
@@ -57,14 +51,9 @@ void content_controller::post(http::request request)
 
         content_builder builder(j);
 
-        mongodb::document<content> doc{};
-        doc.inject(builder.extract());
-        doc.save();
+        mongodb::document<content>::create(builder.extract());
 
-        nlohmann::json res;
-        res["content"] = j;
-
-        request.send_response(res.dump());
+        request.send_response({ {"content", j} });
     });
 }
 
@@ -92,11 +81,10 @@ void content_controller::post_rep(http::request request)
         doc.inject(builder.extract());
         doc.save();
 
-        nlohmann::json res;
-        res["content"] = j;
-        res["rep"] = j_rep;
-
-        request.send_response(res.dump());
+        request.send_response({ 
+            {"content", j},
+            {"rep", j_rep} 
+        });
     });
 }
 

@@ -1,5 +1,4 @@
 #include "server.h"
-#include <nlohmann/json.hpp>
 #include <cpprest/filestream.h>
 
 namespace ops
@@ -60,6 +59,16 @@ void request::send_response(const std::string& body)
 {
     _response.set_body(body);
     _request.reply(_response);
+}
+
+///
+/// \brief todo
+///
+/// \param body todo
+///
+void request::send_response(const nlohmann::json& j)
+{
+    send_response(j.dump());
 }
 
 ///

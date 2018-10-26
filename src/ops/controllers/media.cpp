@@ -39,14 +39,9 @@ void media_controller::post(http::request request)
 
         media_builder builder(j_media);
 
-        mongodb::document<media> doc{};
-        doc.inject(builder.extract());
-        doc.save();
+        mongodb::document<media>::create(builder.extract());
 
-        nlohmann::json res;
-        res["media"] = j_media;
-
-        request.send_response(res.dump());
+        request.send_response({ {"media", j_media} });
     });
 }
 

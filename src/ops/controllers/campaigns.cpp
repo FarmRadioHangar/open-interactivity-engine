@@ -24,10 +24,7 @@ void campaigns_controller::get_item(http::request request)
     const auto id = request.get_uri_param(1);
     const auto doc = mongodb::document<campaigns>::find("id", id);
 
-    nlohmann::json res;
-    res["campaign"] = util::json::extract(doc);
-
-    request.send_response(res.dump());
+    request.send_response({ {"campaign", util::json::extract(doc)} });
 }
 
 void campaigns_controller::get(http::request request)
@@ -41,10 +38,7 @@ void campaigns_controller::get(http::request request)
     for (const auto& doc : page)
         items.emplace_back(util::json::extract(doc));
 
-    nlohmann::json res;
-    res["campaigns"] = items;
-
-    request.send_response(res.dump());
+    request.send_response({ {"campaigns", items} });
 }
 
 void campaigns_controller::post(http::request request)
@@ -56,14 +50,9 @@ void campaigns_controller::post(http::request request)
 
         campaign_builder builder(j);
 
-        mongodb::document<campaigns> doc{};
-        doc.inject(builder.extract());
-        doc.save();
+        mongodb::document<campaigns>::create(builder.extract());
 
-        nlohmann::json res;
-        res["campaign"] = j;
-
-        request.send_response(res.dump());
+        request.send_response({ {"campaign", j} });
     });
 }
 
@@ -91,7 +80,7 @@ void campaigns_controller::post_feature(http::request request)
         res["feature"] = j_feature;
         res["feature"]["id"] = feature_id;
 
-        request.send_response(res.dump());
+        request.send_response(res);
     });
 }
 
@@ -119,7 +108,7 @@ void campaigns_controller::patch_feature(http::request request)
         res["feature"] = j_feature;
         res["feature"]["id"] = feature_id;
 
-        request.send_response(res.dump());
+        request.send_response(res);
     });
 }
 
@@ -145,11 +134,10 @@ void campaigns_controller::post_language(http::request request)
         doc.inject(builder.extract());
         doc.save();
 
-        nlohmann::json res;
-        res["campaign"] = j_campaign;
-        res["language"] = j_language;
-
-        request.send_response(res.dump());
+        request.send_response({
+            {"campaign", j_campaign},
+            {"language", j_language}
+        });
     });
 }
 
@@ -173,11 +161,10 @@ void campaigns_controller::post_adapter(http::request request)
         doc.inject(builder.extract());
         doc.save();
 
-        nlohmann::json res;
-        res["campaign"] = j_campaign;
-        res["adapter"] = j_adapter;
-
-        request.send_response(res.dump());
+        request.send_response({
+            {"campaign", j_campaign},
+            {"adapter", j_adapter}
+        });
     });
 }
 

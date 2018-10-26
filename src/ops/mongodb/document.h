@@ -36,6 +36,8 @@ namespace ops
             void inject(bsoncxx::document::view view);
             bsoncxx::document::view view() const;
 
+            static void create(bsoncxx::document::view view);
+
             static document find(bsoncxx::document::view filter);
 
             template <typename K, typename V>
@@ -115,6 +117,14 @@ namespace ops
         bsoncxx::document::view document<T>::view() const
         {
             return _value.view();
+        }
+
+        template <typename T>
+        void document<T>::create(bsoncxx::document::view view)
+        {
+            document<T> doc{};
+            doc.inject(view);
+            doc.save();
         }
 
         template <typename T>
