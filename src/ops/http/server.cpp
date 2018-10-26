@@ -36,7 +36,9 @@ request::request(web::http::http_request&& request, const boost::smatch& match)
 ///
 void request::with_body(std::function<void(const std::string&)> handler)
 {
+    std::cout << "request::with_body [in]" << std::endl;
     _request.extract_string().then(handler).wait();
+    std::cout << "request::with_body [out]" << std::endl;
 }
 
 ///
@@ -236,7 +238,9 @@ void server::handle_request(web::http::http_request request)
             http::request req{std::move(request), match};
 
             try {
+                std::cout << "route.handler [in]" << std::endl;
                 route.handler(req);
+                std::cout << "route.handler [out]" << std::endl;
                 return;
             //} catch (const web::json::json_exception& error) {
             //    req.send_error_response(400, "BAD_JSON", error.what());

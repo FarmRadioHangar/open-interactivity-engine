@@ -51,7 +51,10 @@ void languages_controller::post(http::request request)
         mongodb::document<languages>::create(builder.extract());
 
         request.send_response({ {"language", j} });
+
+        std::cout << "a" << std::endl;
     });
+    std::cout << "b" << std::endl;
 }
 
 } // namespace ops
