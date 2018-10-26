@@ -9,32 +9,32 @@
 
 namespace ops
 {
-    namespace mongodb
+namespace mongodb
+{
+    class pool
     {
-        class pool
-        {
-        public:
-            static mongodb::pool& instance();
+    public:
+        static mongodb::pool& instance();
 
-            mongocxx::pool::entry acquire_entry() const;
-            mongocxx::database database() const;
+        mongocxx::pool::entry acquire_entry() const;
+        mongocxx::database database() const;
 
-            static void init(
-                const std::string& db,
-                const std::string& uri = "mongodb://localhost:27017");
+        static void init(
+            const std::string& db,
+            const std::string& uri = "mongodb://localhost:27017");
 
-        private:
-            pool();
+    private:
+        pool();
 
-            static bool                     _initialized;
-            static std::string              _uri;
-            static std::string              _database;
-            std::shared_ptr<mongocxx::pool> _pool;
-        };
+        static bool                     _initialized;
+        static std::string              _uri;
+        static std::string              _database;
+        std::shared_ptr<mongocxx::pool> _pool;
+    };
 
-        inline mongocxx::pool::entry pool::acquire_entry() const
-        {
-            return _pool->acquire();
-        }
+    inline mongocxx::pool::entry pool::acquire_entry() const
+    {
+        return _pool->acquire();
     }
+}
 }

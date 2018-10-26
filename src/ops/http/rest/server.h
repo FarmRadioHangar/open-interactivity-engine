@@ -9,21 +9,21 @@ namespace ops
 {
     class adapter;
 
-    namespace http
+namespace http
+{
+namespace rest
+{
+    class controller;
+
+    class server : public http::server
     {
-        namespace rest
-        {
-            class controller;
+    public:
+        server();
 
-            class server : public http::server
-            {
-            public:
-                server();
+        void add_controller(const std::string& resource, controller* ctrl);
 
-                void add_controller(const std::string& resource, controller* ctrl);
-
-                void register_adapter(adapter* adpt);
-            };
-        }
-    }
+        void register_adapter(adapter* adpt);
+    };
+}
+}
 }

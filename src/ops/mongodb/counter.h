@@ -8,20 +8,20 @@
 
 namespace ops
 {
-    namespace mongodb
+namespace mongodb
+{
+    class counter
     {
-        class counter
-        {
-        public:
-            counter() = delete;
+    public:
+        counter() = delete;
 
-            static constexpr auto Increment = 500;
+        static constexpr auto Increment = 500;
 
-            static std::uint64_t next();
-            static std::string generate_id();
+        static std::uint64_t next();
+        static std::string generate_id();
 
-        private:
-            static std::mutex _mutex;
-        };
-    }
+    private:
+        static std::mutex _mutex;
+    };
+}
 }

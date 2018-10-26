@@ -8,17 +8,17 @@
 
 namespace ops
 {
-    namespace mongodb
+namespace mongodb
+{
+namespace bson
+{
+    class builder : public bsoncxx::builder::basic::document
     {
-        namespace bson
-        {
-            class builder : public bsoncxx::builder::basic::document
-            {
-            public:
-                explicit builder(const nlohmann::json& j);
+    public:
+        explicit builder(const nlohmann::json& j);
 
-                bool has_errors() const;
-            };
-        }
-    }
+        bool has_errors() const;
+    };
+}
+}
 }
