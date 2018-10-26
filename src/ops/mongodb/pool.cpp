@@ -51,7 +51,7 @@ mongodb::pool& pool::instance()
 }
 
 ///
-/// \returns the database used for this application
+/// \returns the database used by this application
 ///
 mongocxx::database pool::database() const
 {
