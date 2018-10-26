@@ -22,10 +22,10 @@ campaigns_controller::campaigns_controller()
 void campaigns_controller::get_item(http::request request)
 {
     const auto id = request.get_uri_param(1);
-    const auto doc = mongodb::document<campaigns>::find(make_document(kvp("id", id)));
+    const auto doc = mongodb::document<campaigns>::find("id", id);
 
     nlohmann::json res;
-    res["campaign"] = util::json::builder(doc);
+    res["campaign"] = util::json::extract(doc);
 
     request.send_response(res.dump());
 }
@@ -39,7 +39,7 @@ void campaigns_controller::get(http::request request)
 
     auto items = nlohmann::json::array();
     for (const auto& doc : page)
-        items.emplace_back(util::json::builder(doc));
+        items.emplace_back(util::json::extract(doc));
 
     nlohmann::json res;
     res["campaigns"] = items;
@@ -72,22 +72,22 @@ void campaigns_controller::post_feature(http::request request)
     request.with_body([&request](const std::string& body)
     {
         const auto id = request.get_uri_param(1);
-        auto doc = mongodb::document<campaigns>::find(make_document(kvp("id", id)));
+        auto doc = mongodb::document<campaigns>::find("id", id);
 
-        auto j = util::json::builder(doc);
-
+        auto j_campaign = util::json::extract(doc);
         auto j_feature = nlohmann::json::parse(body);
+
         const std::string feature_id = ops::mongodb::counter::generate_id();
 
-        j["features"][feature_id] = j_feature;
+        j_campaign["features"][feature_id] = j_feature;
 
-        campaign_builder builder(j);
+        campaign_builder builder(j_campaign);
 
         doc.inject(builder.extract());
         doc.save();
 
         nlohmann::json res;
-        res["campaign"] = j;
+        res["campaign"] = j_campaign;
         res["feature"] = j_feature;
         res["feature"]["id"] = feature_id;
 
@@ -101,21 +101,21 @@ void campaigns_controller::patch_feature(http::request request)
     {
         const auto campaign_id = request.get_uri_param(1);
         const auto feature_id = request.get_uri_param(2);
-        auto doc = mongodb::document<campaigns>::find(make_document(kvp("id", campaign_id)));
+        auto doc = mongodb::document<campaigns>::find("id", campaign_id);
 
-        auto j = util::json::builder(doc);
+        auto j_campaign = util::json::extract(doc);
         auto j_request = nlohmann::json::parse(body);
-        auto& j_feature = j["features"][feature_id];
+        auto& j_feature = j_campaign["features"][feature_id];
 
         j_feature.merge_patch(j_request);
 
-        campaign_builder builder(j);
+        campaign_builder builder(j_campaign);
 
         doc.inject(builder.extract());
         doc.save();
 
         nlohmann::json res;
-        res["campaign"] = j;
+        res["campaign"] = j_campaign;
         res["feature"] = j_feature;
         res["feature"]["id"] = feature_id;
 
@@ -128,26 +128,25 @@ void campaigns_controller::post_language(http::request request)
     request.with_body([&request](const std::string& body)
     {
         const auto id = request.get_uri_param(1);
-        auto doc = mongodb::document<campaigns>::find(make_document(kvp("id", id)));
+        auto doc = mongodb::document<campaigns>::find("id", id);
 
-        auto j = util::json::builder(doc);
-
+        auto j_campaign = util::json::extract(doc);
         auto j_request = nlohmann::json::parse(body);
 
         const std::string& tag = j_request["tag"];
-        auto language = mongodb::document<languages>::find(make_document(kvp("tag", tag)));
+        auto language = mongodb::document<languages>::find("tag", tag);
 
-        auto j_language = util::json::builder(language);
+        auto j_language = util::json::extract(language);
 
-        j["languages"][tag] = j_language;
+        j_campaign["languages"][tag] = j_language;
 
-        campaign_builder builder(j);
+        campaign_builder builder(j_campaign);
 
         doc.inject(builder.extract());
         doc.save();
 
         nlohmann::json res;
-        res["campaign"] = j;
+        res["campaign"] = j_campaign;
         res["language"] = j_language;
 
         request.send_response(res.dump());
@@ -160,20 +159,22 @@ void campaigns_controller::post_adapter(http::request request)
     {
         const auto campaign_id = request.get_uri_param(1);
         const auto feature_id = request.get_uri_param(2);
-        auto doc = mongodb::document<campaigns>::find(make_document(kvp("id", campaign_id)));
+        auto doc = mongodb::document<campaigns>::find("id", campaign_id);
 
-        auto j = util::json::builder(doc);
+        auto j_campaign = util::json::extract(doc);
         auto j_adapter = nlohmann::json::parse(body);
 
-        j["features"][feature_id]["adapters"].push_back(j_adapter);
+        const std::string& module = j_adapter["module"];
 
-        campaign_builder builder(j);
+        j_campaign["features"][feature_id]["adapters"][module] = j_adapter;
+
+        campaign_builder builder(j_campaign);
 
         doc.inject(builder.extract());
         doc.save();
 
         nlohmann::json res;
-        res["campaign"] = j;
+        res["campaign"] = j_campaign;
         res["adapter"] = j_adapter;
 
         request.send_response(res.dump());
@@ -182,16 +183,16 @@ void campaigns_controller::post_adapter(http::request request)
 
 void campaigns_controller::do_install(http::rest::server* server)
 {
-    server->add_route(methods::POST, "^/campaigns/([0-9a-f]+)/features$",
+    server->on(methods::POST, "^/campaigns/([0-9a-f]+)/features$",
         bind_handler<ops::campaigns_controller>(&ops::campaigns_controller::post_feature));
 
-    server->add_route(methods::PATCH, "^/campaigns/([0-9a-f]+)/features/([0-9a-f]+)$",
+    server->on(methods::PATCH, "^/campaigns/([0-9a-f]+)/features/([0-9a-f]+)$",
         bind_handler<ops::campaigns_controller>(&ops::campaigns_controller::patch_feature));
 
-    server->add_route(methods::POST, "^/campaigns/([0-9a-f]+)/features/([0-9a-f]+)/adapters$",
+    server->on(methods::POST, "^/campaigns/([0-9a-f]+)/features/([0-9a-f]+)/adapters$",
         bind_handler<ops::campaigns_controller>(&ops::campaigns_controller::post_adapter));
 
-    server->add_route(methods::POST, "^/campaigns/([0-9a-f]+)/languages$",
+    server->on(methods::POST, "^/campaigns/([0-9a-f]+)/languages$",
         bind_handler<ops::campaigns_controller>(&ops::campaigns_controller::post_language));
 }
 

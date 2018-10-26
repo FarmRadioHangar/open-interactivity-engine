@@ -29,13 +29,6 @@ void server::add_controller(const std::string& resource, controller* ctrl)
     ctrl->install(this);
 }
 
-void server::add_route(const web::http::method method,
-                       const std::string& pattern,
-                       request::handler handler)
-{
-    on(method, pattern, handler);
-}
-
 void server::register_adapter(adapter* adpt)
 {
     assert(adpt);

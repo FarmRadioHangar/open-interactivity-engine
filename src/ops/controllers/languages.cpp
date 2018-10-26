@@ -20,10 +20,10 @@ languages_controller::languages_controller()
 void languages_controller::get_item(http::request request)
 {
     const auto id = request.get_uri_param(1);
-    const auto doc = mongodb::document<languages>::find(make_document(kvp("id", id)));
+    const auto doc = mongodb::document<languages>::find("id", id);
 
     nlohmann::json res;
-    res["language"] = util::json::builder(doc);
+    res["language"] = util::json::extract(doc);
 
     request.send_response(res.dump());
 }
@@ -37,7 +37,7 @@ void languages_controller::get(http::request request)
 
     auto items = nlohmann::json::array();
     for (const auto& doc : page)
-        items.emplace_back(util::json::builder(doc));
+        items.emplace_back(util::json::extract(doc));
 
     nlohmann::json res;
     res["languages"] = items;

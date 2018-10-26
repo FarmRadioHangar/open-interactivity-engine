@@ -38,6 +38,9 @@ namespace ops
 
             static document find(bsoncxx::document::view filter);
 
+            template <typename K, typename V>
+            static document find(const K& k, const V& v);
+
             static std::int64_t count();
 
             static std::int64_t count(
@@ -126,6 +129,13 @@ namespace ops
             }
 
             return document{result.value().view()};
+        }
+
+        template <typename T>
+        template <typename K, typename V>
+        document<T> document<T>::find(const K& k, const V& v)
+        {
+            return document<T>::find(make_document(kvp(k, v)));
         }
 
         template <typename T>

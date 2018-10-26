@@ -12,7 +12,9 @@ namespace nexmo
     public:
         controller();
 
-        void test(ops::http::request request);
+        void post_event(ops::http::request request);
+        void post_answer(ops::http::request request);
+        void post_response(ops::http::request request);
 
     private:
         void do_install(ops::http::rest::server* server) override;

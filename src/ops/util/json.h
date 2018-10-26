@@ -13,7 +13,7 @@ namespace ops
         namespace json
         {
             template <typename T>
-            nlohmann::json builder(const mongodb::document<T>& doc)
+            nlohmann::json extract(const mongodb::document<T>& doc)
             {
                 nlohmann::json j;
                 doc.stream() >> j;

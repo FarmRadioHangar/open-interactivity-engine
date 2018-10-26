@@ -26,11 +26,13 @@ feature_builder::feature_builder(const nlohmann::json& j)
     const auto& adapters = j.find("adapters");
 
     if (j.end() != adapters) {
-        bsoncxx::builder::basic::array array_builder{};
-        for (const nlohmann::json& j_adapter : *adapters) {
-            array_builder.append(adapter_builder{j_adapter}.extract());
+        bsoncxx::builder::basic::document collection_builder{};
+        for (nlohmann::json::const_iterator i = adapters->begin(); i != adapters->end(); ++i) {
+            collection_builder.append(kvp(
+                  std::string{i.key()}, 
+                  adapter_builder{i.value()}.extract()));
         }
-        append(kvp("adapters", array_builder.extract()));
+        append(kvp("adapters", collection_builder.extract()));
     }
 }
 

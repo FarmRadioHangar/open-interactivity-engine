@@ -12,6 +12,10 @@ rep_builder::rep_builder(const nlohmann::json& j)
 {
     append(kvp("format", std::string{j.at("format")}));
     append(kvp("language", std::string{j.at("language")}));
+
+    if (j.end() != j.find("media")) {
+        append(kvp("media", std::string{j.at("media")}));
+    }
 }
 
 } // namespace ops

@@ -11,9 +11,6 @@ namespace ops
 {
     namespace mongodb
     {
-        ///
-        /// A \a page is a subset of documents drawn from a MongoDB collection.
-        ///
         template <typename T, template <typename> class Container = std::vector>
         class page
         {
@@ -42,14 +39,6 @@ namespace ops
             std::size_t            _total;
         };
 
-        ///
-        /// \brief todo
-        ///
-        /// \param collection todo
-        /// \param offset     todo
-        /// \param size       todo
-        /// \param total      todo
-        ///
         template <typename T, template <typename> class Container>
         page<T, Container>::page(Container<document<T>>&& collection,
                                  const std::size_t offset,
@@ -63,24 +52,12 @@ namespace ops
             assert(total >= collection.size());
         }
 
-        ///
-        /// Obtain a single document from this page.
-        ///
-        /// \param pos position of the element to return
-        ///
-        /// \returns the document at the given position in the container
-        ///
         template <typename T, template <typename> class Container>
         document<T> page<T, Container>::at(const std::size_t pos) const
         {
             return _collection.at(pos);
         }
 
-        ///
-        /// \brief todo
-        ///
-        /// \returns todo
-        ///
         template <typename T, template <typename> class Container>
         page<T> page<T, Container>::get(const std::int64_t skip,
                                         const std::int64_t limit)

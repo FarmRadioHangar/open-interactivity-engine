@@ -13,6 +13,10 @@ media_builder::media_builder(const nlohmann::json& j)
     if (j.end() != j.find("id")) {
         append(kvp("id", std::string{j.at("id")}));
     }
+
+    if (j.end() != j.find("file")) {
+        append(kvp("file", std::string{j.at("file")}));
+    }
 }
 
 } // namespace ops

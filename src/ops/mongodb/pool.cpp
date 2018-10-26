@@ -17,7 +17,24 @@ static mongocxx::instance instance{};
 ///
 /// \brief MongoDB database connection pool
 /// 
-/// This is a singleton class.
+/// This is a singleton class. Call pool::init (once), passing the name of the 
+/// database used in the application, to initialize the connection pool:
+///
+/// \code
+/// int main()
+/// {
+///     ops::mongodb::pool::init("database");
+///     // ...
+/// \endcode
+///
+/// Then use pool::instance to access the singleton.
+///
+/// \code
+/// auto db = ops::mongodb::pool::instance();
+/// auto client = db.acquire_entry();
+/// \endcode
+///
+/// \sa pool::instance
 ///
 
 ///
@@ -34,7 +51,7 @@ mongodb::pool& pool::instance()
 }
 
 ///
-/// \returns the application's database instance
+/// \returns the application's database
 ///
 mongocxx::database pool::database() const
 {

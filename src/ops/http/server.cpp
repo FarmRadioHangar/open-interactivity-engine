@@ -122,7 +122,7 @@ void request::send_error_response(web::http::status_code code,
 ///
 /// \brief Create the server.
 ///
-/// \param port   number of the port to listen for new connections on (9080)
+/// \param port   number of the port to listen on for new connections (9080)
 /// \param scheme the scheme identifying the protocol used (http)
 /// \param host   todo
 /// \param path   todo
