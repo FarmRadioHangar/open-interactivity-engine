@@ -4,7 +4,7 @@
 #include "../mongodb/counter.h"
 #include "../mongodb/document.h"
 #include "../mongodb/page.h"
-#include "../builders/language.h"
+#include "../builders/media.h"
 #include "../util/json.h"
 
 namespace ops
@@ -20,7 +20,34 @@ media_controller::media_controller()
 
 void media_controller::get_item(http::request request)
 {
-    request.send_media_response("407af98c43fd.mp3", "audio/mpeg");
+    const auto media_id = request.get_uri_param(1);
+    const std::string file = std::string{media_id} + ".mp3";
+
+    request.send_media_response(file, "audio/mpeg");
+}
+
+void media_controller::post(http::request request)
+{
+    request.with_body([&request](const std::vector<unsigned char>& bytes)
+    {
+        nlohmann::json j_media;
+        j_media["id"] = ops::mongodb::counter::generate_id();
+        j_media["file"] = std::string{j_media["id"]} + ".mp3";
+
+        std::ofstream outfile(j_media["file"], std::ios::out | std::ios::binary); 
+        outfile.write(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+
+        media_builder builder(j_media);
+
+        mongodb::document<media> doc{};
+        doc.inject(builder.extract());
+        doc.save();
+
+        nlohmann::json res;
+        res["media"] = j_media;
+
+        request.send_response(res.dump());
+    });
 }
 
 } // namespace ops

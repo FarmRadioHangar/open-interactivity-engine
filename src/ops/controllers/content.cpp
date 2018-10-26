@@ -6,7 +6,6 @@
 #include "../mongodb/page.h"
 #include "../builders/content.h"
 #include "../builders/language.h"
-#include "../builders/media.h"
 #include "../util/json.h"
 
 namespace ops
@@ -101,37 +100,10 @@ void content_controller::post_rep(http::request request)
     });
 }
 
-void content_controller::post_media(http::request request)
-{
-    request.with_body([&request](const std::vector<unsigned char>& bytes)
-    {
-        nlohmann::json j_media;
-        j_media["id"] = ops::mongodb::counter::generate_id();
-        j_media["file"] = std::string{j_media["id"]} + ".mp3";
-
-        std::ofstream outfile(j_media["file"], std::ios::out | std::ios::binary); 
-        outfile.write(reinterpret_cast<const char*>(bytes.data()), bytes.size());
-
-        media_builder builder(j_media);
-
-        mongodb::document<media> doc{};
-        doc.inject(builder.extract());
-        doc.save();
-
-        nlohmann::json res;
-        res["media"] = j_media;
-
-        request.send_response(res.dump());
-    });
-}
-
 void content_controller::do_install(http::rest::server* server)
 {
     server->on(methods::POST, "^/content/([0-9a-f]+)/reps$",
         bind_handler<ops::content_controller>(&ops::content_controller::post_rep));
-
-    server->on(methods::POST, "^/media$",
-        bind_handler<ops::content_controller>(&ops::content_controller::post_media));
 }
 
 } // namespace ops

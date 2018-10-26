@@ -17,7 +17,6 @@ namespace ops
         void post(http::request request) override;
 
         void post_rep(http::request request);
-        void post_media(http::request request);
 
     private:
         void do_install(http::rest::server* server) override;
