@@ -206,6 +206,7 @@ void server::run()
 void server::run(const uint16_t port)
 {
     set_port(port);
+
     run();
 }
 
