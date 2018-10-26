@@ -46,6 +46,10 @@ void controller::post_answer(ops::http::request& request)
 
         script_runner runner(j_feature["data"]["graph"]);
 
+        runner.generate_ncco(runner.root());
+
+        std::cout << runner.ncco().dump() << std::endl;
+
     }
 
     //

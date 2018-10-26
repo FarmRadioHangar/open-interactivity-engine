@@ -23,14 +23,14 @@ script::script(const nlohmann::json& j)
                 node_transmit transmit;
                 transmit.type = t_transmit;
                 transmit.content = j_node["content"];
-                this->nodes.insert({key, std::make_shared<node>(transmit)});
+                this->nodes.insert({key, std::make_shared<node_transmit>(transmit)});
             } else if ("select" == type) {
                 node_select select;
                 select.type = t_select;
                 for (const auto& key : j_node["keys"]) {
                     select.keys.push_back(key);
                 }
-                this->nodes.insert({key, std::make_shared<node>(select)});
+                this->nodes.insert({key, std::make_shared<node_select>(select)});
             } else if ("receive" == type) {
                 node receive;
                 receive.type = t_receive;
@@ -54,18 +54,20 @@ script::script(const nlohmann::json& j)
 }
 
 script_runner::script_runner(const script& script)
-  : _script{script}
+  : _script{script},
+    _ncco{nlohmann::json::array()}
 {
 }
 
 script_runner::script_runner(const nlohmann::json& j)
-  : _script{script{j}}
+  : _script{script{j}},
+    _ncco{nlohmann::json::array()}
 {
 }
 
-nlohmann::json script_runner::generate_ncco(const std::string& key)
+void script_runner::generate_ncco(const std::string& key)
 {
-    std::shared_ptr<node> node = _script.nodes.at(key);
+    auto node = _script.nodes.at("_root" == key ? root() : key);
 
     if (t_transmit == node->type)
     {
@@ -73,18 +75,25 @@ nlohmann::json script_runner::generate_ncco(const std::string& key)
 
         const std::string& content_id = transmit->content;
 
+        std::cout << content_id << std::endl;
+
         auto doc = ops::mongodb::document<ops::content>::find("id", content_id);
         auto j_content = ops::util::json::extract(doc);
 
         const auto& j_audio = j_content["reps"]["audio/mpeg"]["en"]; // todo
         const std::string& media_id = j_audio["media"];
 
-        auto media = ops::mongodb::document<ops::media>::find("id", media_id);
+        //auto media = ops::mongodb::document<ops::media>::find("id", media_id);
 
-        auto j_media = ops::util::json::extract(media);
-        const std::string& filename = j_media["file"];
+        //auto j_media = ops::util::json::extract(media);
+        //const std::string& filename = j_media["file"];
 
+        const std::string& url = "http://localhost:9080/media/" + media_id;
 
+        _ncco.push_back({
+            {"action", "stream"},
+            {"streamUrl", { url }}
+        });
     }
     else if (t_select == node->type)
     {

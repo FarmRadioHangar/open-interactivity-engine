@@ -52,14 +52,21 @@ namespace nexmo
 
         std::string root() const;
 
-        nlohmann::json generate_ncco(const std::string& key);
+        void generate_ncco(const std::string& key = "_root");
+        nlohmann::json ncco() const;
 
     private:
-        const script _script;
+        const script   _script;
+        nlohmann::json _ncco;
     };
 
     inline std::string script_runner::root() const
     {
         return _script.root;
+    }
+
+    inline nlohmann::json script_runner::ncco() const
+    {
+        return _ncco;
     }
 }
