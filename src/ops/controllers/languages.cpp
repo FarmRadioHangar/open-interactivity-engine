@@ -17,7 +17,7 @@ languages_controller::languages_controller()
 {
 }
 
-void languages_controller::get_item(http::request request)
+void languages_controller::get_item(http::request& request)
 {
     const auto id = request.get_uri_param(1);
     const auto doc = mongodb::document<languages>::find("id", id);
@@ -25,7 +25,7 @@ void languages_controller::get_item(http::request request)
     request.send_response({ {"language", util::json::extract(doc)} });
 }
 
-void languages_controller::get(http::request request)
+void languages_controller::get(http::request& request)
 {
     const auto skip = request.get_query_param<int64_t>("skip", 0);
     const auto limit = request.get_query_param<int64_t>("limit", 10);
@@ -39,7 +39,7 @@ void languages_controller::get(http::request request)
     request.send_response({ {"languages", items} });
 }
 
-void languages_controller::post(http::request request)
+void languages_controller::post(http::request& request)
 {
     request.with_body([&request](const std::string& body)
     {
@@ -51,10 +51,7 @@ void languages_controller::post(http::request request)
         mongodb::document<languages>::create(builder.extract());
 
         request.send_response({ {"language", j} });
-
-        std::cout << "a" << std::endl;
     });
-    std::cout << "b" << std::endl;
 }
 
 } // namespace ops

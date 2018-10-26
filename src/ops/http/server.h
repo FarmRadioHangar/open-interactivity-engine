@@ -20,7 +20,7 @@ namespace http
     class request
     {
     public:
-        using handler = std::function<void(http::request)>;
+        using handler = std::function<void(http::request&)>;
 
         struct route
         {

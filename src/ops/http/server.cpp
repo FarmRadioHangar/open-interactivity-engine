@@ -238,9 +238,7 @@ void server::handle_request(web::http::http_request request)
             http::request req{std::move(request), match};
 
             try {
-                std::cout << "route.handler [in]" << std::endl;
                 route.handler(req);
-                std::cout << "route.handler [out]" << std::endl;
                 return;
             //} catch (const web::json::json_exception& error) {
             //    req.send_error_response(400, "BAD_JSON", error.what());

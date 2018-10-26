@@ -17,7 +17,7 @@ controller::controller()
 {
 }
 
-void controller::post_event(ops::http::request request)
+void controller::post_event(ops::http::request& request)
 {
     std::cout << "controller::post_event" << std::endl;
 
@@ -26,7 +26,7 @@ void controller::post_event(ops::http::request request)
     request.send_response();
 }
 
-void controller::post_answer(ops::http::request request)
+void controller::post_answer(ops::http::request& request)
 {
     std::cout << "controller::post_answer" << std::endl;
 
@@ -65,7 +65,7 @@ void controller::post_answer(ops::http::request request)
     //request.send_response(ncco.dump());
 }
 
-void controller::post_response(ops::http::request request)
+void controller::post_response(ops::http::request& request)
 {
     std::cout << "controller::post_response" << std::endl;
 }

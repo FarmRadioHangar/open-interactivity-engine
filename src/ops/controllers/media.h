@@ -12,7 +12,7 @@ namespace ops
     public:
         media_controller();
 
-        void get_item(http::request request) override;
-        void post(http::request request) override;
+        void get_item(http::request& request) override;
+        void post(http::request& request) override;
     };
 }

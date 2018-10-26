@@ -20,14 +20,14 @@ namespace ops
     public:
         campaigns_controller();
 
-        void get_item(http::request request) override;
-        void get(http::request request) override;
-        void post(http::request request) override;
+        void get_item(http::request& request) override;
+        void get(http::request& request) override;
+        void post(http::request& request) override;
 
-        void post_feature(http::request request);
-        void patch_feature(http::request request);
-        void post_language(http::request request);
-        void post_adapter(http::request request);
+        void post_feature(http::request& request);
+        void patch_feature(http::request& request);
+        void post_language(http::request& request);
+        void post_adapter(http::request& request);
 
     private:
         void do_install(http::rest::server* server) override;

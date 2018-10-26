@@ -18,7 +18,7 @@ media_controller::media_controller()
 {
 }
 
-void media_controller::get_item(http::request request)
+void media_controller::get_item(http::request& request)
 {
     const auto media_id = request.get_uri_param(1);
     const std::string file = std::string{media_id} + ".mp3";
@@ -26,7 +26,7 @@ void media_controller::get_item(http::request request)
     request.send_media_response(file, "audio/mpeg");
 }
 
-void media_controller::post(http::request request)
+void media_controller::post(http::request& request)
 {
     request.with_body([&request](const std::vector<unsigned char>& bytes)
     {

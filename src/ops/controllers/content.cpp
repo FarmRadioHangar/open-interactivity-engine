@@ -20,7 +20,7 @@ content_controller::content_controller()
 {
 }
 
-void content_controller::get_item(http::request request)
+void content_controller::get_item(http::request& request)
 {
     const auto id = request.get_uri_param(1);
     const auto doc = mongodb::document<content>::find("id", id);
@@ -28,7 +28,7 @@ void content_controller::get_item(http::request request)
     request.send_response({ {"content", util::json::extract(doc)} });
 }
 
-void content_controller::get(http::request request)
+void content_controller::get(http::request& request)
 {
     const auto skip = request.get_query_param<int64_t>("skip", 0);
     const auto limit = request.get_query_param<int64_t>("limit", 10);
@@ -42,7 +42,7 @@ void content_controller::get(http::request request)
     request.send_response({ {"content", items} });
 }
 
-void content_controller::post(http::request request)
+void content_controller::post(http::request& request)
 {
     request.with_body([&request](const std::string& body)
     {
@@ -57,7 +57,7 @@ void content_controller::post(http::request request)
     });
 }
 
-void content_controller::post_rep(http::request request)
+void content_controller::post_rep(http::request& request)
 {
     request.with_body([&request](const std::string& body)
     {

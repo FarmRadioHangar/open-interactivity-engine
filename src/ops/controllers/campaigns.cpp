@@ -19,7 +19,7 @@ campaigns_controller::campaigns_controller()
 {
 }
 
-void campaigns_controller::get_item(http::request request)
+void campaigns_controller::get_item(http::request& request)
 {
     const auto id = request.get_uri_param(1);
     const auto doc = mongodb::document<campaigns>::find("id", id);
@@ -27,7 +27,7 @@ void campaigns_controller::get_item(http::request request)
     request.send_response({ {"campaign", util::json::extract(doc)} });
 }
 
-void campaigns_controller::get(http::request request)
+void campaigns_controller::get(http::request& request)
 {
     const auto skip = request.get_query_param<int64_t>("skip", 0);
     const auto limit = request.get_query_param<int64_t>("limit", 10);
@@ -41,7 +41,7 @@ void campaigns_controller::get(http::request request)
     request.send_response({ {"campaigns", items} });
 }
 
-void campaigns_controller::post(http::request request)
+void campaigns_controller::post(http::request& request)
 {
     request.with_body([&request](const std::string& body)
     {
@@ -56,7 +56,7 @@ void campaigns_controller::post(http::request request)
     });
 }
 
-void campaigns_controller::post_feature(http::request request)
+void campaigns_controller::post_feature(http::request& request)
 {
     request.with_body([&request](const std::string& body)
     {
@@ -84,7 +84,7 @@ void campaigns_controller::post_feature(http::request request)
     });
 }
 
-void campaigns_controller::patch_feature(http::request request)
+void campaigns_controller::patch_feature(http::request& request)
 {
     request.with_body([&request](const std::string& body)
     {
@@ -112,7 +112,7 @@ void campaigns_controller::patch_feature(http::request request)
     });
 }
 
-void campaigns_controller::post_language(http::request request)
+void campaigns_controller::post_language(http::request& request)
 {
     request.with_body([&request](const std::string& body)
     {
@@ -141,7 +141,7 @@ void campaigns_controller::post_language(http::request request)
     });
 }
 
-void campaigns_controller::post_adapter(http::request request)
+void campaigns_controller::post_adapter(http::request& request)
 {
     request.with_body([&request](const std::string& body)
     {
