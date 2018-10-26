@@ -32,25 +32,25 @@ void languages_controller::get(http::request& request)
 
     auto page = ops::mongodb::page<languages>::get(skip, limit);
 
-    auto items = nlohmann::json::array();
+    auto j_languages = nlohmann::json::array();
     for (const auto& doc : page)
-        items.emplace_back(util::json::extract(doc));
+        j_languages.emplace_back(util::json::extract(doc));
 
-    request.send_response({ {"languages", items} });
+    request.send_response({ {"languages", j_languages} });
 }
 
 void languages_controller::post(http::request& request)
 {
     request.with_body([&request](const std::string& body)
     {
-        auto j = nlohmann::json::parse(body);
-        j["id"] = ops::mongodb::counter::generate_id();
+        auto j_language = nlohmann::json::parse(body);
+        j_language["id"] = ops::mongodb::counter::generate_id();
 
-        language_builder builder(j);
+        language_builder builder(j_language);
 
         mongodb::document<languages>::create(builder.extract());
 
-        request.send_response({ {"language", j} });
+        request.send_response({ {"language", j_language} });
     });
 }
 

@@ -35,25 +35,25 @@ void content_controller::get(http::request& request)
 
     auto page = ops::mongodb::page<content>::get(skip, limit);
 
-    auto items = nlohmann::json::array();
+    auto j_content = nlohmann::json::array();
     for (const auto& doc : page)
-        items.emplace_back(util::json::extract(doc));
+        j_content.emplace_back(util::json::extract(doc));
 
-    request.send_response({ {"content", items} });
+    request.send_response({ {"content", j_content} });
 }
 
 void content_controller::post(http::request& request)
 {
     request.with_body([&request](const std::string& body)
     {
-        auto j = nlohmann::json::parse(body);
-        j["id"] = ops::mongodb::counter::generate_id();
+        auto j_content = nlohmann::json::parse(body);
+        j_content["id"] = ops::mongodb::counter::generate_id();
 
-        content_builder builder(j);
+        content_builder builder(j_content);
 
         mongodb::document<content>::create(builder.extract());
 
-        request.send_response({ {"content", j} });
+        request.send_response({ {"content", j_content} });
     });
 }
 
@@ -64,8 +64,7 @@ void content_controller::post_rep(http::request& request)
         const auto id = request.get_uri_param(1);
         auto doc = mongodb::document<content>::find("id", id);
 
-        auto j = util::json::extract(doc);
-
+        auto j_content = util::json::extract(doc);
         auto j_rep = nlohmann::json::parse(body);
 
         const std::string& tag = j_rep["language"];
@@ -74,15 +73,15 @@ void content_controller::post_rep(http::request& request)
         // Check that language exists
         mongodb::document<languages>::find("tag", tag);
 
-        j["reps"][format][tag] = j_rep;
+        j_content["reps"][format][tag] = j_rep;
 
-        content_builder builder(j);
+        content_builder builder(j_content);
 
         doc.inject(builder.extract());
         doc.save();
 
         request.send_response({ 
-            {"content", j},
+            {"content", j_content},
             {"rep", j_rep} 
         });
     });

@@ -36,7 +36,6 @@ void controller::post_answer(ops::http::request& request)
     auto doc = ops::mongodb::document<ops::campaigns>::find("id", campaign_id);
 
     auto j_campaign = ops::util::json::extract(doc);
-
     auto j_feature = j_campaign["features"][feature_id];
     auto j_adapter = j_feature["adapters"]["nexmo_voice"];
 

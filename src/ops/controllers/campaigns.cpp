@@ -34,25 +34,25 @@ void campaigns_controller::get(http::request& request)
 
     auto page = ops::mongodb::page<campaigns>::get(skip, limit);
 
-    auto items = nlohmann::json::array();
+    auto j_campaigns = nlohmann::json::array();
     for (const auto& doc : page)
-        items.emplace_back(util::json::extract(doc));
+        j_campaigns.emplace_back(util::json::extract(doc));
 
-    request.send_response({ {"campaigns", items} });
+    request.send_response({ {"campaigns", j_campaigns} });
 }
 
 void campaigns_controller::post(http::request& request)
 {
     request.with_body([&request](const std::string& body)
     {
-        auto j = nlohmann::json::parse(body);
-        j["id"] = ops::mongodb::counter::generate_id();
+        auto j_campaign = nlohmann::json::parse(body);
+        j_campaign["id"] = ops::mongodb::counter::generate_id();
 
-        campaign_builder builder(j);
+        campaign_builder builder(j_campaign);
 
         mongodb::document<campaigns>::create(builder.extract());
 
-        request.send_response({ {"campaign", j} });
+        request.send_response({ {"campaign", j_campaign} });
     });
 }
 
