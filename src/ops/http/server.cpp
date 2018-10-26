@@ -1,5 +1,6 @@
 #include "server.h"
 #include <nlohmann/json.hpp>
+#include <cpprest/filestream.h>
 
 namespace ops
 {
@@ -78,6 +79,17 @@ void request::send_error_response(web::http::status_code code,
     response["code"] = tag;
     set_status_code(code);
     send_response(response.dump());
+}
+
+void request::send_media_response(const std::string& file, const std::string& format)
+{
+    using namespace Concurrency::streams;
+
+    file_stream<unsigned char>::open_istream(file)
+        .then([this, format](const basic_istream<unsigned char>& istream) {
+            _request.reply(web::http::status_codes::OK, istream, format);
+        })
+        .wait();
 }
 
 ///
@@ -199,9 +211,8 @@ void server::on(web::http::method method,
                 const std::string& uri_pattern,
                 request::handler handler)
 {
-    _routes.emplace_back(
-        request::route{method, boost::regex{uri_pattern}, handler}
-    );
+    request::route route{method, boost::regex{uri_pattern}, handler};
+    _routes.emplace_back(route);
 }
 
 void server::handle_request(web::http::http_request request)

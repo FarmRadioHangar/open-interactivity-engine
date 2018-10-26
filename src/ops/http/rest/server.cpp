@@ -1,6 +1,7 @@
 #include "server.h"
 #include <cassert>
 #include "controller.h"
+#include "../../adapter.h"
 
 namespace ops
 {

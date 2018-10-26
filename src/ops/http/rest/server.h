@@ -4,11 +4,11 @@
 #pragma once
 
 #include "../server.h"
-#include <cpprest/http_listener.h>
-#include "../../adapter.h"
 
 namespace ops
 {
+    class adapter;
+
     namespace http
     {
         namespace rest
@@ -20,9 +20,7 @@ namespace ops
             public:
                 server();
 
-                void add_controller(
-                    const std::string& resource,
-                    controller* ctrl);
+                void add_controller(const std::string& resource, controller* ctrl);
 
                 void register_adapter(adapter* adpt);
             };

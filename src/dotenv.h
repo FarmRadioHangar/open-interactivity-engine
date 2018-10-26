@@ -69,7 +69,7 @@ private:
 
 ///
 /// Read and initialize environment variables from the `.env` file, or a file 
-/// specified by \a filename.
+/// specified by the \a filename argument.
 ///
 /// \param filename a file to read environment variables from
 ///

@@ -83,6 +83,8 @@ nlohmann::json script_runner::generate_ncco(const std::string& key)
 
         auto j_media = ops::util::json::extract(media);
         const std::string& filename = j_media["file"];
+
+
     }
     else if (t_select == node->type)
     {

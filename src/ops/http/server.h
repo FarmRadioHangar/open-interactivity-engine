@@ -46,6 +46,8 @@ namespace ops
                                      const std::string& tag,
                                      const std::string& error);
 
+            void send_media_response(const std::string& file, const std::string& format);
+
         private:
             template <typename T> T type_conv(const std::string& str) const;
 
