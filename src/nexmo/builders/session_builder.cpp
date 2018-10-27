@@ -11,7 +11,13 @@ namespace nexmo
 session_builder::session_builder(const nlohmann::json& j)
   : ops::mongodb::bson::builder{j}
 {
-    append(kvp("campaign", std::string{j.at("campaign")}));
+    nlohmann::json j_campaign = j.at("campaign");
+
+    bsoncxx::builder::basic::document campaign_builder{};
+    campaign_builder.append(kvp("id", std::string{j_campaign.at("id")}));
+
+    append(kvp("campaign", campaign_builder.extract()));
+
     append(kvp("nexmo", bsoncxx::from_json(j.at("nexmo").dump())));
 
     if (j.end() != j.find("id")) {
