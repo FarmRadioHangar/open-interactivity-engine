@@ -13,8 +13,12 @@ rep_builder::rep_builder(const nlohmann::json& j)
     append(kvp("format", std::string{j.at("format")}));
     append(kvp("language", std::string{j.at("language")}));
 
-    if (j.end() != j.find("media")) {
-        append(kvp("media", std::string{j.at("media")}));
+    const auto& media = j.find("media");
+
+    if (j.end() != media) {
+        bsoncxx::builder::basic::document media_builder{};
+        media_builder.append(kvp("id", std::string{media->at("id")}));
+        append(kvp("media", media_builder.extract()));
     }
 }
 
