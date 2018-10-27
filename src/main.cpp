@@ -1,12 +1,12 @@
 #include <iostream>
 #include "ops/http/rest/server.h"
 #include "ops/mongodb/pool.h"
-#include "ops/controllers/campaigns.h"
-#include "ops/controllers/content.h"
-#include "ops/controllers/languages.h"
-#include "ops/controllers/media.h"
+#include "core/controllers/campaigns.h"
+#include "core/controllers/content.h"
+#include "core/controllers/languages.h"
+#include "core/controllers/media.h"
 #include "dotenv/dotenv.h"
-#include "nexmo/nexmo_voice.h"
+#include "nexmo/adapters/nexmo_voice.h"
 
 int main()
 {
