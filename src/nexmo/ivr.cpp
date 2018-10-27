@@ -10,7 +10,7 @@ namespace nexmo
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
 
-script::script(const nlohmann::json& j)
+ivr::script::script(const nlohmann::json& j)
 {
     const auto& nodes = j.find("nodes");
 
@@ -55,13 +55,13 @@ script::script(const nlohmann::json& j)
     root = std::string{j.at("root")};
 }
 
-ivr::ivr(const script& script)
+ivr::ivr(const script& script, const std::string& language_tag)
   : _script{script},
     _ncco{}
 {
 }
 
-ivr::ivr(const nlohmann::json& j)
+ivr::ivr(const nlohmann::json& j, const std::string& language_tag)
   : _script{script{j}},
     _ncco{}
 {

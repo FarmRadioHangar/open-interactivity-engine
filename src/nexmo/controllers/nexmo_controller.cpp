@@ -30,8 +30,6 @@ void controller::post_event(ops::http::request& request)
 
 void controller::post_answer(ops::http::request& request)
 {
-    std::cout << "controller::post_answer" << std::endl;
-
     request.with_body([&request](const std::string& body)
     {
         const auto campaign_id = request.get_uri_param(1);
