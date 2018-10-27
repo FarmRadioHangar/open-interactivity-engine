@@ -34,12 +34,12 @@ namespace nexmo
 
     struct script
     {
-        using edge = std::pair<std::string, std::string>;
         using node_map = std::map<std::string, std::shared_ptr<node>>;
+        using edge_map = std::map<std::string, std::list<std::string>>;
 
-        node_map        nodes;
-        std::list<edge> edges;
-        std::string     root;
+        node_map    nodes;
+        edge_map    edges;
+        std::string root;
 
         explicit script(const nlohmann::json& j);
     };
@@ -52,7 +52,7 @@ namespace nexmo
 
         std::string root() const;
 
-        void generate_ncco(const std::string& key = "_root");
+        void generate_ncco(const std::string& key);
         nlohmann::json ncco() const;
 
     private:

@@ -43,10 +43,13 @@ script::script(const nlohmann::json& j)
 
     if (j.end() != edges) {
         for (const auto& edge : *edges) {
-            std::pair<std::string, std::string> pair;
-            pair.first = edge.at("source");
-            pair.second = edge.at("dest");
-            this->edges.emplace_back(pair);
+            const std::string& src = edge.at("source");
+            const std::string& dest = edge.at("dest");
+            if (this->edges.count(src)) {
+                this->edges.at(src).push_back(dest);
+            } else {
+                this->edges.insert({src, {dest}});
+            }
         }
     }
 
@@ -55,19 +58,19 @@ script::script(const nlohmann::json& j)
 
 script_runner::script_runner(const script& script)
   : _script{script},
-    _ncco{nlohmann::json::array()}
+    _ncco{}
 {
 }
 
 script_runner::script_runner(const nlohmann::json& j)
   : _script{script{j}},
-    _ncco{nlohmann::json::array()}
+    _ncco{}
 {
 }
 
 void script_runner::generate_ncco(const std::string& key)
 {
-    auto node = _script.nodes.at("_root" == key ? root() : key);
+    auto node = _script.nodes.at(key);
 
     if (t_transmit == node->type)
     {
