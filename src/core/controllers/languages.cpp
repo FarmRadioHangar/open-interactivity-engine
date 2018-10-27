@@ -6,26 +6,26 @@
 #include "../../ops/util/json.h"
 #include "../builders/language.h"
 
-namespace ops
+namespace core
 {
 
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
 
 languages_controller::languages_controller()
-  : http::rest::controller{}
+  : ops::http::rest::controller{}
 {
 }
 
-void languages_controller::get_item(http::request& request)
+void languages_controller::get_item(ops::http::request& request)
 {
     const auto id = request.get_uri_param(1);
-    const auto doc = mongodb::document<languages>::find("id", id);
+    const auto doc = ops::mongodb::document<languages>::find("id", id);
 
-    request.send_response({ {"language", util::json::extract(doc)} });
+    request.send_response({ {"language", ops::util::json::extract(doc)} });
 }
 
-void languages_controller::get(http::request& request)
+void languages_controller::get(ops::http::request& request)
 {
     const auto skip = request.get_query_param<int64_t>("skip", 0);
     const auto limit = request.get_query_param<int64_t>("limit", 10);
@@ -34,12 +34,12 @@ void languages_controller::get(http::request& request)
 
     auto j_languages = nlohmann::json::array();
     for (const auto& doc : page)
-        j_languages.emplace_back(util::json::extract(doc));
+        j_languages.emplace_back(ops::util::json::extract(doc));
 
     request.send_response({ {"languages", j_languages} });
 }
 
-void languages_controller::post(http::request& request)
+void languages_controller::post(ops::http::request& request)
 {
     request.with_body([&request](const std::string& body)
     {
@@ -48,10 +48,10 @@ void languages_controller::post(http::request& request)
 
         language_builder builder(j_language);
 
-        mongodb::document<languages>::create(builder.extract());
+        ops::mongodb::document<languages>::create(builder.extract());
 
         request.send_response({ {"language", j_language} });
     });
 }
 
-} // namespace ops
+} // namespace core

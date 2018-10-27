@@ -6,9 +6,9 @@
 #include <nlohmann/json.hpp>
 #include "../../ops/mongodb/bson/builder.h"
 
-namespace ops
+namespace core
 {
-    class rep_builder : public mongodb::bson::builder
+    class rep_builder : public ops::mongodb::bson::builder
     {
     public:
         explicit rep_builder(const nlohmann::json& j);

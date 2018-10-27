@@ -86,7 +86,7 @@ void ivr::generate_ncco(std::string key)
 
             const std::string& content_id = transmit->content;
 
-            auto doc = ops::mongodb::document<ops::content>::find("id", content_id);
+            auto doc = ops::mongodb::document<core::content>::find("id", content_id);
             auto j_content = ops::util::json::extract(doc);
 
             const auto& j_audio = j_content["reps"]["audio/mpeg"]["en"]; // todo

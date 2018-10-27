@@ -49,7 +49,7 @@ void controller::post_answer(ops::http::request& request)
         j_session["id"] = ops::mongodb::counter::generate_id();
         j_session["campaign"] = campaign_id;
 
-        auto doc = ops::mongodb::document<ops::campaigns>::find("id", campaign_id);
+        auto doc = ops::mongodb::document<core::campaigns>::find("id", campaign_id);
         auto j_campaign = ops::util::json::extract(doc);
 
         j_session["feature"] = j_campaign["features"][feature_id];

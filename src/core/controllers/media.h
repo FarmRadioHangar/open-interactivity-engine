@@ -5,14 +5,14 @@
 
 #include "../../ops/http/rest/controller.h"
 
-namespace ops
+namespace core
 {
-    class media_controller : public http::rest::controller
+    class media_controller : public ops::http::rest::controller
     {
     public:
         media_controller();
 
-        void get_item(http::request& request) override;
-        void post(http::request& request) override;
+        void get_item(ops::http::request& request) override;
+        void post(ops::http::request& request) override;
     };
 }

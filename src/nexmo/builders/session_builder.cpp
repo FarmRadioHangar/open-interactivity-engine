@@ -18,7 +18,7 @@ session_builder::session_builder(const nlohmann::json& j)
         append(kvp("id", std::string{j.at("id")}));
     }
 
-    ops::feature_builder builder{j.at("feature")};
+    core::feature_builder builder{j.at("feature")};
 
     append(kvp("feature", builder.extract()));
 }

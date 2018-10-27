@@ -6,14 +6,14 @@
 #include <nlohmann/json.hpp>
 #include "../../ops/mongodb/bson/builder.h"
 
-namespace ops
+namespace core
 {
     struct campaigns
     {
         static auto constexpr name = "campaigns";
     };
 
-    class campaign_builder : public mongodb::bson::builder
+    class campaign_builder : public ops::mongodb::bson::builder
     {
     public:
         explicit campaign_builder(const nlohmann::json& j);

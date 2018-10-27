@@ -5,9 +5,9 @@
 
 #include "../../ops/http/rest/controller.h"
 
-namespace ops
+namespace core
 {
-    class audience_controller : public http::rest::controller
+    class audience_controller : public ops::http::rest::controller
     {
     public:
         audience_controller();

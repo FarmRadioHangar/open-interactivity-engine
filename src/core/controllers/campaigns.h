@@ -5,7 +5,7 @@
 
 #include "../../ops/http/rest/controller.h"
 
-namespace ops
+namespace core
 {
     namespace http
     {
@@ -15,21 +15,21 @@ namespace ops
         }
     }
 
-    class campaigns_controller : public http::rest::controller
+    class campaigns_controller : public ops::http::rest::controller
     {
     public:
         campaigns_controller();
 
-        void get_item(http::request& request) override;
-        void get(http::request& request) override;
-        void post(http::request& request) override;
+        void get_item(ops::http::request& request) override;
+        void get(ops::http::request& request) override;
+        void post(ops::http::request& request) override;
 
-        void post_feature(http::request& request);
-        void patch_feature(http::request& request);
-        void post_language(http::request& request);
-        void post_adapter(http::request& request);
+        void post_feature(ops::http::request& request);
+        void patch_feature(ops::http::request& request);
+        void post_language(ops::http::request& request);
+        void post_adapter(ops::http::request& request);
 
     private:
-        void do_install(http::rest::server* server) override;
+        void do_install(ops::http::rest::server* server) override;
     };
 }

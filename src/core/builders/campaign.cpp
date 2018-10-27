@@ -6,11 +6,11 @@
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
 
-namespace ops
+namespace core
 {
 
 campaign_builder::campaign_builder(const nlohmann::json& j)
-  : mongodb::bson::builder{j}
+  : ops::mongodb::bson::builder{j}
 {
     append(kvp("name", std::string{j.at("name")}));
 
@@ -47,4 +47,4 @@ campaign_builder::campaign_builder(const nlohmann::json& j)
     }
 }
 
-} // namespace ops
+} // namespace core

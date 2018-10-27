@@ -5,20 +5,20 @@
 
 #include "../../ops/http/rest/controller.h"
 
-namespace ops
+namespace core
 {
-    class content_controller : public http::rest::controller
+    class content_controller : public ops::http::rest::controller
     {
     public:
         content_controller();
 
-        void get_item(http::request& request) override;
-        void get(http::request& request) override;
-        void post(http::request& request) override;
+        void get_item(ops::http::request& request) override;
+        void get(ops::http::request& request) override;
+        void post(ops::http::request& request) override;
 
-        void post_rep(http::request& request);
+        void post_rep(ops::http::request& request);
 
     private:
-        void do_install(http::rest::server* server) override;
+        void do_install(ops::http::rest::server* server) override;
     };
 }

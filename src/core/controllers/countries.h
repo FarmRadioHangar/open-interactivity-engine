@@ -5,9 +5,9 @@
 
 #include "../../ops/http/rest/controller.h"
 
-namespace ops
+namespace core
 {
-    class countries_controller : public http::rest::controller
+    class countries_controller : public ops::http::rest::controller
     {
     public:
         countries_controller();

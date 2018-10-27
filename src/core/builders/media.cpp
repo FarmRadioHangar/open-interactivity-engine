@@ -4,11 +4,11 @@
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
 
-namespace ops
+namespace core
 {
 
 media_builder::media_builder(const nlohmann::json& j)
-  : mongodb::bson::builder{j}
+  : ops::mongodb::bson::builder{j}
 {
     if (j.end() != j.find("id")) {
         append(kvp("id", std::string{j.at("id")}));
@@ -19,4 +19,4 @@ media_builder::media_builder(const nlohmann::json& j)
     }
 }
 
-} // namespace ops
+} // namespace core

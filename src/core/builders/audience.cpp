@@ -4,12 +4,12 @@
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
 
-namespace ops
+namespace core
 {
 
 audience_builder::audience_builder(const nlohmann::json& j)
-  : mongodb::bson::builder{j}
+  : ops::mongodb::bson::builder{j}
 {
 }
 
-} // namespace ops
+} // namespace core

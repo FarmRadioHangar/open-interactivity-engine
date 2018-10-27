@@ -17,12 +17,12 @@ int main()
 
     //
 
-    auto campaigns = std::make_unique<ops::campaigns_controller>();
-    auto languages = std::make_unique<ops::languages_controller>();
-    auto content = std::make_unique<ops::content_controller>();
-    auto media = std::make_unique<ops::media_controller>();
-//    auto audience = std::make_unique<ops::audience_controller>();
-//    auto country = std::make_unique<ops::country_controller>();
+    auto campaigns = std::make_unique<core::campaigns_controller>();
+    auto languages = std::make_unique<core::languages_controller>();
+    auto content = std::make_unique<core::content_controller>();
+    auto media = std::make_unique<core::media_controller>();
+//    auto audience = std::make_unique<core::audience_controller>();
+//    auto country = std::make_unique<core::country_controller>();
 
     server.add_controller("campaigns", campaigns.get());
     server.add_controller("languages", languages.get());

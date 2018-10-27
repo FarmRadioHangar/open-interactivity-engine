@@ -6,15 +6,15 @@
 #include "../../ops/util/json.h"
 #include "../builders/country.h"
 
-namespace ops
+namespace core
 {
 
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
 
 countries_controller::countries_controller()
-  : http::rest::controller{}
+  : ops::http::rest::controller{}
 {
 }
 
-} // namespace ops
+} // namespace core

@@ -4,11 +4,11 @@
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
 
-namespace ops
+namespace core
 {
 
 rep_builder::rep_builder(const nlohmann::json& j)
-  : mongodb::bson::builder{j}
+  : ops::mongodb::bson::builder{j}
 {
     append(kvp("format", std::string{j.at("format")}));
     append(kvp("language", std::string{j.at("language")}));
@@ -18,4 +18,4 @@ rep_builder::rep_builder(const nlohmann::json& j)
     }
 }
 
-} // namespace ops
+} // namespace core

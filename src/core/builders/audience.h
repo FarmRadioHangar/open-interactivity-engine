@@ -6,9 +6,9 @@
 #include <nlohmann/json.hpp>
 #include "../../ops/mongodb/bson/builder.h"
 
-namespace ops
+namespace core
 {
-    class audience_builder : public mongodb::bson::builder
+    class audience_builder : public ops::mongodb::bson::builder
     {
     public:
         explicit audience_builder(const nlohmann::json& j);

@@ -7,18 +7,18 @@
 #include "../../ops/util/json.h"
 #include "../builders/media.h"
 
-namespace ops
+namespace core
 {
 
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
 
 media_controller::media_controller()
-  : http::rest::controller{}
+  : ops::http::rest::controller{}
 {
 }
 
-void media_controller::get_item(http::request& request)
+void media_controller::get_item(ops::http::request& request)
 {
     const auto media_id = request.get_uri_param(1);
     const std::string file = std::string{media_id} + ".mp3";
@@ -26,7 +26,7 @@ void media_controller::get_item(http::request& request)
     request.send_media_response(file, "audio/mpeg");
 }
 
-void media_controller::post(http::request& request)
+void media_controller::post(ops::http::request& request)
 {
     request.with_body([&request](const std::vector<unsigned char>& bytes)
     {
@@ -39,10 +39,10 @@ void media_controller::post(http::request& request)
 
         media_builder builder(j_media);
 
-        mongodb::document<media>::create(builder.extract());
+        ops::mongodb::document<media>::create(builder.extract());
 
         request.send_response({ {"media", j_media} });
     });
 }
 
-} // namespace ops
+} // namespace core

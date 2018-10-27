@@ -5,11 +5,11 @@
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
 
-namespace ops
+namespace core
 {
 
 adapter_builder::adapter_builder(const nlohmann::json& j)
-  : mongodb::bson::builder{j}
+  : ops::mongodb::bson::builder{j}
 {
     append(kvp("module", std::string{j.at("module")}));
 
@@ -18,4 +18,4 @@ adapter_builder::adapter_builder(const nlohmann::json& j)
     }
 }
 
-} // namespace ops
+} // namespace core
