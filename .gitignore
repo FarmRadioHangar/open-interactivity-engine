@@ -4,3 +4,4 @@ latex
 *.mp3
 *.sh
 tmp
+nexmo.json
