@@ -27,9 +27,8 @@ script::script(const nlohmann::json& j)
             } else if ("select" == type) {
                 node_select select;
                 select.type = t_select;
-                for (const auto& key : j_node["keys"]) {
+                for (const auto& key : j_node["keys"]) 
                     select.keys.push_back(key);
-                }
                 this->nodes.insert({key, std::make_shared<node_select>(select)});
             } else if ("receive" == type) {
                 node receive;
@@ -68,45 +67,71 @@ script_runner::script_runner(const nlohmann::json& j)
 {
 }
 
-void script_runner::generate_ncco(const std::string& key)
+void script_runner::generate_ncco(std::string key)
 {
-    auto node = _script.nodes.at(key);
+    bool running = true;
+    int i = 0;
 
-    if (t_transmit == node->type)
+    while (running && i++ < 256)
     {
-        node_transmit* transmit = static_cast<node_transmit*>(node.get());
+        auto node = _script.nodes.at(key);
 
-        const std::string& content_id = transmit->content;
+        //auto edges = _script.edges.count(key) 
+        //    ? _script.edges.at(key) 
+        //    : std::list<std::string>{};
 
-        std::cout << content_id << std::endl;
+        if (t_transmit == node->type)
+        {
+            node_transmit* transmit = static_cast<node_transmit*>(node.get());
 
-        auto doc = ops::mongodb::document<ops::content>::find("id", content_id);
-        auto j_content = ops::util::json::extract(doc);
+            const std::string& content_id = transmit->content;
 
-        const auto& j_audio = j_content["reps"]["audio/mpeg"]["en"]; // todo
-        const std::string& media_id = j_audio["media"];
+            auto doc = ops::mongodb::document<ops::content>::find("id", content_id);
+            auto j_content = ops::util::json::extract(doc);
 
-        //auto media = ops::mongodb::document<ops::media>::find("id", media_id);
+            const auto& j_audio = j_content["reps"]["audio/mpeg"]["en"]; // todo
+            const std::string& media_id = j_audio["media"];
 
-        //auto j_media = ops::util::json::extract(media);
-        //const std::string& filename = j_media["file"];
+            const std::string& url = "http://localhost:9080/media/" + media_id;
 
-        const std::string& url = "http://localhost:9080/media/" + media_id;
+            _ncco.push_back({
+                {"action", "stream"},
+                {"streamUrl", { url }}
+            });
 
-        _ncco.push_back({
-            {"action", "stream"},
-            {"streamUrl", { url }}
-        });
-    }
-    else if (t_select == node->type)
-    {
-        node_select* select = static_cast<node_select*>(node.get());
+            if (_script.edges.count(key) && 1 == _script.edges.at(key).size()) {
+                key = _script.edges.at(key).front();
+            } else {
+                running = false;
+            }
+        }
+        else if (t_select == node->type)
+        {
+//            node_select* select = static_cast<node_select*>(node.get());
+//            const std::list<std::string>& keys = select->keys;
 
-        const std::list<std::string>& keys = select->keys;
-    }
-    else // t_receive
-    {
-        struct node* receive = node.get();
+            const std::string& url = "http://localhost:9080/nexmo/response/n/" + key;
+
+            _ncco.push_back({
+                {"action", "input"},
+                {"eventUrl", { url }}
+            });
+
+            running = false;
+        }
+        else // t_receive
+        {
+//            struct node* receive = node.get();
+
+            const std::string& url = "http://localhost:9080/nexmo/record/n/" + key;
+
+            _ncco.push_back({
+                {"action", "record"},
+                {"eventUrl", { url }}
+            });
+
+            running = false;
+        }
     }
 }
 

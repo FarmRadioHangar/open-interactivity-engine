@@ -52,7 +52,7 @@ namespace nexmo
 
         std::string root() const;
 
-        void generate_ncco(const std::string& key);
+        void generate_ncco(std::string key);
         nlohmann::json ncco() const;
 
     private:
