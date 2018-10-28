@@ -16,6 +16,7 @@ namespace core
         explicit adapter(const nlohmann::json& j);
 
     private:
-        std::string _module;
+        std::string    _module;
+        nlohmann::json _data;
     };
 }

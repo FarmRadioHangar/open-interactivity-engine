@@ -11,6 +11,9 @@ namespace core
 adapter::adapter(const nlohmann::json& j)
   : ops::mongodb::bson::builder{j}
 {
+    _module = j.at("module");
+    _data = j.at("data");
+
     //append(kvp("module", std::string{j.at("module")}));
 
     //if (j.end() != j.find("data")) {
