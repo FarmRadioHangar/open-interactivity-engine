@@ -8,14 +8,11 @@
 
 namespace core
 {
-    struct content
-    {
-        static auto constexpr name = "content";
-    };
-
-    class content_builder : public ops::mongodb::bson::builder
+    class content : public ops::mongodb::bson::builder
     {
     public:
-        explicit content_builder(const nlohmann::json& j);
+        static auto constexpr name = "content";
+
+        explicit content(const nlohmann::json& j);
     };
 }

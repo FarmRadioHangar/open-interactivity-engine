@@ -8,9 +8,11 @@
 
 namespace core
 {
-    class country_builder : public ops::mongodb::bson::builder
+    class country : public ops::mongodb::bson::builder
     {
     public:
-        explicit country_builder(const nlohmann::json& j);
+        static auto constexpr name = "countries";
+
+        explicit country(const nlohmann::json& j);
     };
 }

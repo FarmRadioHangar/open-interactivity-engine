@@ -8,14 +8,11 @@
 
 namespace core
 {
-    struct media
-    {
-        static auto constexpr name = "media";
-    };
-
-    class media_builder : public ops::mongodb::bson::builder
+    class media : public ops::mongodb::bson::builder
     {
     public:
-        explicit media_builder(const nlohmann::json& j);
+        static auto constexpr name = "media";
+
+        explicit media(const nlohmann::json& j);
     };
 }

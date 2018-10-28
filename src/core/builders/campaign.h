@@ -8,14 +8,16 @@
 
 namespace core
 {
-    struct campaigns
-    {
-        static auto constexpr name = "campaigns";
-    };
-
-    class campaign_builder : public ops::mongodb::bson::builder
+    class campaign : public ops::mongodb::bson::builder
     {
     public:
-        explicit campaign_builder(const nlohmann::json& j);
+        static auto constexpr name = "campaigns";
+
+        explicit campaign(const nlohmann::json& j);
+
+    private:
+        std::string _id;
+        std::string _name;
+        std::string _alias;
     };
 }

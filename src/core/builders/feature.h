@@ -8,9 +8,9 @@
 
 namespace core
 {
-    class feature_builder : public ops::mongodb::bson::builder
+    class feature : public ops::mongodb::bson::builder
     {
     public:
-        explicit feature_builder(const nlohmann::json& j);
+        explicit feature(const nlohmann::json& j);
     };
 }

@@ -8,9 +8,14 @@
 
 namespace core
 {
-    class adapter_builder : public ops::mongodb::bson::builder
+    class adapter : public ops::mongodb::bson::builder
     {
     public:
-        explicit adapter_builder(const nlohmann::json& j);
+        static auto constexpr name = "adapters";
+
+        explicit adapter(const nlohmann::json& j);
+
+    private:
+        std::string _module;
     };
 }

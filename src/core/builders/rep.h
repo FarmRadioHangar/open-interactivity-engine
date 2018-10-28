@@ -8,9 +8,9 @@
 
 namespace core
 {
-    class rep_builder : public ops::mongodb::bson::builder
+    class rep : public ops::mongodb::bson::builder
     {
     public:
-        explicit rep_builder(const nlohmann::json& j);
+        explicit rep(const nlohmann::json& j);
     };
 }

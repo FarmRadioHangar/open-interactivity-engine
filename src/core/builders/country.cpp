@@ -7,7 +7,7 @@ using bsoncxx::builder::basic::make_document;
 namespace core
 {
 
-country_builder::country_builder(const nlohmann::json& j)
+country::country(const nlohmann::json& j)
   : ops::mongodb::bson::builder{j}
 {
 }

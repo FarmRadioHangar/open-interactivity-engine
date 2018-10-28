@@ -7,7 +7,7 @@ using bsoncxx::builder::basic::make_document;
 namespace core
 {
 
-audience_builder::audience_builder(const nlohmann::json& j)
+audience::audience(const nlohmann::json& j)
   : ops::mongodb::bson::builder{j}
 {
 }

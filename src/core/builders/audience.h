@@ -8,9 +8,11 @@
 
 namespace core
 {
-    class audience_builder : public ops::mongodb::bson::builder
+    class audience : public ops::mongodb::bson::builder
     {
     public:
-        explicit audience_builder(const nlohmann::json& j);
+        static auto constexpr name = "audience";
+
+        explicit audience(const nlohmann::json& j);
     };
 }
