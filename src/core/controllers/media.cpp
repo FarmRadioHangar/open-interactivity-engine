@@ -5,7 +5,7 @@
 #include "../../ops/mongodb/document.h"
 #include "../../ops/mongodb/page.h"
 #include "../../ops/util/json.h"
-#include "../builders/media.h"
+#include "../models/media.h"
 
 namespace core
 {
@@ -37,9 +37,9 @@ void media_controller::post(ops::http::request& request)
         std::ofstream outfile(j_media["file"], std::ios::out | std::ios::binary); 
         outfile.write(reinterpret_cast<const char*>(bytes.data()), bytes.size());
 
-        media_builder builder(j_media);
+        media model(j_media);
 
-        ops::mongodb::document<media>::create(builder.extract());
+        ops::mongodb::document<media>::create(model.bson());
 
         request.send_response({ {"media", j_media} });
     });

@@ -71,7 +71,7 @@ namespace mongodb
 
     template <typename T> void document<T>::fetch()
     {
-        auto collection = pool::instance().database().collection(T::name);
+        auto collection = pool::instance().database().collection(T::collection);
 
         const auto filter = make_document(kvp("_id", _oid));
         const auto result = collection.find_one(filter.view());
@@ -85,7 +85,7 @@ namespace mongodb
 
     template <typename T> void document<T>::save()
     {
-        auto collection = pool::instance().database().collection(T::name);
+        auto collection = pool::instance().database().collection(T::collection);
 
         const auto filter = make_document(kvp("_id", _oid));
 
@@ -97,7 +97,7 @@ namespace mongodb
 
     template <typename T> void document<T>::remove()
     {
-        auto collection = pool::instance().database().collection(T::name);
+        auto collection = pool::instance().database().collection(T::collection);
 
         const auto filter = make_document(kvp("_id", _oid));
 
@@ -130,7 +130,7 @@ namespace mongodb
     template <typename T>
     document<T> document<T>::find(bsoncxx::document::view filter)
     {
-        auto collection = pool::instance().database().collection(T::name);
+        auto collection = pool::instance().database().collection(T::collection);
 
         const auto result = collection.find_one(filter);
 
@@ -151,7 +151,7 @@ namespace mongodb
     template <typename T>
     std::int64_t document<T>::count()
     {
-        auto collection = pool::instance().database().collection(T::name);
+        auto collection = pool::instance().database().collection(T::collection);
         return collection.count({});
     }
 
@@ -159,7 +159,7 @@ namespace mongodb
     std::int64_t document<T>::count(bsoncxx::document::view filter, 
                                     mongocxx::options::count options)
     {
-        auto collection = pool::instance().database().collection(T::name);
+        auto collection = pool::instance().database().collection(T::collection);
         return collection.count(filter, options);
     }
 

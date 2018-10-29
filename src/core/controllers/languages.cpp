@@ -4,7 +4,7 @@
 #include "../../ops/mongodb/document.h"
 #include "../../ops/mongodb/page.h"
 #include "../../ops/util/json.h"
-#include "../builders/language.h"
+#include "../models/language.h"
 
 namespace core
 {
@@ -45,9 +45,9 @@ void languages_controller::post(ops::http::request& request)
         auto j_language = nlohmann::json::parse(body);
         j_language["id"] = ops::mongodb::counter::generate_id();
 
-        language builder(j_language);
+        language model(j_language);
 
-        ops::mongodb::document<language>::create(builder.extract());
+        ops::mongodb::document<language>::create(model.bson());
 
         request.send_response({ {"language", j_language} });
     });

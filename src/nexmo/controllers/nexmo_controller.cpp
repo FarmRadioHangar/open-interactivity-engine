@@ -1,11 +1,11 @@
 #include "nexmo_controller.h"
 #include <bsoncxx/builder/basic/document.hpp>
-#include "../../core/builders/campaign.h"
+#include "../../core/models/campaign.h"
 #include "../../ops/mongodb/counter.h"
 #include "../../ops/mongodb/document.h"
 #include "../../ops/util/json.h"
-#include "../builders/session_builder.h"
 #include "../ivr.h"
+#include "../models/session.h"
 
 namespace nexmo
 {
@@ -47,14 +47,14 @@ void controller::post_answer(ops::http::request& request)
         j_session["id"] = ops::mongodb::counter::generate_id();
         j_session["campaign"] = { {"id", campaign_id} };
 
-        auto doc = ops::mongodb::document<core::campaigns>::find("id", campaign_id);
+        auto doc = ops::mongodb::document<core::campaign>::find("id", campaign_id);
         auto j_campaign = ops::util::json::extract(doc);
 
         j_session["feature"] = j_campaign["features"][feature_id];
 
-        session_builder builder(j_session);
+        session model(j_session);
 
-        ops::mongodb::document<nexmo::session>::create(builder.extract());
+        ops::mongodb::document<nexmo::session>::create(model.bson());
 
         //
 
@@ -63,7 +63,7 @@ void controller::post_answer(ops::http::request& request)
         //const auto campaign_id = request.get_uri_param(1);
         //const auto feature_id = request.get_uri_param(2);
 
-        //auto doc = ops::mongodb::document<ops::campaigns>::find("id", campaign_id);
+        //auto doc = ops::mongodb::document<ops::campaign>::find("id", campaign_id);
 
         //auto j_campaign = ops::util::json::extract(doc);
         //auto j_feature = j_campaign["features"][feature_id];

@@ -4,8 +4,8 @@
 #include "../../ops/mongodb/document.h"
 #include "../../ops/mongodb/page.h"
 #include "../../ops/util/json.h"
-#include "../builders/campaign.h"
-#include "../builders/language.h"
+#include "../models/campaign.h"
+#include "../models/language.h"
 
 namespace core
 {
@@ -22,7 +22,7 @@ campaigns_controller::campaigns_controller()
 void campaigns_controller::get_item(ops::http::request& request)
 {
     const auto id = request.get_uri_param(1);
-    const auto doc = ops::mongodb::document<campaigns>::find("id", id);
+    const auto doc = ops::mongodb::document<campaign>::find("id", id);
 
     request.send_response({ {"campaign", ops::util::json::extract(doc)} });
 }
@@ -32,7 +32,7 @@ void campaigns_controller::get(ops::http::request& request)
     const auto skip = request.get_query_param<int64_t>("skip", 0);
     const auto limit = request.get_query_param<int64_t>("limit", 10);
 
-    auto page = ops::mongodb::page<campaigns>::get(skip, limit);
+    auto page = ops::mongodb::page<campaign>::get(skip, limit);
 
     auto j_campaigns = nlohmann::json::array();
     for (const auto& doc : page)
@@ -48,9 +48,9 @@ void campaigns_controller::post(ops::http::request& request)
         auto j_campaign = nlohmann::json::parse(body);
         j_campaign["id"] = ops::mongodb::counter::generate_id();
 
-        campaign_builder builder(j_campaign);
+        campaign model(j_campaign);
 
-        ops::mongodb::document<campaigns>::create(builder.extract());
+        ops::mongodb::document<campaign>::create(model.bson());
 
         request.send_response({ {"campaign", j_campaign} });
     });
@@ -61,7 +61,7 @@ void campaigns_controller::post_feature(ops::http::request& request)
     request.with_body([&request](const std::string& body)
     {
         const auto id = request.get_uri_param(1);
-        auto doc = ops::mongodb::document<campaigns>::find("id", id);
+        auto doc = ops::mongodb::document<campaign>::find("id", id);
 
         auto j_campaign = ops::util::json::extract(doc);
         auto j_feature = nlohmann::json::parse(body);
@@ -70,9 +70,9 @@ void campaigns_controller::post_feature(ops::http::request& request)
 
         j_campaign["features"][feature_id] = j_feature;
 
-        campaign_builder builder(j_campaign);
+        campaign model(j_campaign);
 
-        doc.inject(builder.extract());
+        doc.inject(model.bson());
         doc.save();
 
         nlohmann::json res;
@@ -90,7 +90,7 @@ void campaigns_controller::patch_feature(ops::http::request& request)
     {
         const auto campaign_id = request.get_uri_param(1);
         const auto feature_id = request.get_uri_param(2);
-        auto doc = ops::mongodb::document<campaigns>::find("id", campaign_id);
+        auto doc = ops::mongodb::document<campaign>::find("id", campaign_id);
 
         auto j_campaign = ops::util::json::extract(doc);
         auto j_request = nlohmann::json::parse(body);
@@ -98,9 +98,9 @@ void campaigns_controller::patch_feature(ops::http::request& request)
 
         j_feature.merge_patch(j_request);
 
-        campaign_builder builder(j_campaign);
+        campaign model(j_campaign);
 
-        doc.inject(builder.extract());
+        doc.inject(model.bson());
         doc.save();
 
         nlohmann::json res;
@@ -117,21 +117,21 @@ void campaigns_controller::post_language(ops::http::request& request)
     request.with_body([&request](const std::string& body)
     {
         const auto id = request.get_uri_param(1);
-        auto doc = ops::mongodb::document<campaigns>::find("id", id);
+        auto doc = ops::mongodb::document<campaign>::find("id", id);
 
         auto j_campaign = ops::util::json::extract(doc);
         auto j_request = nlohmann::json::parse(body);
 
         const std::string& tag = j_request["tag"];
-        auto language = ops::mongodb::document<languages>::find("tag", tag);
+        auto language_doc = ops::mongodb::document<language>::find("tag", tag);
 
-        auto j_language = ops::util::json::extract(language);
+        auto j_language = ops::util::json::extract(language_doc);
 
         j_campaign["languages"][tag] = j_language;
 
-        campaign_builder builder(j_campaign);
+        campaign model(j_campaign);
 
-        doc.inject(builder.extract());
+        doc.inject(model.bson());
         doc.save();
 
         request.send_response({
@@ -147,7 +147,7 @@ void campaigns_controller::post_adapter(ops::http::request& request)
     {
         const auto campaign_id = request.get_uri_param(1);
         const auto feature_id = request.get_uri_param(2);
-        auto doc = ops::mongodb::document<campaigns>::find("id", campaign_id);
+        auto doc = ops::mongodb::document<campaign>::find("id", campaign_id);
 
         auto j_campaign = ops::util::json::extract(doc);
         auto j_adapter = nlohmann::json::parse(body);
@@ -156,9 +156,9 @@ void campaigns_controller::post_adapter(ops::http::request& request)
 
         j_campaign["features"][feature_id]["adapters"][module] = j_adapter;
 
-        campaign_builder builder(j_campaign);
+        campaign model(j_campaign);
 
-        doc.inject(builder.extract());
+        doc.inject(model.bson());
         doc.save();
 
         request.send_response({

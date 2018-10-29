@@ -5,8 +5,8 @@
 #include "../../ops/mongodb/document.h"
 #include "../../ops/mongodb/page.h"
 #include "../../ops/util/json.h"
-#include "../builders/content.h"
-#include "../builders/language.h"
+#include "../models/content.h"
+#include "../models/language.h"
 
 namespace core
 {
@@ -49,9 +49,9 @@ void content_controller::post(ops::http::request& request)
         auto j_content = nlohmann::json::parse(body);
         j_content["id"] = ops::mongodb::counter::generate_id();
 
-        content_builder builder(j_content);
+        content model(j_content);
 
-        ops::mongodb::document<content>::create(builder.extract());
+        ops::mongodb::document<content>::create(model.bson());
 
         request.send_response({ {"content", j_content} });
     });
@@ -71,13 +71,13 @@ void content_controller::post_rep(ops::http::request& request)
         const std::string& format = j_rep["format"];
 
         // Check that language exists
-        ops::mongodb::document<languages>::find("tag", tag);
+        ops::mongodb::document<language>::find("tag", tag);
 
         j_content["reps"][format][tag] = j_rep;
 
-        content_builder builder(j_content);
+        content model(j_content);
 
-        doc.inject(builder.extract());
+        doc.inject(model.bson());
         doc.save();
 
         request.send_response({ 

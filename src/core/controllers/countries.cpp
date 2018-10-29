@@ -4,7 +4,7 @@
 #include "../../ops/mongodb/document.h"
 #include "../../ops/mongodb/page.h"
 #include "../../ops/util/json.h"
-#include "../builders/country.h"
+#include "../models/country.h"
 
 namespace core
 {

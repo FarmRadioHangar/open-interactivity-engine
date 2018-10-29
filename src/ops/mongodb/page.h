@@ -66,7 +66,7 @@ namespace mongodb
         opts.skip(skip);
         opts.limit(limit);
 
-        auto collection = pool::instance().database().collection(T::name);
+        auto collection = pool::instance().database().collection(T::collection);
         auto cursor = collection.find({}, opts);
 
         Container<document<T>> container{};

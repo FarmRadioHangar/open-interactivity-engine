@@ -1,6 +1,6 @@
 #include "ivr.h"
-#include "../core/builders/content.h"
-#include "../core/builders/media.h"
+#include "../core/models/content.h"
+#include "../core/models/media.h"
 #include "../ops/mongodb/document.h"
 #include "../ops/util/json.h"
 

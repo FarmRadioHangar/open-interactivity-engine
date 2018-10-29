@@ -9,7 +9,7 @@ namespace core
 {
 
 content::content(const nlohmann::json& j)
-  : ops::mongodb::bson::builder{j}
+  : ops::mongodb::model<content>{}
 {
 //    append(kvp("title", std::string{j.at("title")}));
 //
@@ -34,6 +34,13 @@ content::content(const nlohmann::json& j)
 //        }
 //        append(kvp("reps", collection_builder.extract()));
 //    }
+}
+
+bsoncxx::document::view content::get_bson() const
+{
+    bsoncxx::builder::basic::document builder{};
+
+    return builder.extract();
 }
 
 } // namespace core
