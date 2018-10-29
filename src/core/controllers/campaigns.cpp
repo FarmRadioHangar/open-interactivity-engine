@@ -93,7 +93,7 @@ void campaigns_controller::patch_feature(ops::http::request& request)
         auto doc = ops::mongodb::document<campaign>::find("id", campaign_id);
 
         auto j_campaign = ops::util::json::extract(doc);
-        auto j_request = nlohmann::json::parse(body);
+        auto j_request  = nlohmann::json::parse(body);
         auto& j_feature = j_campaign["features"][feature_id];
 
         j_feature.merge_patch(j_request);
