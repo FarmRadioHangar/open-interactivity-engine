@@ -11,6 +11,20 @@ namespace core
 content::content(const nlohmann::json& j)
   : ops::mongodb::model<content>{}
 {
+    _title = j.at("title");
+
+    if (j.end() != j.find("id")) {
+        _id = j.at("id");
+    }
+
+    const auto& reps = j.find("reps");
+
+    if (j.end() != reps) {
+        for (const auto& j_rep : *reps) {
+            _reps.emplace_back(rep{j_rep});
+        }
+    }
+
 //    append(kvp("title", std::string{j.at("title")}));
 //
 //    if (j.end() != j.find("id")) {
@@ -39,6 +53,20 @@ content::content(const nlohmann::json& j)
 bsoncxx::document::view content::get_bson() const
 {
     bsoncxx::builder::basic::document builder{};
+
+    builder.append(kvp("title", _title));
+
+    if (_id.has_value()) {
+        builder.append(kvp("id", _id.value()));
+    }
+
+    {
+        bsoncxx::builder::basic::document collection_builder{};
+        for (const auto& rep : _reps) {
+            collection_builder.append(kvp(rep.format(), rep.bson()));
+        }
+        builder.append(kvp("reps", collection_builder.extract()));
+    }
 
     return builder.extract();
 }

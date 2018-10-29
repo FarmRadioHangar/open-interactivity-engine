@@ -15,6 +15,8 @@ namespace core
     public:
         explicit rep(const nlohmann::json& j);
 
+        std::string format() const;
+
     private:
         bsoncxx::document::view get_bson() const;
 
@@ -22,4 +24,9 @@ namespace core
         std::string          _language;
         std::optional<media> _media;
     };
+
+    inline std::string rep::format() const
+    {
+        return _format;
+    }
 }
