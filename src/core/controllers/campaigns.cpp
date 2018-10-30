@@ -29,7 +29,7 @@ void campaigns_controller::get_item(ops::http::request& request)
 
 void campaigns_controller::get(ops::http::request& request)
 {
-    const auto skip = request.get_query_param<int64_t>("skip", 0);
+    const auto skip  = request.get_query_param<int64_t>("skip", 0);
     const auto limit = request.get_query_param<int64_t>("limit", 10);
 
     auto page = ops::mongodb::page<campaign>::get(skip, limit);
@@ -89,7 +89,7 @@ void campaigns_controller::patch_feature(ops::http::request& request)
     request.with_body([&request](const std::string& body)
     {
         const auto campaign_id = request.get_uri_param(1);
-        const auto feature_id = request.get_uri_param(2);
+        const auto feature_id  = request.get_uri_param(2);
         auto doc = ops::mongodb::document<campaign>::find("id", campaign_id);
 
         auto j_campaign = ops::util::json::extract(doc);
@@ -146,7 +146,7 @@ void campaigns_controller::post_adapter(ops::http::request& request)
     request.with_body([&request](const std::string& body)
     {
         const auto campaign_id = request.get_uri_param(1);
-        const auto feature_id = request.get_uri_param(2);
+        const auto feature_id  = request.get_uri_param(2);
         auto doc = ops::mongodb::document<campaign>::find("id", campaign_id);
 
         auto j_campaign = ops::util::json::extract(doc);
