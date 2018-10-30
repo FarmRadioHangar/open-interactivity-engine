@@ -21,9 +21,9 @@ namespace nexmo
     private:
         bsoncxx::builder::basic::document get_builder() const;
 
-        std::optional<std::string> _id;
-        nlohmann::json             _nexmo;
-        core::campaign             _campaign;
-        core::feature              _feature;
+        std::optional<std::string>   _id;
+        std::optional<core::feature> _feature;
+        std::string                  _campaign_id;
+        nlohmann::json               _nexmo;
     };
 }

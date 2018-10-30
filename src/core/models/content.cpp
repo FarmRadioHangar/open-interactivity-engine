@@ -38,13 +38,13 @@ bsoncxx::builder::basic::document content::get_builder() const
         builder.append(kvp("id", _id.value()));
     }
 
-    bsoncxx::builder::basic::document collection_builder{};
-    for (const auto& rep : _reps) {
-        collection_builder.append(kvp(rep.format(), [&rep](bsoncxx::builder::basic::sub_document sub_collection_builder) {
-            sub_collection_builder.append(kvp(rep.language(), rep.builder().extract()));
-        }));
-    }
-    builder.append(kvp("reps", collection_builder.extract()));
+    builder.append(kvp("reps", [this](bsoncxx::builder::basic::sub_document sub_builder) {
+        for (const auto& rep : _reps) {
+            sub_builder.append(kvp(rep.format(), [this, &rep](bsoncxx::builder::basic::sub_document sub_sub_builder) {
+                sub_sub_builder.append(kvp(rep.language(), rep.builder().extract()));
+            }));
+        }
+    }));
 
     return builder;
 }

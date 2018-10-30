@@ -33,7 +33,7 @@ void controller::post_answer(ops::http::request& request)
     request.with_body([&request](const std::string& body)
     {
         const auto campaign_id = request.get_uri_param(1);
-        const auto feature_id = request.get_uri_param(2);
+        const auto feature_id  = request.get_uri_param(2);
 
         nlohmann::json j_session{};
 
@@ -43,7 +43,7 @@ void controller::post_answer(ops::http::request& request)
         //   "to": "44xxxxxxxxxx",
         //   "uuid": "daaa34f8cfca9e70e6f3ea4091b5831c"
         // }
-        j_session["nexmo"] = nlohmann::json::parse(body);
+        j_session["conversation"] = nlohmann::json::parse(body);
         j_session["id"] = ops::mongodb::counter::generate_id();
         j_session["campaign"] = { {"id", campaign_id} };
 
@@ -55,6 +55,8 @@ void controller::post_answer(ops::http::request& request)
         session model(j_session);
 
         ops::mongodb::document<nexmo::session>::create(model.builder().extract());
+
+        std::cout << j_session["id"] << std::endl;
 
         //
 

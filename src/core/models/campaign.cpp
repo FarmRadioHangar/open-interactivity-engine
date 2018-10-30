@@ -1,4 +1,5 @@
 #include "campaign.h"
+#include <bsoncxx/builder/basic/array.hpp>
 #include <bsoncxx/builder/basic/kvp.hpp>
 #include "feature.h"
 #include "language.h"
@@ -55,21 +56,17 @@ bsoncxx::builder::basic::document campaign::get_builder() const
         builder.append(kvp("alias", _alias.value()));
     }
 
-    {
-        bsoncxx::builder::basic::document collection_builder{};
+    builder.append(kvp("features", [this](bsoncxx::builder::basic::sub_document sub_builder) {
         for (const auto& feature : _features) {
-            collection_builder.append(kvp(feature.id().value(), feature.builder().extract()));
+            sub_builder.append(kvp(feature.id().value(), feature.builder().extract()));
         }
-        builder.append(kvp("features", collection_builder.extract()));
-    }
+    }));
 
-    {
-        bsoncxx::builder::basic::document collection_builder{};
+    builder.append(kvp("languages", [this](bsoncxx::builder::basic::sub_document sub_builder) {
         for (const auto& language : _languages) {
-            collection_builder.append(kvp(language.tag(), language.builder().extract()));
+            sub_builder.append(kvp(language.tag(), language.builder().extract()));
         }
-        builder.append(kvp("languages", collection_builder.extract()));
-    }
+    }));
 
     return builder;
 }
