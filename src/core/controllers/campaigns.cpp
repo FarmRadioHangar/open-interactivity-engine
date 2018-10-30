@@ -64,7 +64,7 @@ void campaigns_controller::post_feature(ops::http::request& request)
         auto doc = ops::mongodb::document<campaign>::find("id", id);
 
         auto j_campaign = ops::util::json::extract(doc);
-        auto j_feature = nlohmann::json::parse(body);
+        auto j_feature  = nlohmann::json::parse(body);
 
         const std::string feature_id = ops::mongodb::counter::generate_id();
 
@@ -120,7 +120,7 @@ void campaigns_controller::post_language(ops::http::request& request)
         auto doc = ops::mongodb::document<campaign>::find("id", id);
 
         auto j_campaign = ops::util::json::extract(doc);
-        auto j_request = nlohmann::json::parse(body);
+        auto j_request  = nlohmann::json::parse(body);
 
         const std::string& tag = j_request["tag"];
         auto language_doc = ops::mongodb::document<language>::find("tag", tag);
@@ -150,7 +150,7 @@ void campaigns_controller::post_adapter(ops::http::request& request)
         auto doc = ops::mongodb::document<campaign>::find("id", campaign_id);
 
         auto j_campaign = ops::util::json::extract(doc);
-        auto j_adapter = nlohmann::json::parse(body);
+        auto j_adapter  = nlohmann::json::parse(body);
 
         const std::string& module = j_adapter["module"];
 

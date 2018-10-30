@@ -26,7 +26,7 @@ void languages_controller::get_item(ops::http::request& request)
 
 void languages_controller::get(ops::http::request& request)
 {
-    const auto skip = request.get_query_param<int64_t>("skip", 0);
+    const auto skip  = request.get_query_param<int64_t>("skip", 0);
     const auto limit = request.get_query_param<int64_t>("limit", 10);
 
     auto page = ops::mongodb::page<language>::get(skip, limit);

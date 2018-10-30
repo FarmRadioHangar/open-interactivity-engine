@@ -3,6 +3,7 @@
 ///
 #pragma once
 
+#include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/document/value.hpp>
 #include "../../ops/mongodb/document.h"
 
@@ -14,7 +15,7 @@ namespace mongodb
     class model
     {
     public:
-        model() = default;
+        model();
         virtual ~model() = default;
 
         bsoncxx::builder::basic::document builder() const;
@@ -23,6 +24,11 @@ namespace mongodb
     private:
         virtual bsoncxx::builder::basic::document get_builder() const = 0;
     };
+
+    template <typename T>
+    model<T>::model()
+    {
+    }
 
     template <typename T>
     bsoncxx::builder::basic::document model<T>::builder() const
@@ -34,7 +40,7 @@ namespace mongodb
     ops::mongodb::document<T> model<T>::document() const
     {
         ops::mongodb::document<T> document{};
-        document.inject(builder().extract());
+        document.inject(get_builder().extract());
 
         return document;
     }
