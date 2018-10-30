@@ -45,13 +45,11 @@ bsoncxx::builder::basic::document feature::get_builder() const
         builder.append(kvp("data", bsoncxx::from_json(_data.value().dump())));
     }
 
-    {
-        bsoncxx::builder::basic::document collection_builder{};
-        for (const auto& adapter : _adapters) {
-            collection_builder.append(kvp(adapter.module(), adapter.builder().extract()));
-        }
-        builder.append(kvp("adapters", collection_builder.extract()));
+    bsoncxx::builder::basic::document collection_builder{};
+    for (const auto& adapter : _adapters) {
+        collection_builder.append(kvp(adapter.module(), adapter.builder().extract()));
     }
+    builder.append(kvp("adapters", collection_builder.extract()));
 
     return builder;
 }
