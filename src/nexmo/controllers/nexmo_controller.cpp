@@ -54,7 +54,7 @@ void controller::post_answer(ops::http::request& request)
 
         session model(j_session);
 
-        ops::mongodb::document<nexmo::session>::create(model.bson());
+        ops::mongodb::document<nexmo::session>::create(model.builder().extract());
 
         //
 

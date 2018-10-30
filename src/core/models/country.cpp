@@ -12,11 +12,11 @@ country::country(const nlohmann::json& j)
 {
 }
 
-bsoncxx::document::view country::get_bson() const
+bsoncxx::builder::basic::document country::get_builder() const
 {
     bsoncxx::builder::basic::document builder{};
 
-    return builder.extract();
+    return builder;
 }
 
 } // namespace core

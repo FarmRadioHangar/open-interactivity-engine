@@ -21,7 +21,7 @@ media::media(const nlohmann::json& j)
     }
 }
 
-bsoncxx::document::view media::get_bson() const
+bsoncxx::builder::basic::document media::get_builder() const
 {
     bsoncxx::builder::basic::document builder{};
 
@@ -33,7 +33,7 @@ bsoncxx::document::view media::get_bson() const
         builder.append(kvp("file", _file.value()));
     }
 
-    return builder.extract();
+    return builder;
 }
 
 } // namespace core

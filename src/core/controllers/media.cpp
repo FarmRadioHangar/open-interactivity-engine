@@ -39,7 +39,7 @@ void media_controller::post(ops::http::request& request)
 
         media model(j_media);
 
-        ops::mongodb::document<media>::create(model.bson());
+        ops::mongodb::document<media>::create(model.builder().extract());
 
         request.send_response({ {"media", j_media} });
     });

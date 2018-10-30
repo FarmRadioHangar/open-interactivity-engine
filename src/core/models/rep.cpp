@@ -21,7 +21,7 @@ rep::rep(const nlohmann::json& j)
     }
 }
 
-bsoncxx::document::view rep::get_bson() const
+bsoncxx::builder::basic::document rep::get_builder() const
 {
     bsoncxx::builder::basic::document builder{};
 
@@ -29,10 +29,10 @@ bsoncxx::document::view rep::get_bson() const
     builder.append(kvp("language", _language));
 
     if (_media.has_value()) {
-        builder.append(kvp("media", _media.value().bson()));
+        builder.append(kvp("media", _media.value().builder().extract()));
     }
 
-    return builder.extract();
+    return builder;
 }
 
 } // namespace core

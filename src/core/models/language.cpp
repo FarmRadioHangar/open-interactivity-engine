@@ -19,7 +19,7 @@ language::language(const nlohmann::json& j)
     } 
 }
 
-bsoncxx::document::view language::get_bson() const
+bsoncxx::builder::basic::document language::get_builder() const
 {
     bsoncxx::builder::basic::document builder{};
 
@@ -30,7 +30,7 @@ bsoncxx::document::view language::get_bson() const
         builder.append(kvp("id", _id.value()));
     }
 
-    return builder.extract();
+    return builder;
 }
 
 } // namespace core

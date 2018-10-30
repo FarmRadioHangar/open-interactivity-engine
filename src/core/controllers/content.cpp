@@ -51,7 +51,7 @@ void content_controller::post(ops::http::request& request)
 
         content model(j_content);
 
-        ops::mongodb::document<content>::create(model.bson());
+        ops::mongodb::document<content>::create(model.builder().extract());
 
         request.send_response({ {"content", j_content} });
     });
@@ -77,7 +77,7 @@ void content_controller::post_rep(ops::http::request& request)
 
         content model(j_content);
 
-        doc.inject(model.bson());
+        doc.inject(model.builder().extract());
         doc.save();
 
         request.send_response({ 

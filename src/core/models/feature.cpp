@@ -31,7 +31,7 @@ feature::feature(const nlohmann::json& j) : ops::mongodb::model<feature>{}
     }
 }
 
-bsoncxx::document::view feature::get_bson() const
+bsoncxx::builder::basic::document feature::get_builder() const
 {
     bsoncxx::builder::basic::document builder{};
 
@@ -48,12 +48,12 @@ bsoncxx::document::view feature::get_bson() const
     {
         bsoncxx::builder::basic::document collection_builder{};
         for (const auto& adapter : _adapters) {
-            collection_builder.append(kvp(adapter.module(), adapter.bson()));
+            collection_builder.append(kvp(adapter.module(), adapter.builder().extract()));
         }
-        builder.append(kvp("features", collection_builder.extract()));
+        builder.append(kvp("adapters", collection_builder.extract()));
     }
 
-    return builder.extract();
+    return builder;
 }
 
 } // namespace core

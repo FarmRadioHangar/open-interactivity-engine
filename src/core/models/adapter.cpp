@@ -18,7 +18,7 @@ adapter::adapter(const nlohmann::json& j)
     }
 }
 
-bsoncxx::document::view adapter::get_bson() const
+bsoncxx::builder::basic::document adapter::get_builder() const
 {
     bsoncxx::builder::basic::document builder{};
 
@@ -28,7 +28,7 @@ bsoncxx::document::view adapter::get_bson() const
         builder.append(kvp("data", bsoncxx::from_json(_data.value().dump())));
     }
 
-    return builder.extract();
+    return builder;
 }
 
 } // namespace core

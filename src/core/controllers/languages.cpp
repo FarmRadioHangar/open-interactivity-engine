@@ -47,7 +47,7 @@ void languages_controller::post(ops::http::request& request)
 
         language model(j_language);
 
-        ops::mongodb::document<language>::create(model.bson());
+        ops::mongodb::document<language>::create(model.builder().extract());
 
         request.send_response({ {"language", j_language} });
     });

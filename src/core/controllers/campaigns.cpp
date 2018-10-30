@@ -50,7 +50,7 @@ void campaigns_controller::post(ops::http::request& request)
 
         campaign model(j_campaign);
 
-        ops::mongodb::document<campaign>::create(model.bson());
+        ops::mongodb::document<campaign>::create(model.builder().extract());
 
         request.send_response({ {"campaign", j_campaign} });
     });
@@ -68,17 +68,17 @@ void campaigns_controller::post_feature(ops::http::request& request)
 
         const std::string feature_id = ops::mongodb::counter::generate_id();
 
+        j_feature["id"] = feature_id;
         j_campaign["features"][feature_id] = j_feature;
 
         campaign model(j_campaign);
 
-        doc.inject(model.bson());
+        doc.inject(model.builder().extract());
         doc.save();
 
         nlohmann::json res;
         res["campaign"] = j_campaign;
         res["feature"] = j_feature;
-        res["feature"]["id"] = feature_id;
 
         request.send_response(res);
     });
@@ -100,7 +100,7 @@ void campaigns_controller::patch_feature(ops::http::request& request)
 
         campaign model(j_campaign);
 
-        doc.inject(model.bson());
+        doc.inject(model.builder().extract());
         doc.save();
 
         nlohmann::json res;
@@ -131,7 +131,7 @@ void campaigns_controller::post_language(ops::http::request& request)
 
         campaign model(j_campaign);
 
-        doc.inject(model.bson());
+        doc.inject(model.builder().extract());
         doc.save();
 
         request.send_response({
@@ -158,7 +158,7 @@ void campaigns_controller::post_adapter(ops::http::request& request)
 
         campaign model(j_campaign);
 
-        doc.inject(model.bson());
+        doc.inject(model.builder().extract());
         doc.save();
 
         request.send_response({

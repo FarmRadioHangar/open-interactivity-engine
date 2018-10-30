@@ -16,6 +16,6 @@ namespace core
         explicit country(const nlohmann::json& j);
 
     private:
-        bsoncxx::document::view get_bson() const;
+        bsoncxx::builder::basic::document get_builder() const;
     };
 }

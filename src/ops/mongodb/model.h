@@ -17,24 +17,24 @@ namespace mongodb
         model() = default;
         virtual ~model() = default;
 
-        bsoncxx::document::view bson() const;
+        bsoncxx::builder::basic::document builder() const;
         ops::mongodb::document<T> document() const;
 
     private:
-        virtual bsoncxx::document::view get_bson() const = 0;
+        virtual bsoncxx::builder::basic::document get_builder() const = 0;
     };
 
     template <typename T>
-    bsoncxx::document::view model<T>::bson() const
+    bsoncxx::builder::basic::document model<T>::builder() const
     {
-        return get_bson();
+        return get_builder();
     }
 
     template <typename T>
     ops::mongodb::document<T> model<T>::document() const
     {
         ops::mongodb::document<T> document{};
-        document.inject(bson());
+        document.inject(builder().extract());
 
         return document;
     }

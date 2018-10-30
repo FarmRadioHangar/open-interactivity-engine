@@ -41,7 +41,7 @@ campaign::campaign(const nlohmann::json& j)
     }
 }
 
-bsoncxx::document::view campaign::get_bson() const
+bsoncxx::builder::basic::document campaign::get_builder() const
 {
     bsoncxx::builder::basic::document builder{};
 
@@ -58,7 +58,7 @@ bsoncxx::document::view campaign::get_bson() const
     {
         bsoncxx::builder::basic::document collection_builder{};
         for (const auto& feature : _features) {
-            collection_builder.append(kvp(feature.id().value(), feature.bson()));
+            collection_builder.append(kvp(feature.id().value(), feature.builder().extract()));
         }
         builder.append(kvp("features", collection_builder.extract()));
     }
@@ -66,12 +66,12 @@ bsoncxx::document::view campaign::get_bson() const
     {
         bsoncxx::builder::basic::document collection_builder{};
         for (const auto& language : _languages) {
-            collection_builder.append(kvp(language.tag(), language.bson()));
+            collection_builder.append(kvp(language.tag(), language.builder().extract()));
         }
         builder.append(kvp("languages", collection_builder.extract()));
     }
 
-    return builder.extract();
+    return builder;
 }
 
 } // namespace core

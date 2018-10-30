@@ -19,7 +19,7 @@ namespace core
         std::optional<std::string> id() const;
 
     private:
-        bsoncxx::document::view get_bson() const;
+        bsoncxx::builder::basic::document get_builder() const;
 
         std::list<adapter>            _adapters;
         std::optional<nlohmann::json> _data;

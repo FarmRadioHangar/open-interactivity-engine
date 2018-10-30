@@ -21,7 +21,7 @@ namespace core
         std::string tag() const;
 
     private:
-        bsoncxx::document::view get_bson() const;
+        bsoncxx::builder::basic::document get_builder() const;
 
         std::optional<std::string> _id;
         std::string                _name;

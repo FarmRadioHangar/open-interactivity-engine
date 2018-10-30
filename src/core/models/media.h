@@ -16,7 +16,7 @@ namespace core
         explicit media(const nlohmann::json& j);
 
     private:
-        bsoncxx::document::view get_bson() const;
+        bsoncxx::builder::basic::document get_builder() const;
 
         std::optional<std::string> _id;
         std::optional<std::string> _file;
