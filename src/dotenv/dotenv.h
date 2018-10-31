@@ -73,7 +73,7 @@ private:
 ///
 /// \param filename a file to read environment variables from
 ///
-void dotenv::init(const char* filename)
+inline void dotenv::init(const char* filename)
 {
     dotenv::do_init(OptionsNone, filename);
 }
@@ -93,7 +93,7 @@ void dotenv::init(const char* filename)
 /// \param flags    configuration flags
 /// \param filename a file to read environment variables from
 ///
-void dotenv::init(int flags, const char* filename)
+inline void dotenv::init(int flags, const char* filename)
 {
     dotenv::do_init(flags, filename);
 }
@@ -108,13 +108,13 @@ void dotenv::init(int flags, const char* filename)
 /// \returns the value of the environment variable \a name, or \a def if the
 ///          variable is not set
 ///
-std::string dotenv::getenv(const char* name, const std::string& def)
+inline std::string dotenv::getenv(const char* name, const std::string& def)
 {
     const char* str = std::getenv(name);
     return str ? std::string(str) : def;
 }
 
-void dotenv::do_init(int flags, const char* filename)
+inline void dotenv::do_init(int flags, const char* filename)
 {
     std::ifstream file;
     std::string line;
@@ -142,7 +142,7 @@ void dotenv::do_init(int flags, const char* filename)
     }
 }
 
-std::string dotenv::strip_quotes(const std::string& str)
+inline std::string dotenv::strip_quotes(const std::string& str)
 {
     const std::size_t len = str.length();
 

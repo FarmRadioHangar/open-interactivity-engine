@@ -276,6 +276,7 @@ void server::handle_request(web::http::http_request request)
             //    }
             //    return;
             } catch (const std::exception& error) {
+                std::cout << error.what() << std::endl;
                 req.send_error_response(500, "INTERNAL_SERVER_ERROR", error.what());
                 return;
             }

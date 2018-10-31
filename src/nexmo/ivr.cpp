@@ -11,8 +11,10 @@ using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
 
 ivr::script::script(const nlohmann::json& j)
+  : _has_next{true}
 {
     const auto& nodes = j.find("nodes");
+    const auto& edges = j.find("edges");
 
     if (j.end() != nodes) {
         for (nlohmann::json::const_iterator i = nodes->begin(); i != nodes->end(); ++i) {
@@ -20,119 +22,50 @@ ivr::script::script(const nlohmann::json& j)
             const auto& j_node = i.value();
             const auto& type = j_node["type"];
             if ("transmit" == type) {
-                node_transmit transmit;
-                transmit.type = t_transmit;
-                transmit.content = j_node["content"];
-                this->nodes.insert({key, std::make_shared<node_transmit>(transmit)});
+                node_transmit node;
+                node.type = t_transmit;
+                node.content = j_node["content"];
+                _nodes.insert({key, std::make_shared<node_transmit>(node)});
             } else if ("select" == type) {
-                node_select select;
-                select.type = t_select;
+                node_select node;
+                node.type = t_select;
                 for (const auto& key : j_node["keys"]) 
-                    select.keys.push_back(key);
-                this->nodes.insert({key, std::make_shared<node_select>(select)});
+                    node.keys.push_back(key);
+                _nodes.insert({key, std::make_shared<node_select>(node)});
             } else if ("receive" == type) {
-                node receive;
-                receive.type = t_receive;
-                this->nodes.insert({key, std::make_shared<node>(receive)});
+                ivr::node node;
+                node.type = t_receive;
+                _nodes.insert({key, std::make_shared<ivr::node>(node)});
             }
         }
     }
-
-    const auto& edges = j.find("edges");
 
     if (j.end() != edges) {
         for (const auto& edge : *edges) {
             const std::string& src = edge.at("source");
             const std::string& dest = edge.at("dest");
-            if (this->edges.count(src)) {
-                this->edges.at(src).push_back(dest);
+            if (_edges.count(src)) {
+                _edges.at(src).push_back(dest);
             } else {
-                this->edges.insert({src, {dest}});
+                _edges.insert({src, {dest}});
             }
         }
     }
 
-    root = std::string{j.at("root")};
+    _node = std::string{j.at("root")};
 }
 
-ivr::ivr(const script& script, const std::string& language_tag)
-  : _script{script},
-    _ncco{}
+std::shared_ptr<ivr::node> ivr::script::next_node()
 {
-}
+    std::shared_ptr<ivr::node> current = _nodes.at(_node);
 
-ivr::ivr(const nlohmann::json& j, const std::string& language_tag)
-  : _script{script{j}},
-    _ncco{}
-{
-}
-
-void ivr::generate_ncco(std::string key)
-{
-    bool running = true;
-    int i = 0;
-
-    while (running && i++ < 256)
-    {
-        auto node = _script.nodes.at(key);
-
-        //auto edges = _script.edges.count(key) 
-        //    ? _script.edges.at(key) 
-        //    : std::list<std::string>{};
-
-        if (t_transmit == node->type)
-        {
-            node_transmit* transmit = static_cast<node_transmit*>(node.get());
-
-            const std::string& content_id = transmit->content;
-
-            auto doc = ops::mongodb::document<core::content>::find("id", content_id);
-            auto j_content = ops::util::json::extract(doc);
-
-            const auto& j_audio = j_content["reps"]["audio/mpeg"]["en"]; // todo
-            const std::string& media_id = j_audio["media"];
-
-            const std::string& url = "http://localhost:9080/media/" + media_id;
-
-            _ncco.push_back({
-                {"action", "stream"},
-                {"streamUrl", { url }}
-            });
-
-            if (_script.edges.count(key) && 1 == _script.edges.at(key).size()) {
-                key = _script.edges.at(key).front();
-            } else {
-                running = false;
-            }
-        }
-        else if (t_select == node->type)
-        {
-//            node_select* select = static_cast<node_select*>(node.get());
-//            const std::list<std::string>& keys = select->keys;
-
-            const std::string& url = "http://localhost:9080/nexmo/response/n/" + key;
-
-            _ncco.push_back({
-                {"action", "input"},
-                {"eventUrl", { url }}
-            });
-
-            running = false;
-        }
-        else // t_receive
-        {
-//            struct node* receive = node.get();
-
-            const std::string& url = "http://localhost:9080/nexmo/record/n/" + key;
-
-            _ncco.push_back({
-                {"action", "record"},
-                {"eventUrl", { url }}
-            });
-
-            running = false;
-        }
+    if (t_transmit == current->type) {
+        _node = _edges.at(_node).front();
+    } else {
+        _has_next = false;
     }
+
+    return current;
 }
 
 } // namespace nexmo

@@ -5,3 +5,4 @@ latex
 *.sh
 tmp
 nexmo.json
+.env

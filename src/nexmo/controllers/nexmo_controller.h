@@ -19,5 +19,7 @@ namespace nexmo
 
     private:
         void do_install(ops::http::rest::server* server) override;
+
+        std::string get_media_url(const std::string& host, const std::string& content_id);
     };
 }
