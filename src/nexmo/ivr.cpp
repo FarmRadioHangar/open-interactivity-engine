@@ -11,7 +11,7 @@ using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
 
 ivr::script::script(const nlohmann::json& j)
-  : _has_next{true}
+  : has_next{true}
 {
     const auto& nodes = j.find("nodes");
     const auto& edges = j.find("edges");
@@ -52,17 +52,17 @@ ivr::script::script(const nlohmann::json& j)
         }
     }
 
-    _node = std::string{j.at("root")};
+    node_key = std::string{j.at("root")};
 }
 
 std::shared_ptr<ivr::node> ivr::script::next_node()
 {
-    std::shared_ptr<ivr::node> current = _nodes.at(_node);
+    std::shared_ptr<ivr::node> current = _nodes.at(node_key);
 
     if (t_transmit == current->type) {
-        _node = _edges.at(_node).front();
+        node_key = _edges.at(node_key).front();
     } else {
-        _has_next = false;
+        has_next = false;
     }
 
     return current;

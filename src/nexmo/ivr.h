@@ -44,24 +44,12 @@ namespace ivr
 
         std::shared_ptr<node> next_node();
 
-        std::string node_key() const;
-        bool has_next() const;
+        std::string node_key;
+        bool        has_next;
 
     private:
-        std::string _node;
-        node_map    _nodes;
-        edge_map    _edges;
-        bool        _has_next;
+        node_map _nodes;
+        edge_map _edges;
     };
-
-    inline std::string script::node_key() const
-    {
-        return _node;
-    }
-
-    inline bool script::has_next() const
-    {
-        return _has_next;
-    }
 }
 }
