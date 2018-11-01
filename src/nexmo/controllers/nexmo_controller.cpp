@@ -2,12 +2,12 @@
 #include <bsoncxx/builder/basic/document.hpp>
 #include "../../core/models/campaign.h"
 #include "../../core/models/content.h"
+#include "../../dotenv/dotenv.h"
 #include "../../ops/mongodb/counter.h"
 #include "../../ops/mongodb/document.h"
 #include "../../ops/util/json.h"
 #include "../ivr.h"
 #include "../models/session.h"
-#include "../../dotenv/dotenv.h"
 
 namespace nexmo
 {
@@ -31,22 +31,49 @@ void controller::post_event(ops::http::request& request)
         auto session_doc = ops::mongodb::document<nexmo::session>::find("id", session_id);
         auto j_session = ops::util::json::extract(session_doc);
 
-        nexmo::ivr::script graph(j_session["feature"]["data"]["graph"]);
+        nexmo::ivr::script graph(j_session["feature"]["data"]["graph"], node_key);
+
+        auto j = nlohmann::json::parse(body);
 
         // {
-        //   "dtmf":"",
-        //   "timed_out": true,
+        //   "dtmf":"2",
+        //   "timed_out": false,
         //   "uuid": null,
         //   "conversation_uuid": "CON-5584355f-9e68-4bc7-b272-92e5842c4711",
         //   "timestamp": "2018-10-31T08:11:33.044Z"
         // }
-
-        std::cout << body << std::endl;
-
         //
 
-        request.send_response();
+        std::shared_ptr<ivr::node> n = graph.current_node();
 
+        if (ivr::t_select == n->type) {
+            const ivr::node_select* node = static_cast<ivr::node_select*>(n.get());
+            size_t p = 0;
+            for (auto i = node->keys.begin(); i != node->keys.end(); ++i) {
+                if (j["dtmf"] == *i)
+                    break;
+                ++p;
+            }
+            if (p < node->keys.size()) {
+                graph.traverse_edge(p);
+            } 
+        } else if (ivr::t_receive == n->type) {
+            std::cout << "///////////////////////////////////////////////////////////////////" << std::endl;
+            std::cout << j.dump() << std::endl;
+            // todo
+        }
+
+        request.send_response(graph.build_ncco(session_id).dump());
+    });
+}
+
+void controller::post_event_(ops::http::request& request)
+{
+    request.with_body([this, &request](const std::string& body)
+    {
+        std::cout << "-------------------------------------------------------------------" << std::endl;
+        std::cout << body << std::endl;
+        std::cout << "-------------------------------------------------------------------" << std::endl;
     });
 }
 
@@ -79,39 +106,13 @@ void controller::post_answer(ops::http::request& request)
 
         session model(j_session);
 
+        // Register a new session
         ops::mongodb::document<nexmo::session>::create(model.builder().extract());
 
-        nexmo::ivr::script graph(j_session["feature"]["data"]["graph"]);
+        const auto& j_graph = j_session["feature"]["data"]["graph"];
+        nexmo::ivr::script graph(j_graph, j_graph["root"]);
 
-        int i = 0;
-        auto ncco = nlohmann::json::array();
-
-        while (graph.has_next() && i++ < 100)
-        {
-            std::shared_ptr<ivr::node> next = graph.next_node();
-            const std::string host = dotenv::getenv("HOST", "http://localhost:9080");
-            if (ivr::t_transmit == next->type) {
-                const ivr::node_transmit* node = static_cast<ivr::node_transmit*>(next.get());
-                ncco.push_back({
-                    {"action", "stream"},
-                    {"streamUrl", { get_media_url(host, node->content) }}
-                });
-            } else if (ivr::t_select == next->type) {
-                std::string url = host + "/nexmo/event/s/" + session_id + "/n/" + graph.node_key();
-                ncco.push_back({
-                    {"action", "input"},
-                    {"eventUrl", { url }}
-                });
-            } else {
-                std::string url = host + "/nexmo/event/s/" + session_id + "/n/" + graph.node_key();
-                ncco.push_back({
-                    {"action", "record"},
-                    {"eventUrl", { url }}
-                });
-            }
-        }
-
-        request.send_response(ncco.dump());
+        request.send_response(graph.build_ncco(session_id).dump());
     });
 }
 
@@ -120,18 +121,11 @@ void controller::do_install(ops::http::rest::server* server)
     server->on(methods::POST, "^/nexmo/event/s/([0-9a-f]+)/n/([0-9]+)$",
         bind_handler<controller>(&controller::post_event));
 
+    server->on(methods::POST, "^/nexmo/event$",
+        bind_handler<controller>(&controller::post_event_));
+
     server->on(methods::POST, "^/nexmo/answer/c/([0-9a-f]+)/f/([0-9a-f]+)$",
         bind_handler<controller>(&controller::post_answer));
-}
-
-std::string controller::get_media_url(const std::string& host, const std::string& content_id)
-{
-    auto content_doc = ops::mongodb::document<core::content>::find("id", content_id);
-    auto j_content = ops::util::json::extract(content_doc);
-
-    const auto& j_audio = j_content["reps"]["audio/mpeg"]["en"]; // todo
-
-    return host + "/media/" + std::string{j_audio["media"]["id"]};
 }
 
 } // namespace nexmo

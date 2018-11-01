@@ -4,6 +4,7 @@
 #pragma once
 
 #include "../../ops/http/rest/controller.h"
+#include "../ivr.h"
 
 namespace nexmo
 {
@@ -13,13 +14,12 @@ namespace nexmo
         controller();
 
         void post_event(ops::http::request& request);
+        void post_event_(ops::http::request& request);
         void post_answer(ops::http::request& request);
         void post_response(ops::http::request& request);
         void post_record(ops::http::request& request);
 
     private:
         void do_install(ops::http::rest::server* server) override;
-
-        std::string get_media_url(const std::string& host, const std::string& content_id);
     };
 }

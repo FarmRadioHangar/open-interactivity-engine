@@ -3,10 +3,10 @@
 ///
 #pragma once
 
-#include <nlohmann/json.hpp>
-#include <list>
 #include <map>
+#include <nlohmann/json.hpp>
 #include <utility>
+#include <vector>
 
 namespace nexmo
 {
@@ -31,25 +31,39 @@ namespace ivr
 
     struct node_select : public node
     {
-        std::list<std::string> keys;
+        std::vector<std::string> keys;
     };
 
     class script
     {
     public:
         using node_map = std::map<std::string, std::shared_ptr<node>>;
-        using edge_map = std::map<std::string, std::list<std::string>>;
+        using edge_map = std::map<std::string, std::vector<std::string>>;
 
-        explicit script(const nlohmann::json& j);
+        script(const nlohmann::json& j, const std::string& node_key);
 
-        std::shared_ptr<node> next_node();
+        std::shared_ptr<node> current_node() const;
+        void traverse_edge(int n);
 
-        std::string node_key;
-        bool        has_next;
+        nlohmann::json build_ncco(const std::string& session_id);
 
     private:
-        node_map _nodes;
-        edge_map _edges;
+        std::string get_media_url(const std::string& host, 
+                                  const std::string& content_id) const;
+
+        std::string _node_key;
+        node_map    _nodes;
+        edge_map    _edges;
     };
+
+    inline std::shared_ptr<node> script::current_node() const
+    {
+        return _nodes.at(_node_key);
+    }
+
+    inline void script::traverse_edge(int n)
+    {
+        _node_key = _edges.at(_node_key).at(n);
+    }
 }
 }
