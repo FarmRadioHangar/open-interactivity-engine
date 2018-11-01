@@ -79,13 +79,16 @@ nlohmann::json ivr::script::build_ncco(const std::string& session_id)
                 {"action", "input"},
                 {"maxDigits", 2},
                 {"timeOut", 10},
-                {"eventUrl", { host + "/nexmo/event/s/" + session_id + "/n/" + _node_key }}
+                {"eventUrl", { host + "/nexmo/ivr/s/" + session_id + "/n/" + _node_key }}
             });
             has_content = false;
         } else {
             ncco.push_back({
                 {"action", "record"},
-                {"eventUrl", { host + "/nexmo/event/s/" + session_id + "/n/" + _node_key }}
+                {"endOnKey", "#"},
+                {"beepStart", true},
+                {"endOnSilence", 10},
+                {"eventUrl", { host + "/nexmo/ivr/s/" + session_id + "/n/" + _node_key }}
             });
             has_content = false;
         }

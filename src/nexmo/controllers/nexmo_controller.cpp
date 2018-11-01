@@ -21,7 +21,7 @@ controller::controller()
 {
 }
 
-void controller::post_event(ops::http::request& request)
+void controller::post_ivr(ops::http::request& request)
 {
     request.with_body([this, &request](const std::string& body)
     {
@@ -60,6 +60,8 @@ void controller::post_event(ops::http::request& request)
         } else if (ivr::t_receive == n->type) {
             std::cout << "///////////////////////////////////////////////////////////////////" << std::endl;
             std::cout << j.dump() << std::endl;
+            std::cout << "" << std::endl;
+            std::cout << "" << std::endl;
             // todo
         }
 
@@ -67,13 +69,16 @@ void controller::post_event(ops::http::request& request)
     });
 }
 
-void controller::post_event_(ops::http::request& request)
+void controller::post_event(ops::http::request& request)
 {
     request.with_body([this, &request](const std::string& body)
     {
         std::cout << "-------------------------------------------------------------------" << std::endl;
         std::cout << body << std::endl;
         std::cout << "-------------------------------------------------------------------" << std::endl;
+        std::cout << "" << std::endl;
+
+        request.send_response();
     });
 }
 
@@ -118,11 +123,11 @@ void controller::post_answer(ops::http::request& request)
 
 void controller::do_install(ops::http::rest::server* server)
 {
-    server->on(methods::POST, "^/nexmo/event/s/([0-9a-f]+)/n/([0-9]+)$",
-        bind_handler<controller>(&controller::post_event));
+    server->on(methods::POST, "^/nexmo/ivr/s/([0-9a-f]+)/n/([0-9]+)$",
+        bind_handler<controller>(&controller::post_ivr));
 
     server->on(methods::POST, "^/nexmo/event$",
-        bind_handler<controller>(&controller::post_event_));
+        bind_handler<controller>(&controller::post_event));
 
     server->on(methods::POST, "^/nexmo/answer/c/([0-9a-f]+)/f/([0-9a-f]+)$",
         bind_handler<controller>(&controller::post_answer));

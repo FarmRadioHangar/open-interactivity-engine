@@ -13,8 +13,8 @@ namespace nexmo
     public:
         controller();
 
+        void post_ivr(ops::http::request& request);
         void post_event(ops::http::request& request);
-        void post_event_(ops::http::request& request);
         void post_answer(ops::http::request& request);
         void post_response(ops::http::request& request);
         void post_record(ops::http::request& request);
