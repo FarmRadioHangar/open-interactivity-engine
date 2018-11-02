@@ -13,6 +13,9 @@ namespace twilio
     public:
         controller();
 
+        void post_voice(ops::http::request& request);
+        void post_event(ops::http::request& request);
+
 //        void post_ivr(ops::http::request& request);
 //        void post_event(ops::http::request& request);
 //        void post_answer(ops::http::request& request);

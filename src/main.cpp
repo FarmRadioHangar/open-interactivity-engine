@@ -7,6 +7,7 @@
 #include "core/controllers/media.h"
 #include "dotenv/dotenv.h"
 #include "nexmo/adapters/nexmo_voice.h"
+#include "twilio/adapters/twilio_voice.h"
 #include "ops/http/rest/server.h"
 #include "ops/mongodb/pool.h"
 
@@ -38,6 +39,10 @@ int main()
     auto nexmo_voice = std::make_unique<nexmo::voice>();
 
     server.register_adapter(nexmo_voice.get());
+
+    auto twilio_voice = std::make_unique<twilio::voice>();
+
+    server.register_adapter(twilio_voice.get());
 
     //
 
