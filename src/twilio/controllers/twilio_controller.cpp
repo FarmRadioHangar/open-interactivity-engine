@@ -19,6 +19,8 @@ void controller::post_voice(ops::http::request& request)
     {
         std::cout << "post_voice: " << std::endl;
         std::cout << body << std::endl;
+
+        request.send_response();
     });
 }
 
@@ -28,6 +30,8 @@ void controller::post_event(ops::http::request& request)
     {
         std::cout << "post_event: " << std::endl;
         std::cout << body << std::endl;
+
+        request.send_response();
     });
 }
 
