@@ -62,7 +62,7 @@ mongocxx::database pool::database() const
 ///
 /// \brief Initialize the database connection pool.
 ///
-/// \param db  the name of the database used in this application
+/// \param db  the name of the MongoDB database used in this application
 /// \param uri a valid MongoDB connection string
 ///
 /// \sa https://docs.mongodb.com/manual/reference/connection-string/
