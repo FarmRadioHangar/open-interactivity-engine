@@ -24,7 +24,11 @@ static mongocxx::instance instance{};
 /// int main()
 /// {
 ///     ops::mongodb::pool::init("database");
+///
 ///     // ...
+///
+///     return 0;
+/// }
 /// \endcode
 ///
 /// Then use pool::instance to access the singleton.
