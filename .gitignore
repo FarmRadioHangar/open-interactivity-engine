@@ -1,8 +1,10 @@
 build
 html
 latex
+xml
 *.mp3
 *.sh
 tmp
 nexmo.json
 .env
+*.bak
