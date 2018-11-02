@@ -22,6 +22,8 @@ namespace json
 
         return j;
     }
+
+    nlohmann::json from_urlencoded(const std::string& input);
 }
 }
 }

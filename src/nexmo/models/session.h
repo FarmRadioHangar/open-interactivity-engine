@@ -1,5 +1,5 @@
 ///
-/// \file session_builder.h
+/// \file session.h
 ///
 #pragma once
 

@@ -25,7 +25,7 @@ ivr::script::script(const nlohmann::json& j, const std::string& node_key)
             if ("transmit" == type) {
                 node_transmit node;
                 node.type = t_transmit;
-                node.content = j_node["content"];
+                node.content = j_node["content"]["id"];
                 _nodes.insert({key, std::make_shared<node_transmit>(node)});
             } else if ("select" == type) {
                 node_select node;
