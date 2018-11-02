@@ -13,12 +13,6 @@ namespace ops
     ///
     namespace mongodb
     {
-        ///
-        /// Namespace for BSON builder utilitites
-        ///
-        namespace bson
-        {
-        }
     }
 
     ///
