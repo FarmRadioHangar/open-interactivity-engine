@@ -17,5 +17,7 @@ namespace twilio
 
     private:
         bsoncxx::builder::basic::document get_builder() const;
+
+        std::optional<std::string> _id;
     };
 }

@@ -64,7 +64,6 @@ void controller::post_voice(ops::http::request& request)
         ops::mongodb::document<twilio::session>::create(model.builder().extract());
 
         std::cout << "post_voice: " << std::endl;
-        std::cout << body << std::endl;
         std::cout << j_body.dump() << std::endl;
 
         request.send_response();
