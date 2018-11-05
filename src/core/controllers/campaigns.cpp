@@ -94,7 +94,7 @@ void campaigns_controller::patch_feature(ops::http::request& request)
 
         auto j_campaign = ops::util::json::extract(doc);
         auto j_request  = nlohmann::json::parse(body);
-        auto& j_feature = j_campaign["features"][feature_id];
+        auto j_feature = j_campaign["features"][feature_id];
 
         j_feature.merge_patch(j_request);
 
@@ -152,7 +152,7 @@ void campaigns_controller::post_adapter(ops::http::request& request)
         auto j_campaign = ops::util::json::extract(doc);
         auto j_adapter  = nlohmann::json::parse(body);
 
-        const std::string& module = j_adapter["module"];
+        const std::string module = j_adapter["module"];
 
         j_campaign["features"][feature_id]["adapters"][module] = j_adapter;
 

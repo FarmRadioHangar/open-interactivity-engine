@@ -23,7 +23,8 @@ namespace nexmo
 
         std::optional<std::string>   _id;
         std::optional<core::feature> _feature;
-        std::string                  _campaign_id;
-        nlohmann::json               _nexmo;
+        std::optional<std::string>   _campaign_id;
+        nlohmann::json               _conversation;
+        nlohmann::json               _events;
     };
 }

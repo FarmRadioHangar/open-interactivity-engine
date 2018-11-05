@@ -50,7 +50,7 @@ mongodb::pool& pool::instance()
         throw std::runtime_error{"pool::init has not been called"};
     }
 
-    static mongodb::pool instance{};
+    static thread_local mongodb::pool instance{};
     return instance;
 }
 

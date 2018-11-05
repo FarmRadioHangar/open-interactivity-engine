@@ -3,6 +3,7 @@
 ///
 #pragma once
 
+#include <cassert>
 #include <map>
 #include <nlohmann/json.hpp>
 #include <utility>
@@ -43,7 +44,7 @@ namespace ivr
         script(const nlohmann::json& j, const std::string& node_key);
 
         std::shared_ptr<node> current_node() const;
-        void traverse_edge(int n);
+        bool traverse_edge(int n);
 
         nlohmann::json build_ncco(const std::string& session_id);
 
@@ -58,12 +59,19 @@ namespace ivr
 
     inline std::shared_ptr<node> script::current_node() const
     {
+        assert(_nodes.count(_node_key));
+
         return _nodes.at(_node_key);
     }
 
-    inline void script::traverse_edge(int n)
+    inline bool script::traverse_edge(int n)
     {
+        if (!_edges.count(_node_key)) {
+            return false;
+        }
+
         _node_key = _edges.at(_node_key).at(n);
+        return true;
     }
 }
 }

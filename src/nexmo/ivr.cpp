@@ -73,12 +73,12 @@ nlohmann::json ivr::script::build_ncco(const std::string& session_id)
                 {"action", "stream"},
                 {"streamUrl", { get_media_url(host, node->content) }}
             });
-            traverse_edge(0);
+            has_content = traverse_edge(0);
         } else if (ivr::t_select == n->type) {
             ncco.push_back({
                 {"action", "input"},
-                {"maxDigits", 2},
-                {"timeOut", 10},
+                {"maxDigits", 1},
+                {"timeOut", 4},
                 {"eventUrl", { host + "/nexmo/ivr/s/" + session_id + "/n/" + _node_key }}
             });
             has_content = false;
@@ -90,7 +90,7 @@ nlohmann::json ivr::script::build_ncco(const std::string& session_id)
                 {"endOnSilence", 10},
                 {"eventUrl", { host + "/nexmo/ivr/s/" + session_id + "/n/" + _node_key }}
             });
-            has_content = false;
+            has_content = traverse_edge(0);
         }
     }
 

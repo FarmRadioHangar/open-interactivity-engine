@@ -49,6 +49,12 @@ namespace mongodb
             bsoncxx::document::view filter,
             mongocxx::options::count options = mongocxx::options::count{});
 
+        template <typename K, typename V>
+        static std::int64_t count(
+            const K& k, 
+            const V& v, 
+            mongocxx::options::count options = mongocxx::options::count{});
+
         std::istringstream stream() const;
 
     private:
@@ -161,6 +167,13 @@ namespace mongodb
     {
         auto collection = pool::instance().database().collection(T::collection);
         return collection.count(filter, options);
+    }
+
+    template <typename T>
+    template <typename K, typename V>
+    std::int64_t document<T>::count(const K& k, const V& v, mongocxx::options::count options)
+    {
+        return document<T>::count(make_document(kvp(k, v)));
     }
 
     template <typename T>

@@ -67,8 +67,8 @@ void content_controller::post_rep(ops::http::request& request)
         auto j_content = ops::util::json::extract(doc);
         auto j_rep = nlohmann::json::parse(body);
 
-        const std::string& tag = j_rep["language"];
-        const std::string& format = j_rep["format"];
+        const std::string tag = j_rep["language"];
+        const std::string format = j_rep["format"];
 
         // Check that language exists
         ops::mongodb::document<language>::find("tag", tag);

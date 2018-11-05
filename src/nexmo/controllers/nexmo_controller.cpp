@@ -25,32 +25,26 @@ void controller::post_ivr(ops::http::request& request)
 {
     request.with_body([this, &request](const std::string& body)
     {
+        std::cout << "controller::post_ivr" << std::endl;
+
         const auto session_id = request.get_uri_param(1);
-        const auto node_key = request.get_uri_param(2);
+        const auto node_key   = request.get_uri_param(2);
+
+        auto j_body = nlohmann::json::parse(body);
 
         auto session_doc = ops::mongodb::document<nexmo::session>::find("id", session_id);
         auto j_session = ops::util::json::extract(session_doc);
 
         nexmo::ivr::script graph(j_session["feature"]["data"]["graph"], node_key);
 
-        auto j = nlohmann::json::parse(body);
-
-        // {
-        //   "dtmf":"2",
-        //   "timed_out": false,
-        //   "uuid": null,
-        //   "conversation_uuid": "CON-5584355f-9e68-4bc7-b272-92e5842c4711",
-        //   "timestamp": "2018-10-31T08:11:33.044Z"
-        // }
-        //
-
         std::shared_ptr<ivr::node> n = graph.current_node();
 
         if (ivr::t_select == n->type) {
+
             const ivr::node_select* node = static_cast<ivr::node_select*>(n.get());
             size_t p = 0;
             for (auto i = node->keys.begin(); i != node->keys.end(); ++i) {
-                if (j["dtmf"] == *i)
+                if (j_body["dtmf"] == *i)
                     break;
                 ++p;
             }
@@ -58,11 +52,11 @@ void controller::post_ivr(ops::http::request& request)
                 graph.traverse_edge(p);
             } 
         } else if (ivr::t_receive == n->type) {
-            std::cout << "///////////////////////////////////////////////////////////////////" << std::endl;
-            std::cout << j.dump() << std::endl;
-            std::cout << "" << std::endl;
-            std::cout << "" << std::endl;
-            // todo
+
+            // todo: process audio and create media
+
+            request.send_response();
+            return;
         }
 
         request.send_response(graph.build_ncco(session_id).dump());
@@ -73,10 +67,25 @@ void controller::post_event(ops::http::request& request)
 {
     request.with_body([this, &request](const std::string& body)
     {
-        std::cout << "-------------------------------------------------------------------" << std::endl;
-        std::cout << body << std::endl;
-        std::cout << "-------------------------------------------------------------------" << std::endl;
-        std::cout << "" << std::endl;
+        std::cout << "controller::post_event" << std::endl;
+
+        auto j_body = nlohmann::json::parse(body);
+
+        const std::string uuid = j_body["conversation_uuid"];
+
+        auto collection = ops::mongodb::pool::instance().database().collection(nexmo::session::collection);
+
+        const auto filter = make_document(kvp("conversation.conversation_uuid", uuid));
+
+        mongocxx::options::find_one_and_update options{};
+        options.upsert(true);
+
+        bsoncxx::builder::basic::document builder{};
+        builder.append(kvp("$push", [this, body](bsoncxx::builder::basic::sub_document sub_builder) {
+            sub_builder.append(kvp("events", bsoncxx::from_json(body)));
+        }));
+
+        collection.find_one_and_update(filter.view(), builder.extract(), options);
 
         request.send_response();
     });
@@ -86,38 +95,57 @@ void controller::post_answer(ops::http::request& request)
 {
     request.with_body([this, &request](const std::string& body)
     {
-        const auto campaign_id = request.get_uri_param(1);
-        const auto feature_id  = request.get_uri_param(2);
+        std::cout << "controller::post_answer" << std::endl;
 
-        const std::string session_id = ops::mongodb::counter::generate_id();
+        auto j_body = nlohmann::json::parse(body);
 
-        nlohmann::json j_session{
-            {"id", session_id},
-            {"campaign", { {"id", campaign_id}} },
-            {"conversation", nlohmann::json::parse(body)}
-        };
-
-        // {
-        //   "conversation_uuid": "CON-c387139a-060f-4875-8f6e-6f64da0971df",
-        //   "from": "xxxxxxxxxxxx",
-        //   "to": "44xxxxxxxxxx",
-        //   "uuid": "daaa34f8cfca9e70e6f3ea4091b5831c"
-        // }
+        const std::string campaign_id = request.get_uri_param(1);
+        const std::string feature_id  = request.get_uri_param(2);
 
         auto campaign_doc = ops::mongodb::document<core::campaign>::find("id", campaign_id);
         auto j_campaign = ops::util::json::extract(campaign_doc);
 
-        j_session["feature"] = j_campaign["features"][feature_id];
+        const std::string session_id = ops::mongodb::counter::generate_id();
 
-        session model(j_session);
+        const std::string uuid = j_body["conversation_uuid"];
 
-        // Register a new session
-        ops::mongodb::document<nexmo::session>::create(model.builder().extract());
+        auto collection = ops::mongodb::pool::instance().database().collection(nexmo::session::collection);
 
-        const auto& j_graph = j_session["feature"]["data"]["graph"];
+        std::cout << "uuid: " << uuid << std::endl;
+
+        const auto filter = make_document(kvp("conversation.conversation_uuid", uuid));
+
+        mongocxx::options::find_one_and_update options{};
+        options.upsert(true);
+
+        bsoncxx::builder::basic::document builder{};
+
+        builder.append(kvp("$set", [this, campaign_id, session_id, feature_id, body, 
+              j_campaign](bsoncxx::builder::basic::sub_document update_builder) 
+        {
+            update_builder.append(kvp("id", session_id));
+
+            update_builder.append(kvp("campaign", [this, campaign_id](bsoncxx::builder::basic::sub_document sub_builder) {
+                sub_builder.append(kvp("id", campaign_id));
+            }));
+
+            update_builder.append(kvp("conversation", bsoncxx::from_json(body)));
+
+            core::feature feature(j_campaign["features"][feature_id]);
+
+            update_builder.append(kvp("feature", feature.builder().extract()));
+        }));
+
+        collection.find_one_and_update(filter.view(), builder.extract(), options);
+
+        //session model(j_session);
+
+        const auto j_graph = j_campaign["features"][feature_id]["data"]["graph"];
         nexmo::ivr::script graph(j_graph, j_graph["root"]);
 
-        request.send_response(graph.build_ncco(session_id).dump());
+        const auto j_resp = graph.build_ncco(session_id);
+
+        request.send_response(j_resp.dump());
     });
 }
 
