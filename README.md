@@ -1,1 +1,1 @@
-# FRI Open Survey Engine
+# FRI Open Interactivity Engine
