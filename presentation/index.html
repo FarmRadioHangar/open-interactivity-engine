@@ -1,0 +1,344 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+
+				<section>
+          In the past, we have created services based on a number of communication formats, including IVR, SMS, and the Web. 
+        </section>
+
+				<section>
+          <h3>Some of which are&hellip;</h3>
+          <ul>
+            <li class="fragment">Uliza Polls</li>
+            <li class="fragment">Information services</li>
+            <li class="fragment">Registration</li>
+            <li class="fragment">Uliza Answers</li>
+          </ul>
+        </section>
+
+				<section data-transition="zoom-in fade-out">
+          <h2>Observation #1</h2>
+          <p>
+            These can all be thought of as programmable or scripted <i>conversations</i>, in one form or another.
+          </p>
+        </section>
+
+				<section data-transition="zoom-in fade-out">
+          <h2>Observation #2</h2>
+          <p>
+            Such conversations take place across one or more communication <i>channels</i>.
+          </p>
+        </section>
+
+				<section data-transition="zoom-in">
+          <h2>Question</h2>
+          <p>
+            Can we capture the essence of this interactivity in a technology-agnostic way? 
+          </p>
+        </section>
+
+				<section>
+          <h2>Goal</h2>
+          The goal is to introduce a set of building blocks that:
+        </section>
+
+				<section>
+          <ol>
+            <li><b>Allows us to design and implement new services:</b>
+              <ul>
+                <li class="fragment">easily,</li>
+                <li class="fragment">reasonably fast, and</li>
+                <li class="fragment">without the need to think about the underlying delivery mechanisms.</li>
+              </ul>
+            </li>
+            <li class="fragment"><b>Enables these services to:</b>
+              <ul>
+                <li class="fragment">work with different channels, and even across multiple channels at once; and</li>
+                <li class="fragment">integrate with different service providers and technology platforms.</li>
+              </ul>
+            </li>
+          </ol>
+        </section>
+
+				<section>
+          This is the basic proposition behind the&hellip;
+				</section>
+
+				<section>
+          <h2>Open Interactivity Engine</h2>
+          <p>
+            <img src="img/spongebob.gif">
+          </p>
+				</section>
+
+				<section>
+          To demonstrate the idea, we will see what it would look like to recreate Uliza Answers according to this approach.
+				</section>
+
+				<section>
+          <h2>The script</h2>
+          <p>
+            We will use a <i>directed graph</i> to represent the control flow aspects of a conversation, with each individual vertex serving one of a number of purposes, the two most important of which are:
+          </p>
+				</section>
+
+				<section>
+          <p>
+            <img src="img/content-node.png" style="width: 25%; background: none; border: none;">
+          </p>
+          <p>
+            A node that has a message attached to it. An example would be to welcome the user and explain the basic steps involved in using the service.
+          </p>
+				</section>
+
+				<section>
+          <p>
+            <img src="img/action-node.png" style="width: 25%; background: none; border: none;">
+          </p>
+          <p>
+            A node that responds to the user’s intent to perform some action. This could be, for example, for the user to express that they would like to ask a question.
+          </p>
+				</section>
+
+				<section>
+          <h3>Note that</h3>
+          <p>
+            At this stage, we are not saying anything about:
+          </p>
+          <ul>
+            <li class="fragment"><b>The format of the message:</b> <span class="fragment">Is it audio, or text, or perhaps even video?</span></li>
+            <li class="fragment"><b>How the user communicates their intent:</b> <span class="fragment">This could be, e.g., by pressing a button, typing a message, or by using their voice.</span></li>
+          </ul>
+				</section>
+
+				<section>
+          <p>
+            And this is an important point&mdash;we want to abstract as much as possible from the technologies used to deliver these services in the end&mdash;and from the channels.
+          </p> 
+          <p>
+            <b>These are concerns that should not affect the script.</b>
+          </p> 
+				</section>
+
+        <section>
+          <p>
+            <img src="img/graph-preview.png" style="margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            <a href="img/graph.png" target="_newtab">Click to enlarge</a>
+          </p>
+				</section>
+
+				<section>
+          A conversation induces a <i>walk</i> on the graph. 
+				</section>
+
+				<section>
+          Conversations involve an <i>audience</i>, and take place across one or more <i>channels</i>.
+				</section>
+
+				<section>
+          Here is what this could look like using the familiar IVR format of communication.
+				</section>
+
+				<section data-transition="slide-in">
+          <p>
+            <img src="img/anim/01_01.png" style="max-width: 45%; margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            The user calls in on the campaign number.
+          </p>
+				</section>
+
+        <section data-transition="fade-in">
+          <p>
+            <img src="img/anim/01_02.png" style="max-width: 45%; margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            A recorded message is played.
+          </p>
+				</section>
+
+        <section data-transition="fade-in">
+          <p>
+            <img src="img/anim/01_03.png" style="max-width: 45%; margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            The user presses 1 to ask a question.
+          </p>
+				</section>
+
+        <section data-transition="fade-in">
+          <p>
+            <img src="img/anim/01_04.png" style="max-width: 45%; margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            Instructions are played.
+          </p>
+				</section>
+
+        <section data-transition="fade-in">
+          <p>
+            <img src="img/anim/01_05.png" style="max-width: 45%; margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            The user records their message.
+          </p>
+				</section>
+
+				<section>
+          Next we consider instead the scenario where the listener initiates the conversation, using an SMS to request a call.
+				</section>
+
+				<section data-transition="slide-in">
+          <p>
+            <img src="img/anim/02_01.png" style="margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            The audience member sends an SMS with a keyword.
+          </p>
+				</section>
+
+        <section data-transition="fade-in">
+          <p>
+            <img src="img/anim/02_02.png" style="margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            An outbound call is made.
+          </p>
+				</section>
+
+        <section data-transition="fade-in">
+          <p>
+            <img src="img/anim/02_03.png" style="margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            The process continues as before.
+          </p>
+				</section>
+
+				<section>
+          In some cases, the call is automated, and initiated by a scheduler or script.
+				</section>
+
+				<section data-transition="slide-in">
+          <p>
+            <img src="img/anim/03_01.png" style="margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            An event is automatically triggered.
+          </p>
+				</section>
+
+        <section data-transition="fade-in">
+          <p>
+            <img src="img/anim/03_02.png" style="margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            An outbound call is made.
+          </p>
+				</section>
+
+        <section data-transition="fade-in">
+          <p>
+            <img src="img/anim/03_03.png" style="margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            The process continues as before.
+          </p>
+				</section>
+
+				<section>
+          Finally, a more interesting case: Here we imagine the conversation taking place over a chat messenger application, such as Telegram or WhatsApp.
+				</section>
+
+				<section data-transition="slide-in">
+          <p>
+            <img src="img/anim/04_01.png" style="margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            An audience member types a special command to engage the chat bot.<br>
+          </p>
+				</section>
+
+        <section data-transition="fade-in">
+          <p>
+            <img src="img/anim/04_02.png" style="margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            The bot replies with a welcome message and some brief instructions.
+          </p>
+				</section>
+
+        <section data-transition="fade-in">
+          <p>
+            <img src="img/anim/04_03.png" style="margin:0; background: none; border: none; box-shadow: none;">
+          </p>
+          <p>
+            The user sends a command to state their intention to ask a question.
+          </p>
+				</section>
+
+				<section>
+          One script&mdash;different formats.
+				</section>
+
+				<section>
+          Where does Uliza fit into this? What does the bigger picture look like?
+				</section>
+
+				<section>
+          <img src="img/arch.png" style="margin:0; background: none; border: none; box-shadow: none;">
+				</section>
+
+				<section>
+          <h2>Next steps</h2>
+          <p>Thoughts, ideas?</p>
+				</section>
+
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				],
+        minScale: 1,
+        maxScale: 1
+			});
+		</script>
+	</body>
+</html>
